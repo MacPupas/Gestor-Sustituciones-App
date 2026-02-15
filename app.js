@@ -1,0 +1,2452 @@
+const storageKeys = {
+  profesores: "gs_profesores",
+  materias: "gs_materias",
+  tabla: "gs_tabla_sust",
+  sustituciones: "gs_sustituciones",
+};
+
+const dayNames = [
+  "lunes",
+  "martes",
+  "miercoles",
+  "jueves",
+  "viernes",
+  "sabado",
+  "domingo",
+];
+
+const dayDisplay = {
+  lunes: "lunes",
+  martes: "martes",
+  miercoles: "miércoles",
+  jueves: "jueves",
+  viernes: "viernes",
+  sabado: "sábado",
+  domingo: "domingo",
+};
+
+const dayLabels = ["L", "M", "X", "J", "V", "S", "D"];
+
+const tramos = [
+  { start: "09:00", end: "09:30" },
+  { start: "09:30", end: "10:00" },
+  { start: "10:00", end: "10:30" },
+  { start: "10:30", end: "11:00" },
+  { start: "11:00", end: "11:30" },
+  { start: "11:30", end: "12:00" },
+  { start: "12:00", end: "12:30", blocked: true },
+  { start: "12:30", end: "13:00" },
+  { start: "13:00", end: "13:30" },
+  { start: "13:30", end: "14:00" },
+];
+
+const state = {
+  activeDate: new Date(),
+  calendarDate: new Date(),
+  editingId: null,
+  importType: null,
+  importRows: [],
+  importColumns: [],
+  importMapping: {},
+  datasetViewType: null,
+  datasetViewSearch: "",
+};
+
+const el = {
+  miniCalendar: document.getElementById("miniCalendar"),
+  ctaNueva: document.getElementById("ctaNueva"),
+  substitutionGrid: document.getElementById("substitutionGrid"),
+  modal: document.getElementById("substitutionModal"),
+  modalTitle: document.getElementById("modalTitle"),
+  modalClose: document.getElementById("modalClose"),
+  modalCancel: document.getElementById("modalCancel"),
+  substitutionForm: document.getElementById("substitutionForm"),
+  formFecha: document.getElementById("formFecha"),
+  formDiaSemana: document.getElementById("formDiaSemana"),
+  formHoraInicio: document.getElementById("formHoraInicio"),
+  formHoraFin: document.getElementById("formHoraFin"),
+  formProfesorAusente: document.getElementById("formProfesorAusente"),
+  formProfesorSustituto: document.getElementById("formProfesorSustituto"),
+  formProfesorExtra: document.getElementById("formProfesorExtra"),
+  formCursoGrupo: document.getElementById("formCursoGrupo"),
+  materiaInfo: document.getElementById("materiaInfo"),
+  formError: document.getElementById("formError"),
+  importModal: document.getElementById("importModal"),
+  importTitle: document.getElementById("importTitle"),
+  importClose: document.getElementById("importClose"),
+  importCancel: document.getElementById("importCancel"),
+  importFile: document.getElementById("importFile"),
+  importMeta: document.getElementById("importMeta"),
+  mappingGrid: document.getElementById("mappingGrid"),
+  previewTable: document.getElementById("previewTable"),
+  importConfirm: document.getElementById("importConfirm"),
+  importError: document.getElementById("importError"),
+  datasetTable: document.getElementById("datasetTable"),
+  statsFrom: document.getElementById("statsFrom"),
+  statsTo: document.getElementById("statsTo"),
+  statsProfesor: document.getElementById("statsProfesor"),
+  statsApply: document.getElementById("statsApply"),
+  statTotal: document.getElementById("statTotal"),
+  statByDay: document.getElementById("statByDay"),
+  statTopAbsent: document.getElementById("statTopAbsent"),
+  statTopSub: document.getElementById("statTopSub"),
+  statRankingSub: document.getElementById("statRankingSub"),
+  printDate: document.getElementById("printDate"),
+  printFrom: document.getElementById("printFrom"),
+  printTo: document.getElementById("printTo"),
+  printGenerate: document.getElementById("printGenerate"),
+  printBtn: document.getElementById("printBtn"),
+  exportPdf: document.getElementById("exportPdf"),
+  printTable: document.getElementById("printTable"),
+};
+
+const datasetConfig = {
+  profesores: {
+    label: "Profesores",
+    required: ["profesor", "puesto", "movilAvisos", "cuenta"],
+    fields: [
+      { key: "profesor", label: "Nombre y apellidos (CSV col 1)" },
+      { key: "puesto", label: "Puesto (CSV col 2)" },
+      { key: "movilAvisos", label: "Móvil avisos emergencia (CSV col 3)" },
+      { key: "cuenta", label: "Cuenta Google/Microsoft (CSV col 4)" },
+    ],
+  },
+  materias: {
+    label: "Materias de horario",
+    required: ["profesor", "diaSemana", "horaInicio", "horaFin", "materia", "cursoGrupo"],
+    fields: [
+      { key: "profesor", label: "Profesor (CSV col 1)" },
+      { key: "diaSemana", label: "Día semana (CSV col 2)" },
+      { key: "horaInicio", label: "Hora inicio (CSV col 3)" },
+      { key: "horaFin", label: "Hora fin (CSV col 4)" },
+      { key: "materia", label: "Asignatura (CSV col 5)" },
+      { key: "cursoGrupo", label: "Curso/Grupo (CSV col 6)" },
+    ],
+  },
+  tabla: {
+    label: "Tabla de datos",
+    required: ["profesor", "diaSemana", "horaInicio", "horaFin", "asignatura", "cursoGrupo"],
+    fields: [
+      { key: "profesor", label: "Profesor (CSV col 1)" },
+      { key: "diaSemana", label: "Día (CSV col 2)" },
+      { key: "horaInicio", label: "Hora_Inicio (CSV col 3)" },
+      { key: "horaFin", label: "Hora_Fin (CSV col 4)" },
+      { key: "asignatura", label: "Asignatura (CSV col 5)" },
+      { key: "cursoGrupo", label: "Curso/Grupo (CSV col 6)" },
+    ],
+  },
+};
+
+const storage = {
+  get(key, fallback) {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    try {
+      return JSON.parse(raw);
+    } catch (error) {
+      return fallback;
+    }
+  },
+  set(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+  },
+};
+
+const getProfesores = () => storage.get(storageKeys.profesores, []);
+const getMaterias = () => storage.get(storageKeys.materias, []);
+const getTabla = () => storage.get(storageKeys.tabla, []);
+const getSustituciones = () => storage.get(storageKeys.sustituciones, []);
+
+const setProfesores = (data) => storage.set(storageKeys.profesores, data);
+const setMaterias = (data) => storage.set(storageKeys.materias, data);
+const setTabla = (data) => storage.set(storageKeys.tabla, data);
+const setSustituciones = (data) => storage.set(storageKeys.sustituciones, data);
+
+const toIso = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+const fromIso = (value) => {
+  const [year, month, day] = value.split('-').map(Number);
+  return new Date(year, month - 1, day);
+};
+const formatDate = (date) =>
+  date.toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+const getDayKey = (date) => {
+  const day = date.getDay();
+  // Convertir de domingo=0 a lunes=1, ... , sábado=6, domingo=7
+  const adjustedDay = day === 0 ? 6 : day - 1;
+  return dayNames[adjustedDay];
+};
+const getDayLabel = (dayKey) => dayDisplay[dayKey] || dayKey;
+const getDayName = (date) => getDayLabel(getDayKey(date));
+const normalizeDay = (value) =>
+  String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+const normalizeTime = (value) => {
+  if (!value) return "";
+  const cleaned = String(value).trim();
+  if (cleaned.includes(":")) {
+    const [h, m] = cleaned.split(":");
+    return `${h.padStart(2, "0")}:${(m || "00").padStart(2, "0")}`;
+  }
+  if (cleaned.length === 4) {
+    return `${cleaned.slice(0, 2)}:${cleaned.slice(2)}`;
+  }
+  return cleaned;
+};
+
+const addMinutes = (time, minutes) => {
+  const [h, m] = time.split(":").map(Number);
+  const total = h * 60 + m + minutes;
+  const nh = String(Math.floor(total / 60)).padStart(2, "0");
+  const nm = String(total % 60).padStart(2, "0");
+  return `${nh}:${nm}`;
+};
+
+const getTramoByStart = (start) => tramos.find((t) => t.start === start);
+
+const generateId = () => `id_${Math.random().toString(36).slice(2, 10)}`;
+
+const buildDisplayName = (prof) => {
+  return prof.profesor || "";
+};
+
+const normalizeText = (value) =>
+  String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+const resolveProfesorId = (value) => {
+  if (!value) return "";
+  const profesores = getProfesores();
+  const normalized = String(value).trim();
+  const byId = profesores.find((p) => p.id === normalized);
+  if (byId) return byId.id;
+  const byName = profesores.find(
+    (p) => normalizeText(p.displayName) === normalizeText(normalized)
+  );
+  if (byName) return byName.id;
+  const newProf = {
+    id: generateId(),
+    profesor: normalized,
+    puesto: "",
+    movilAvisos: "",
+    cuenta: "",
+    displayName: normalized,
+  };
+  const updated = [...profesores, newProf];
+  setProfesores(updated);
+  return newProf.id;
+};
+
+const findProfesorMatch = (profesores, id, nombre) => {
+  if (!Array.isArray(profesores)) return null;
+  if (id) {
+    const byId = profesores.find((p) => p.id === id);
+    if (byId) return byId;
+  }
+  if (nombre) {
+    const normalized = normalizeText(nombre);
+    return profesores.find(
+      (p) => normalizeText(p.displayName) === normalized
+    );
+  }
+  return null;
+};
+
+const getFormDayNormalized = () => {
+  const fecha = el.formFecha.value;
+  if (fecha) {
+    return normalizeDay(getDayKey(fromIso(fecha)));
+  }
+  return normalizeDay(el.formDiaSemana.textContent);
+};
+
+const setActiveDate = (date) => {
+  state.activeDate = date;
+  el.formFecha.value = toIso(date);
+  el.printDate.value = toIso(date);
+  renderDashboard();
+  renderCalendar();
+};
+
+const openModal = (mode = "new", data = null) => {
+  el.formError.textContent = "";
+  el.modal.classList.add("is-open");
+  el.modal.setAttribute("aria-hidden", "false");
+  if (mode === "edit" && data) {
+    state.editingId = data.id;
+    el.modalTitle.textContent = "Editar sustitución";
+    el.formFecha.value = data.fecha;
+    // Asegurar que solo se muestre la hora de inicio, no el tramo completo
+    const horaInicio = data.horaInicio.includes('-') ? data.horaInicio.split('-')[0] : data.horaInicio;
+    const horaFin = data.horaFin.includes('-') ? data.horaFin.split('-')[1] : data.horaFin;
+    el.formHoraInicio.value = horaInicio;
+    el.formHoraFin.value = horaFin;
+    // Guardar el ausenteId
+    const ausenteId = data.profesorAusenteId || "";
+    // Establecer el ausente ANTES de llamar a refreshProfesorOptions
+    el.formProfesorAusente.value = ausenteId;
+    // Actualizar el día
+    updateFormDay();
+    // Cargar las opciones de profesor (ya incluye el ausente porque se estableció antes)
+    refreshProfesorOptions();
+    // Otros valores
+    el.formProfesorExtra.value = data.profesorExtraId || "";
+    el.formCursoGrupo.value = data.cursoGrupoMateria || "";
+    el.formCursoGrupo.readOnly = false;
+    // Actualizar la información de materia después de establecer el ausente
+    updateMateriaInfo();
+    // Actualizar las opciones de sustituto
+    refreshSustitutoOptions(ausenteId, data.profesorSustitutoId || "");
+    // Establecer el valor del ausente AL FINAL para asegurar que se seleccione correctamente
+    el.formProfesorAusente.value = ausenteId;
+  } else {
+    // Limpiar todos los campos del formulario
+    el.formFecha.value = toIso(state.activeDate);
+    el.formHoraInicio.value = "";
+    el.formHoraFin.value = "";
+    el.formProfesorAusente.value = "";
+    el.formProfesorSustituto.value = "";
+    el.formProfesorExtra.value = "";
+    el.formCursoGrupo.value = "";
+    el.formCursoGrupo.readOnly = false;
+    el.materiaInfo.textContent = "--";
+    el.materiaInfo.style.color = "#6b7280";
+    // Cargar opciones
+    refreshProfesorOptions();
+    refreshSustitutoOptions("", "");
+    updateFormDay();
+  }
+};
+
+const closeModal = () => {
+  el.modal.classList.remove("is-open");
+  el.modal.setAttribute("aria-hidden", "true");
+};
+
+const openImportModal = (type) => {
+  state.importType = type;
+  state.importRows = [];
+  state.importColumns = [];
+  state.importMapping = {};
+  el.importTitle.textContent = `Importar ${datasetConfig[type].label}`;
+  el.importMeta.textContent = "Sin archivo seleccionado";
+  el.mappingGrid.innerHTML = "";
+  el.previewTable.innerHTML = "";
+  el.importConfirm.disabled = true;
+  el.importError.textContent = "";
+  el.importFile.value = "";
+  el.importModal.classList.add("is-open");
+  el.importModal.setAttribute("aria-hidden", "false");
+};
+
+const closeImportModal = () => {
+  el.importModal.classList.remove("is-open");
+  el.importModal.setAttribute("aria-hidden", "true");
+};
+
+const updateFormDay = () => {
+  const date = fromIso(el.formFecha.value);
+  if (!isNaN(date)) {
+    el.formDiaSemana.textContent = getDayName(date);
+  }
+};
+
+const updateHoraFin = () => {
+  const start = el.formHoraInicio.value;
+  const tramo = getTramoByStart(start);
+  const end = tramo ? tramo.end : addMinutes(start, 30);
+  el.formHoraFin.value = end;
+};
+
+const updateMateriaInfo = () => {
+  const dia = getFormDayNormalized();
+  const start = el.formHoraInicio.value;
+  const end = el.formHoraFin.value;
+  const ausenteId = el.formProfesorAusente.value;
+  const tabla = getTabla();
+
+  // Buscar en la tabla importada el registro del profesor ausente en este tramo
+  const materia = tabla.find((t) => {
+    if (
+      normalizeDay(t.diaSemana) !== dia ||
+      t.horaInicio !== start ||
+      t.horaFin !== end
+    ) {
+      return false;
+    }
+    if (t.profesorId && t.profesorId === ausenteId) {
+      return true;
+    }
+    return false;
+  });
+
+  if (materia) {
+    // Mostrar materia y curso/grupo debajo del desplegable en azul
+    const label = materia.asignatura && materia.cursoGrupo
+      ? `${materia.asignatura} - ${materia.cursoGrupo}`
+      : materia.asignatura || materia.cursoGrupo || "Sin materia";
+    el.materiaInfo.textContent = label;
+    el.materiaInfo.style.color = "#2563eb";
+    
+    // Rellenar el campo Curso/Grupo con la información
+    const cursoGrupoValue = materia.cursoGrupo && materia.asignatura
+      ? `${materia.cursoGrupo} / ${materia.asignatura}`
+      : materia.cursoGrupo || materia.asignatura || "";
+    el.formCursoGrupo.value = cursoGrupoValue;
+    el.formCursoGrupo.readOnly = true;
+  } else {
+    el.materiaInfo.textContent = "Sin materias asociadas";
+    el.materiaInfo.style.color = "#6b7280";
+    if (!el.formCursoGrupo.value) {
+      el.formCursoGrupo.readOnly = false;
+    }
+  }
+};
+
+const refreshProfesorOptions = () => {
+  const tabla = getTabla();
+  const dia = getFormDayNormalized();
+  const start = el.formHoraInicio.value;
+  const end = el.formHoraFin.value;
+  const currentFecha = el.formFecha.value || toIso(new Date());
+  const sustituciones = getSustituciones();
+  const ausenteId = el.formProfesorAusente.value;
+
+  const sustitucionCount = {};
+  sustituciones.forEach(s => {
+    if (s.fecha <= currentFecha) {
+      if (s.profesorSustitutoId) {
+        sustitucionCount[s.profesorSustitutoId] = (sustitucionCount[s.profesorSustitutoId] || 0) + 1;
+      }
+    }
+  });
+
+  // Obtener profesores que tienen clase en este tramo desde la tabla importada
+  let profesoresTramo = tabla.filter(t => 
+    normalizeDay(t.diaSemana) === dia &&
+    t.horaInicio === start &&
+    t.horaFin === end
+  );
+
+  // SIEMPRE añadir el ausente si hay uno seleccionado, aunque no tenga clase en este tramo
+  if (ausenteId) {
+    const yaExiste = profesoresTramo.some(t => t.profesorId === ausenteId);
+    if (!yaExiste) {
+      // Buscar cualquier registro del profesor en la tabla para obtener su nombre
+      const profesorAusenteRegistro = tabla.find(t => t.profesorId === ausenteId);
+      if (profesorAusenteRegistro) {
+        // Añadir el profesor ausente con su información original
+        profesoresTramo = [{
+          profesorId: ausenteId,
+          profesorNombre: profesorAusenteRegistro.profesorNombre,
+          diaSemana: dia,
+          horaInicio: start,
+          horaFin: end,
+          asignatura: "",
+          cursoGrupo: ""
+        }, ...profesoresTramo];
+      } else {
+        // Si no está en la tabla, añadirlo de todas formas con el ID
+        profesoresTramo = [{
+          profesorId: ausenteId,
+          profesorNombre: "Profesor (sin datos)",
+          diaSemana: dia,
+          horaInicio: start,
+          horaFin: end,
+          asignatura: "",
+          cursoGrupo: ""
+        }, ...profesoresTramo];
+      }
+    }
+  }
+
+  const options = ["<option value=\"\">Seleccionar</option>"];
+  
+  // Siempre generar opciones, aunque estén vacías
+  // Mostrar solo el nombre del profesor (sin materia en el dropdown)
+  profesoresTramo.forEach((t) => {
+    const count = sustitucionCount[t.profesorId] || 0;
+    const countLabel = count > 0 ? ` <b style="color:#dc2626; font-weight:bold;">(${count})</b>` : '';
+    options.push(`<option value="${t.profesorId}">${t.profesorNombre || 'Sin nombre'}${countLabel}</option>`);
+  });
+
+  const extraOptions = ["<option value=\"\"></option>"];
+  
+  // Profesores del centro (casos excepcionales) - todos los de la tabla
+  const uniqueProfesores = [...new Map(tabla.map(t => [t.profesorId, t])).values()];
+  uniqueProfesores.forEach((t) => {
+    const count = sustitucionCount[t.profesorId] || 0;
+    const countLabel = count > 0 ? ` <b style="color:#dc2626; font-weight:bold;">(${count})</b>` : '';
+    extraOptions.push(`<option value="${t.profesorId}">${t.profesorNombre || 'Sin nombre'}${countLabel}</option>`);
+  });
+
+  el.formProfesorAusente.innerHTML = options.join("");
+  el.formProfesorExtra.innerHTML = extraOptions.join("");
+
+  const statsOptions = ["<option value=\"\">Todos</option>"];
+  uniqueProfesores.forEach((t) => {
+    statsOptions.push(`<option value="${t.profesorId}">${t.profesorNombre || 'Sin nombre'}</option>`);
+  });
+  el.statsProfesor.innerHTML = statsOptions.join("");
+};
+
+const refreshHoraInicioOptions = () => {
+  el.formHoraInicio.innerHTML = tramos
+    .map((t) => {
+      const label = `${t.start}${t.blocked ? " (Recreo)" : ""}`;
+      return `<option value="${t.start}" ${t.blocked ? "disabled" : ""}>${label}</option>`;
+    })
+    .join("");
+};
+
+const refreshSustitutoOptions = (ausenteId, selected = "") => {
+  const dia = getFormDayNormalized();
+  const start = el.formHoraInicio.value;
+  const end = el.formHoraFin.value;
+  const currentFecha = el.formFecha.value;
+  const sustituciones = getSustituciones();
+  const tabla = getTabla();
+
+  // Asignaturas que pueden ser sustituidas
+  const asignaturasSustituibles = ['refuerzo pedagógico', 'coordinación', 'mayores', 'biblioteca'];
+
+  // Contar sustituciones históricas (para mostrar el número)
+  const sustitucionCount = {};
+  sustituciones.forEach(s => {
+    if (s.id !== state.editingId && s.fecha <= currentFecha) {
+      if (s.profesorSustitutoId) {
+        sustitucionCount[s.profesorSustitutoId] = (sustitucionCount[s.profesorSustitutoId] || 0) + 1;
+      }
+    }
+  });
+
+  // Obtener profesores de la tabla que en este tramo:
+  // 1. NO tienen curso/grupo asignado (están disponibles), O
+  // 2. Tienen como asignatura "Refuerzo Pedagógico", "Coordinación", "Mayores" o "Biblioteca"
+  const disponiblesTramo = tabla.filter(t => {
+    const matchDia = normalizeDay(t.diaSemana) === dia;
+    const matchHora = t.horaInicio === start && t.horaFin === end;
+    if (!matchDia || !matchHora) return false;
+    
+    // Si no tiene curso/grupo, está disponible
+    if (!t.cursoGrupo || t.cursoGrupo.trim() === '') return true;
+    
+    // Si tiene una de las asignaturas especial, también está disponible
+    const asignaturaNormalizada = (t.asignatura || '').toLowerCase().trim();
+    return asignaturasSustituibles.some(a => asignaturaNormalizada.includes(a));
+  });
+
+  // Profesores que ya están ocupados en este día y tramo (como sustitutos o extras)
+  const occupied = sustituciones
+    .filter(
+      (s) =>
+        s.fecha === currentFecha &&
+        s.horaInicio === start &&
+        s.horaFin === end &&
+        s.id !== state.editingId
+    )
+    .flatMap((s) => [s.profesorSustitutoId, s.profesorExtraId])
+    .filter(Boolean);
+
+  // Filtrar: excluir al profesor ausente Y los que ya están ocupados como sustitutos
+  const filteredEntries = disponiblesTramo.filter(
+    (entry) => entry.profesorId && entry.profesorId !== ausenteId && !occupied.includes(entry.profesorId)
+  );
+
+  const options = ["<option value=\"\">Sin asignar</option>"];
+  
+  // Mostrar candidatos disponibles de la tabla importada con su materia en azul
+  if (filteredEntries.length > 0) {
+    filteredEntries.forEach((entry) => {
+      const count = sustitucionCount[entry.profesorId] || 0;
+      const countLabel = count > 0 ? ` <b style="color:#dc2626; font-weight:bold;">(${count})</b>` : '';
+      const materiaLabel = entry.asignatura ? ` <span style="color:#2563eb;">[${entry.asignatura}]</span>` : '';
+      options.push(`<option value="${entry.profesorId}">${entry.profesorNombre || 'Sin nombre'}${countLabel}${materiaLabel}</option>`);
+    });
+  } else {
+    // Si no hay nadie disponible, mostrar mensaje
+    options.push(`<option value="" disabled>No hay profesores disponibles en este tramo</option>`);
+  }
+  
+  el.formProfesorSustituto.innerHTML = options.join("");
+  if (selected) {
+    el.formProfesorSustituto.value = selected;
+  }
+};
+
+const renderDashboard = () => {
+  const dateKey = toIso(state.activeDate);
+  const profesores = getProfesores();
+  const dayName = getDayName(state.activeDate);
+  
+  // Obtener sustituciones del día
+  const daySubstitutions = getSustituciones().filter(s => s.fecha === dateKey);
+  
+  if (daySubstitutions.length === 0) {
+    el.substitutionGrid.innerHTML = `
+      <div class="empty-substitutions">
+        <div class="empty-illustration">📅</div>
+        <h4>No hay sustituciones programadas para hoy</h4>
+        <p>Selecciona un día del calendario para ver o crear sustituciones.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // Agrupar sustituciones por profesor ausente (guardando también el ID)
+  const substitutionsByTeacher = {};
+  daySubstitutions.forEach(sub => {
+    const ausente = profesores.find(p => p.id === sub.profesorAusenteId);
+    const teacherName = ausente ? ausente.displayName : 'Desconocido';
+    
+    if (!substitutionsByTeacher[teacherName]) {
+      substitutionsByTeacher[teacherName] = {
+        ausenteId: sub.profesorAusenteId,
+        substitutions: []
+      };
+    }
+    substitutionsByTeacher[teacherName].substitutions.push(sub);
+  });
+  
+  let dashboardHTML = '';
+  
+  Object.entries(substitutionsByTeacher).forEach(([teacherName, data]) => {
+    const ausenteId = data.ausenteId;
+    const substitutions = data.substitutions;
+    dashboardHTML += `
+      <div class="substitution-card">
+        <div class="card-header" data-ausente-id="${ausenteId}">
+          <div class="teacher-info">
+            <div class="teacher-avatar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="8" r="4"></circle>
+                <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="teacher-name">${teacherName}</h3>
+              <span class="substitution-count">${substitutions.length} ${substitutions.length === 1 ? 'tramo' : 'tramos'}</span>
+            </div>
+          </div>
+          <button class="btn-delete-all" data-teacher="${teacherName}" title="Eliminar todas las sustituciones de este profesor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3,6 5,6 21,6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+            Eliminar todos
+          </button>
+        </div>
+        
+        <table class="tramo-table">
+          <thead>
+            <tr>
+              <th>Tramo</th>
+              <th>Sustituto</th>
+              <th>Grupo/Materia</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tramos.map(tramo => {
+              const substitution = substitutions.find(s => s.horaInicio === tramo.start && s.horaFin === tramo.end);
+              const isRecreo = tramo.blocked;
+              
+              if (substitution) {
+                const ausente = profesores.find(p => p.id === substitution.profesorAusenteId);
+                const sustituto = profesores.find(p => p.id === substitution.profesorSustitutoId);
+                const extra = profesores.find(p => p.id === substitution.profesorExtraId);
+                
+                return `
+                  <tr class="${isRecreo ? 'tramo-recreo' : ''}" data-id="${substitution.id}">
+                    <td class="tramo-time">
+                      ${tramo.start} - ${tramo.end}${isRecreo ? ' · Recreo' : ''}
+                    </td>
+                    <td class="tramo-sustituto">
+                      ${sustituto ? sustituto.displayName : '-'}
+                      ${extra ? `<br><small>+${extra.displayName}</small>` : ''}
+                    </td>
+                    <td class="tramo-grupo">
+                      ${substitution.cursoGrupoMateria || '-'}
+                    </td>
+                    <td class="tramo-actions">
+                      <button class="btn-edit" data-id="${substitution.id}" title="Editar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                      </button>
+                      <button class="btn-delete" data-id="${substitution.id}" title="Eliminar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="3,6 5,6 21,6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                          <line x1="10" y1="11" x2="10" y2="17"></line>
+                          <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                `;
+              } else {
+                // Tramo sin sustitución
+                return `
+                  <tr class="${isRecreo ? 'tramo-recreo' : ''}" data-tramo="${tramo.start}-${tramo.end}" data-ausente-id="${ausenteId}">
+                    <td class="tramo-time">
+                      ${tramo.start} - ${tramo.end}${isRecreo ? ' · Recreo' : ''}
+                    </td>
+                    <td class="tramo-sustituto">-</td>
+                    <td class="tramo-grupo">-</td>
+                    <td class="tramo-actions">
+                      ${!isRecreo ? `
+                        <button class="btn-add" data-ausente-id="${ausenteId}" data-tramo="${tramo.start}-${tramo.end}" title="Añadir sustitución">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                          </svg>
+                        </button>
+                      ` : ''}
+                    </td>
+                  </tr>
+                `;
+              }
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  });
+  
+  el.substitutionGrid.innerHTML = dashboardHTML;
+  
+  // Event listeners para botones de eliminar todos
+  el.substitutionGrid.querySelectorAll('.btn-delete-all').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const teacherName = btn.dataset.teacher;
+      if (confirm(`¿Estás seguro de eliminar todas las sustituciones de ${teacherName}?`)) {
+        const teacherSubstitutions = daySubstitutions.filter(sub => {
+          const ausente = profesores.find(p => p.id === sub.profesorAusenteId);
+          return ausente && ausente.displayName === teacherName;
+        });
+        
+        const allSubstitutions = getSustituciones();
+        const updated = allSubstitutions.filter(sub => 
+          !teacherSubstitutions.some(teacherSub => teacherSub.id === sub.id)
+        );
+        
+        setSustituciones(updated);
+        renderDashboard();
+        updateStats();
+        renderPrintTable();
+      }
+    });
+  });
+  
+  // Event listeners para botones de editar
+  el.substitutionGrid.querySelectorAll('.btn-edit').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = btn.dataset.id;
+      const substitution = getSustituciones().find(s => s.id === id);
+      if (substitution) openModal('edit', substitution);
+    });
+  });
+  
+  // Event listeners para botones de eliminar individual
+  el.substitutionGrid.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = btn.dataset.id;
+      if (confirm('¿Estás seguro de eliminar esta sustitución?')) {
+        const allSubstitutions = getSustituciones();
+        const updated = allSubstitutions.filter(s => s.id !== id);
+        setSustituciones(updated);
+        renderDashboard();
+        updateStats();
+        renderPrintTable();
+      }
+    });
+  });
+  
+  // Event listeners para botones de añadir sustitución
+  el.substitutionGrid.querySelectorAll('.btn-add').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const tramo = btn.dataset.tramo;
+      const ausenteId = btn.dataset.ausenteId;
+      const [start, end] = tramo.split('-');
+      
+      setActiveDate(state.activeDate);
+      openModal('new');
+      el.formHoraInicio.value = start;
+      el.formHoraFin.value = end;
+      updateHoraFin();
+      // Establecer el profesor ausente
+      refreshProfesorOptions();
+      el.formProfesorAusente.value = ausenteId || "";
+      updateFormDay();
+      updateMateriaInfo();
+      refreshSustitutoOptions(ausenteId || "");
+    });
+  });
+  
+  // Event listeners para celdas editables
+  el.substitutionGrid.querySelectorAll('.tramo-sustituto, .tramo-grupo').forEach(cell => {
+    cell.addEventListener('click', (e) => {
+      const row = e.target.closest('tr');
+      const id = row.dataset.id;
+      const ausenteId = row.dataset.ausenteId;
+      const substitution = getSustituciones().find(s => s.id === id);
+      
+      if (substitution) {
+        openModal('edit', substitution);
+      } else {
+        // Si no hay sustitución, crear una nueva
+        const tramo = row.dataset.tramo;
+        if (tramo) {
+          const [start, end] = tramo.split('-');
+          setActiveDate(state.activeDate);
+          openModal('new');
+          el.formHoraInicio.value = start;
+          el.formHoraFin.value = end;
+          updateHoraFin();
+          refreshProfesorOptions();
+          el.formProfesorAusente.value = ausenteId || "";
+          updateFormDay();
+          updateMateriaInfo();
+          refreshSustitutoOptions(ausenteId || "");
+        }
+      }
+    });
+  });
+};
+
+const renderCalendar = () => {
+  const date = state.calendarDate;
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  
+  const sustituciones = getSustituciones();
+  const datesWithSubs = new Set(sustituciones.map(s => s.fecha));
+  
+  // Convertir a sistema de semana empezando en lunes (lunes=0, domingo=6)
+  const firstDayOfWeek = firstDay.getDay();
+  const startDay = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+  
+  const totalDays = lastDay.getDate();
+  const prevMonthDays = new Date(year, month, 0).getDate();
+
+  const header = `
+    <div class="calendar-header">
+      <button class="icon-btn" data-cal="prev">◀</button>
+      <span>${date.toLocaleDateString("es-ES", { month: "long" })} ${year}</span>
+      <button class="icon-btn" data-cal="next">▶</button>
+    </div>
+  `;
+
+  const daysRow = dayLabels
+    .map((d, index) => {
+      const isWeekend = index >= 5; // Sábado (5) y Domingo (6)
+      return `<div class="calendar-day ${isWeekend ? 'is-weekend' : ''}">${d}</div>`;
+    })
+    .join("");
+
+  let cells = "";
+  for (let i = 0; i < startDay; i += 1) {
+    const num = prevMonthDays - startDay + i + 1;
+    cells += `<div class="calendar-cell is-muted">${num}</div>`;
+  }
+  for (let day = 1; day <= totalDays; day += 1) {
+    const cellDate = new Date(year, month, day);
+    const dayOfWeek = cellDate.getDay();
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6; // Domingo o Sábado
+    const isActive = toIso(cellDate) === toIso(state.activeDate);
+    const dateKey = toIso(cellDate);
+    const hasSubstitution = datesWithSubs.has(dateKey);
+    const dotClass = hasSubstitution ? ' has-substitution' : '';
+    cells += `<div class="calendar-cell ${isActive ? "is-active" : ""} ${isWeekend ? "is-weekend" : ""}${dotClass}" data-date="${toIso(
+      cellDate
+    )}">${day}${hasSubstitution ? '<span class="sub-dot"></span>' : ''}</div>`;
+  }
+
+  el.miniCalendar.innerHTML = `
+    ${header}
+    <div class="calendar-grid">${daysRow}${cells}</div>
+  `;
+
+  el.miniCalendar.querySelectorAll("[data-cal]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const dir = btn.dataset.cal;
+      state.calendarDate = new Date(year, month + (dir === "next" ? 1 : -1), 1);
+      renderCalendar();
+    });
+  });
+
+  el.miniCalendar.querySelectorAll("[data-date]").forEach((cell) => {
+    cell.addEventListener("click", (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const selected = fromIso(cell.dataset.date);
+      setActiveDate(selected);
+      return false;
+    });
+  });
+};
+
+const validateForm = () => {
+  const fecha = el.formFecha.value;
+  const horaInicio = el.formHoraInicio.value;
+  const horaFin = el.formHoraFin.value;
+  const ausenteId = el.formProfesorAusente.value;
+  const sustitutoId = el.formProfesorSustituto.value;
+  const extraId = el.formProfesorExtra.value;
+
+  const tramo = getTramoByStart(horaInicio);
+  if (tramo && tramo.blocked) {
+    return { error: "No se permite guardar en el tramo de recreo (12:00-12:30)." };
+  }
+  if (ausenteId && sustitutoId && ausenteId === sustitutoId) {
+    return { error: "El profesor ausente no puede ser el sustituto." };
+  }
+  const conflict = getSustituciones().find(
+    (s) =>
+      s.fecha === fecha &&
+      s.horaInicio === horaInicio &&
+      s.horaFin === horaFin &&
+      s.profesorSustitutoId === sustitutoId &&
+      s.id !== state.editingId
+  );
+  if (conflict) {
+    return { error: "El profesor sustituto ya está asignado en este tramo." };
+  }
+  if (extraId && extraId === ausenteId) {
+    const ok = window.confirm(
+      "El profesor extra coincide con el ausente. ¿Deseas continuar?"
+    );
+    if (!ok) return { cancel: true };
+  }
+  return null;
+};
+
+const handleSubmit = (event) => {
+  event.preventDefault();
+  const validation = validateForm();
+  if (validation?.error) {
+    el.formError.textContent = validation.error;
+    return;
+  }
+  if (validation?.cancel) {
+    return;
+  }
+  const fecha = el.formFecha.value;
+  const diaSemana = normalizeDay(el.formDiaSemana.textContent);
+  const horaInicio = el.formHoraInicio.value;
+  const horaFin = el.formHoraFin.value;
+  const ausenteId = el.formProfesorAusente.value;
+  const sustitutoId = el.formProfesorSustituto.value || null;
+  const extraId = el.formProfesorExtra.value || null;
+  const cursoGrupoMateria = el.formCursoGrupo.value || "";
+
+  const sustituciones = getSustituciones();
+  if (state.editingId) {
+    const updated = sustituciones.map((s) =>
+      s.id === state.editingId
+        ? {
+            ...s,
+            fecha,
+            diaSemana,
+            horaInicio,
+            horaFin,
+            profesorAusenteId: ausenteId,
+            profesorSustitutoId: sustitutoId,
+            profesorExtraId: extraId,
+            cursoGrupoMateria,
+            updatedAt: new Date().toISOString(),
+          }
+        : s
+    );
+    setSustituciones(updated);
+  } else {
+    const newSub = {
+      id: generateId(),
+      fecha,
+      diaSemana,
+      horaInicio,
+      horaFin,
+      profesorAusenteId: ausenteId,
+      profesorSustitutoId: sustitutoId,
+      profesorExtraId: extraId,
+      cursoGrupoMateria,
+      notas: "",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    setSustituciones([...sustituciones, newSub]);
+  }
+  closeModal();
+  renderDashboard();
+  updateStats();
+  renderPrintTable();
+};
+
+const parseCsv = (file) =>
+  new Promise((resolve, reject) => {
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      delimiter: "",
+      complete: (results) => resolve(results),
+      error: (err) => reject(err),
+    });
+  });
+
+const parseXlsx = async (file) => {
+  const arrayBuffer = await file.arrayBuffer();
+  const workbook = XLSX.read(arrayBuffer, { type: "array" });
+  const firstSheet = workbook.SheetNames[0];
+  const worksheet = workbook.Sheets[firstSheet];
+  const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+  const columns = json.length ? Object.keys(json[0]) : [];
+  return { data: json, meta: { fields: columns } };
+};
+
+const parsePdf = async (file) => {
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let allLines = [];
+
+    for (let i = 1; i <= pdf.numPages; i += 1) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const pageText = content.items.map((item) => item.str).join("\n");
+      allLines = allLines.concat(pageText.split("\n"));
+    }
+
+    const rows = allLines
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
+      .map((line) => line.split(/\s{2,}|\t|\|/).map((cell) => cell.trim()).filter(Boolean));
+
+    const validRows = rows.filter((row) => row.length > 1);
+
+    const columns = validRows.length
+      ? validRows[0].map((_, idx) => `Col ${idx + 1}`)
+      : [];
+
+    const data = validRows.map((row) => {
+      const record = {};
+      columns.forEach((col, idx) => {
+        record[col] = row[idx] || "";
+      });
+      return record;
+    });
+
+    return { data, meta: { fields: columns }, isPdf: true };
+  } catch (error) {
+    console.error("PDF parsing error:", error);
+    return { data: [], meta: { fields: [] }, isPdf: true, error: error.message };
+  }
+};
+
+const loadImportFile = async (file) => {
+  if (!file) return;
+  const name = file.name.toLowerCase();
+  el.importError.textContent = "";
+  try {
+    let results;
+    if (name.endsWith(".csv")) {
+      results = await parseCsv(file);
+    } else if (name.endsWith(".xlsx") || name.endsWith(".xls")) {
+      results = await parseXlsx(file);
+    } else if (name.endsWith(".pdf")) {
+      results = await parsePdf(file);
+      if (results.data.length === 0) {
+        el.importMeta.textContent = `${file.name} · No se pudieron extraer datos del PDF`;
+        el.importError.textContent = "El PDF no tiene un formato reconocible. Asegúrate de que sea un PDF con texto seleccionable.";
+        return;
+      }
+      if (results.isPdf) {
+        el.importMeta.textContent = `${file.name} · ${results.data.length} filas · PDF detectado`;
+      }
+    } else {
+      throw new Error("Formato no soportado. Usa CSV, Excel (.xlsx/.xls) o PDF.");
+    }
+
+    state.importRows = results.data || [];
+    state.importColumns = results.meta?.fields || [];
+
+    if (state.importRows.length === 0) {
+      el.importMeta.textContent = `${file.name} · Sin datos`;
+      el.importError.textContent = "No se encontraron datos en el archivo. Verifica el formato.";
+      return;
+    }
+
+    el.importMeta.textContent = `${file.name} · ${state.importRows.length} filas`;
+    buildMappingUI();
+    renderPreview();
+  } catch (error) {
+    el.importError.textContent = error.message || "No se pudo leer el archivo. Revisa el formato.";
+  }
+};
+
+const buildMappingUI = () => {
+  const config = datasetConfig[state.importType];
+  el.mappingGrid.innerHTML = config.fields
+    .map(
+      (field) => `
+      <label>
+        ${field.label}
+        <select data-map="${field.key}">
+          <option value="">Sin asignar</option>
+          ${state.importColumns
+            .map((col) => `<option value="${col}">${col}</option>`)
+            .join("")}
+        </select>
+      </label>
+    `
+    )
+    .join("");
+
+  el.mappingGrid.querySelectorAll("select").forEach((select) => {
+    select.addEventListener("change", () => {
+      state.importMapping[select.dataset.map] = select.value;
+      validateMapping();
+    });
+  });
+
+  const normalizeColumn = (value) =>
+    String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[-_]/g, "")
+      .replace(/\s+/g, "");
+
+  const getFieldVariants = (field) => {
+    const variants = new Set();
+    variants.add(field.key);
+    variants.add(field.label.toLowerCase());
+    variants.add(field.key.replace(/([A-Z])/g, "_$1").toLowerCase());
+    variants.add(field.key.replace(/([A-Z])/g, "$1").toLowerCase());
+    return variants;
+  };
+
+  if (state.importType === "profesores" && state.importColumns.length >= 4) {
+    config.fields.forEach((field, index) => {
+      const select = el.mappingGrid.querySelector(`[data-map="${field.key}"]`);
+      if (select && state.importColumns[index]) {
+        select.value = state.importColumns[index];
+        state.importMapping[field.key] = state.importColumns[index];
+      }
+    });
+  } else {
+    config.fields.forEach((field) => {
+      const select = el.mappingGrid.querySelector(`[data-map="${field.key}"]`);
+      if (!select) return;
+      const fieldVariants = getFieldVariants(field);
+      const match = state.importColumns.find((col) => {
+        const normalizedCol = normalizeColumn(col);
+        return fieldVariants.has(normalizedCol) ||
+               Array.from(fieldVariants).some(v => normalizedCol.includes(v));
+      });
+      if (match) {
+        select.value = match;
+        state.importMapping[field.key] = match;
+      }
+    });
+  }
+  validateMapping();
+};
+
+const validateMapping = () => {
+  const config = datasetConfig[state.importType];
+  const missing = config.required.filter((key) => !state.importMapping[key]);
+  el.importConfirm.disabled = missing.length > 0 || state.importRows.length === 0;
+};
+
+const renderPreview = () => {
+  if (!state.importRows.length) {
+    el.previewTable.innerHTML = "Sin datos";
+    return;
+  }
+  const preview = state.importRows.slice(0, 8);
+  const cols = state.importColumns;
+  const header = cols.map((c) => `<th>${c}</th>`).join("");
+  const body = preview
+    .map((row) => {
+      const cells = cols.map((c) => `<td>${row[c] ?? ""}</td>`).join("");
+      return `<tr>${cells}</tr>`;
+    })
+    .join("");
+  el.previewTable.innerHTML = `
+    <table class="table">
+      <thead><tr>${header}</tr></thead>
+      <tbody>${body}</tbody>
+    </table>
+  `;
+};
+
+const applyImport = () => {
+  const config = datasetConfig[state.importType];
+  const mapping = state.importMapping;
+  const rows = state.importRows;
+
+  if (!rows.length) return;
+  const mapped = rows.map((row) => {
+    const record = {};
+    config.fields.forEach((field) => {
+      const key = mapping[field.key];
+      record[field.key] = key ? row[key] : "";
+    });
+    return record;
+  });
+
+  if (state.importType === "profesores") {
+    const profesores = mapped.map((row) => {
+      const prof = {
+        id: generateId(),
+        profesor: row.profesor || "",
+        puesto: row.puesto || "",
+        movilAvisos: row.movilAvisos || "",
+        cuenta: row.cuenta || "",
+        displayName: row.profesor || "",
+      };
+      return prof;
+    });
+    setProfesores(profesores);
+  }
+
+  if (state.importType === "materias") {
+    const materias = mapped.map((row) => {
+      return {
+        id: generateId(),
+        diaSemana: normalizeDay(row.diaSemana),
+        horaInicio: normalizeTime(row.horaInicio),
+        horaFin: normalizeTime(row.horaFin),
+        profesorId: resolveProfesorId(row.profesor),
+        profesorNombre: row.profesor || "",
+        cursoGrupo: row.cursoGrupo || "",
+        materia: row.materia || "",
+      };
+    });
+    setMaterias(materias);
+  }
+
+  if (state.importType === "tabla") {
+    const tabla = mapped.map((row) => {
+      const profesorId = resolveProfesorId(row.profesor);
+      return {
+        id: generateId(),
+        profesorId: profesorId,
+        profesorNombre: row.profesor || "",
+        diaSemana: normalizeDay(row.diaSemana),
+        horaInicio: normalizeTime(row.horaInicio),
+        horaFin: normalizeTime(row.horaFin),
+        asignatura: row.asignatura || "",
+        cursoGrupo: row.cursoGrupo || "",
+      };
+    });
+    setTabla(tabla);
+  }
+
+  refreshProfesorOptions();
+  closeImportModal();
+  renderDashboard();
+};
+
+const renderProfesoresCards = (profesores) => {
+  const search = state.datasetViewSearch.toLowerCase();
+  const filtered = search
+    ? profesores.filter((p) =>
+        Object.values(p).some((val) =>
+          String(val || "").toLowerCase().includes(search)
+        )
+      )
+    : profesores;
+
+  if (!filtered.length) {
+    return `<div class="empty-profesores">No hay profesores para mostrar.</div>`;
+  }
+
+  const cards = filtered.map((prof) => `
+    <div class="profesor-card" data-id="${prof.id}">
+      <div class="profesor-header">
+        <div class="profesor-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+          </svg>
+        </div>
+        <div class="profesor-info">
+          <h3 class="profesor-nombre">${prof.profesor || prof.displayName || 'Sin nombre'}</h3>
+          <span class="profesor-puesto">${prof.puesto || 'Sin puesto'}</span>
+        </div>
+      </div>
+      <div class="profesor-email">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+        <span>${prof.cuenta || 'Sin email'}</span>
+      </div>
+      <div class="profesor-movil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+        </svg>
+        <span>${prof.movilAvisos || 'Sin móvil'}</span>
+      </div>
+      <div class="profesor-actions">
+        <button class="btn-profesor-edit" data-id="${prof.id}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          Editar
+        </button>
+        <button class="btn-profesor-delete" data-id="${prof.id}" data-name="${prof.profesor}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <polyline points="3,6 5,6 21,6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `).join("");
+
+  return `<div class="profesores-grid">${cards}</div>`;
+};
+
+const renderDataset = (type) => {
+  state.datasetViewType = type;
+  
+  // Si es la página de profesores, mostrar la tabla de datos
+  if (type === "profesores") {
+    type = "tabla";
+  }
+  
+  const data =
+    type === "profesores"
+      ? getProfesores()
+      : type === "materias"
+        ? getMaterias()
+        : getTabla();
+
+  if (type === "profesores") {
+    el.datasetTable.innerHTML = renderProfesoresCards(data);
+    // Add event listeners for profesor card buttons
+    el.datasetTable.querySelectorAll('.btn-profesor-edit').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        editProfesor(id);
+      });
+    });
+    el.datasetTable.querySelectorAll('.btn-profesor-delete').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const name = btn.dataset.name;
+        deleteProfesor(id, name);
+      });
+    });
+    return;
+  }
+
+  // Custom view for materias with profesor name resolution
+  if (type === "materias") {
+    const profesores = getProfesores();
+    const search = state.datasetViewSearch.toLowerCase();
+    const filtered = search
+      ? data.filter((row) =>
+          Object.values(row).some((val) =>
+            String(val || "")
+              .toLowerCase()
+              .includes(search)
+          )
+        )
+      : data;
+
+    if (!filtered.length) {
+      el.datasetTable.innerHTML = `<div class="empty-materias">No hay materias para mostrar.</div>`;
+      return;
+    }
+
+    // Build table with profesor names
+    const headerRow = `
+      <th>Profesor</th>
+      <th>Día</th>
+      <th>Hora Inicio</th>
+      <th>Hora Fin</th>
+      <th>Asignatura</th>
+      <th>Curso/Grupo</th>
+    `;
+
+    const body = filtered
+      .map((row) => {
+        const prof = profesores.find((p) => p.id === row.profesorId);
+        const profesorName = row.profesorNombre || (prof ? prof.displayName : row.profesorId || "-");
+        return `
+          <tr>
+            <td>${profesorName}</td>
+            <td>${row.diaSemana || '-'}</td>
+            <td>${row.horaInicio || '-'}</td>
+            <td>${row.horaFin || '-'}</td>
+            <td>${row.materia || '-'}</td>
+            <td>${row.cursoGrupo || '-'}</td>
+          </tr>
+        `;
+      })
+      .join("");
+
+    el.datasetTable.innerHTML = `
+      <table class="table materias-table">
+        <thead><tr>${headerRow}</tr></thead>
+        <tbody>${body}</tbody>
+      </table>
+    `;
+
+    return;
+  }
+
+  // Custom view for tabla with profesor name resolution
+  if (type === "tabla") {
+    const profesores = getProfesores();
+    const search = state.datasetViewSearch.toLowerCase();
+    const filtered = search
+      ? data.filter((row) =>
+          Object.values(row).some((val) =>
+            String(val || "")
+              .toLowerCase()
+              .includes(search)
+          )
+        )
+      : data;
+
+    if (!filtered.length) {
+      el.datasetTable.innerHTML = `<div class="empty-tabla">No hay registros para mostrar.</div>`;
+      return;
+    }
+
+    // Build table with profesor names
+    const headerRow = `
+      <th>Profesor</th>
+      <th>Día</th>
+      <th>Hora Inicio</th>
+      <th>Hora Fin</th>
+      <th>Asignatura</th>
+      <th>Curso/Grupo</th>
+    `;
+
+    const body = filtered
+      .map((row) => {
+        const prof = profesores.find((p) => p.id === row.profesorId);
+        const profesorName = row.profesorNombre || (prof ? prof.displayName : row.profesorId || "-");
+        return `
+          <tr>
+            <td>${profesorName}</td>
+            <td>${row.diaSemana || '-'}</td>
+            <td>${row.horaInicio || '-'}</td>
+            <td>${row.horaFin || '-'}</td>
+            <td>${row.asignatura || '-'}</td>
+            <td>${row.cursoGrupo || '-'}</td>
+          </tr>
+        `;
+      })
+      .join("");
+
+    el.datasetTable.innerHTML = `
+      <table class="table tabla-sustituciones-table">
+        <thead><tr>${headerRow}</tr></thead>
+        <tbody>${body}</tbody>
+      </table>
+    `;
+
+    return;
+  }
+
+  // Table view for generic data
+  const search = state.datasetViewSearch.toLowerCase();
+  const filtered = search
+    ? data.filter((row) =>
+        Object.values(row).some((val) =>
+          String(val || "")
+            .toLowerCase()
+            .includes(search)
+        )
+      )
+    : data;
+
+  if (!data.length) {
+    el.datasetTable.innerHTML = "No hay datos para mostrar.";
+    return;
+  }
+
+const headers = Object.keys(data[0]);
+  const headerRow = headers.map((h) => `<th>${h}</th>`).join("");
+  const body = filtered
+    .map((row) => {
+      const cells = headers.map((h) => `<td>${row[h] ?? ""}</td>`).join("");
+      return `<tr>${cells}</tr>`;
+    })
+    .join("");
+  el.datasetTable.innerHTML = `
+    <div class="filters" style="margin-bottom:12px;">
+      <label>
+        Buscar
+        <input type="text" id="datasetSearch" value="${state.datasetViewSearch}" placeholder="Filtrar..." />
+      </label>
+      <div style="font-size:0.8rem;color:#6b7280;">${filtered.length} registros</div>
+    </div>
+    <table class="table">
+      <thead><tr>${headerRow}</tr></thead>
+      <tbody>${body}</tbody>
+    </table>
+  `;
+};
+
+const editProfesor = (id) => {
+  const profesores = getProfesores();
+  const prof = profesores.find((p) => p.id === id);
+  if (!prof) return;
+  
+  // Simple prompt-based editing (can be enhanced with a modal later)
+  const nuevoProfesor = prompt("Nombre y apellidos:", prof.profesor);
+  if (nuevoProfesor === null) return; // Cancelled
+  
+  const nuevoPuesto = prompt("Puesto:", prof.puesto);
+  if (nuevoPuesto === null) return;
+  
+  const nuevoMovil = prompt("Móvil avisos emergencia:", prof.movilAvisos);
+  if (nuevoMovil === null) return;
+  
+  const nuevaCuenta = prompt("Cuenta Google/Microsoft:", prof.cuenta);
+  if (nuevaCuenta === null) return;
+  
+  const updated = profesores.map((p) =>
+    p.id === id
+      ? {
+          ...p,
+          profesor: nuevoProfesor || p.profesor,
+          puesto: nuevoPuesto || p.puesto,
+          movilAvisos: nuevoMovil || p.movilAvisos,
+          cuenta: nuevaCuenta || p.cuenta,
+          displayName: nuevoProfesor || p.displayName,
+        }
+      : p
+  );
+  setProfesores(updated);
+  renderDataset("profesores");
+  refreshProfesorOptions();
+  alert("Profesor actualizado correctamente.");
+};
+
+const deleteProfesor = (id, name) => {
+  const ok = confirm(`¿Seguro que deseas eliminar a ${name || "este profesor"}?`);
+  if (!ok) return;
+  
+  const profesores = getProfesores();
+  const updated = profesores.filter((p) => p.id !== id);
+  setProfesores(updated);
+  renderDataset("profesores");
+  refreshProfesorOptions();
+  alert("Profesor eliminado correctamente.");
+};
+
+const addNewProfesor = () => {
+  const profesor = prompt("Nombre y apellidos del profesor:");
+  if (profesor === null || profesor.trim() === "") return;
+  
+  const puesto = prompt("Puesto:", "Profesor/a");
+  if (puesto === null) return;
+  
+  const movilAvisos = prompt("Móvil avisos emergencia:");
+  if (movilAvisos === null) return;
+  
+  const cuenta = prompt("Cuenta Google/Microsoft:");
+  if (cuenta === null) return;
+  
+  const newProf = {
+    id: generateId(),
+    profesor: profesor.trim(),
+    puesto: puesto.trim() || "Profesor/a",
+    movilAvisos: movilAvisos.trim(),
+    cuenta: cuenta.trim(),
+    displayName: profesor.trim(),
+  };
+  
+  const profesores = getProfesores();
+  setProfesores([...profesores, newProf]);
+  renderDataset("profesores");
+  refreshProfesorOptions();
+  alert("Profesor añadido correctamente.");
+};
+
+const addNewTablaRecord = () => {
+  const profesor = prompt("Nombre y apellidos del profesor:");
+  if (profesor === null || profesor.trim() === "") return;
+  
+  const diaSemana = prompt("Día de la semana (ej: lunes):");
+  if (diaSemana === null || diaSemana.trim() === "") return;
+  
+  const horaInicio = prompt("Hora de inicio (ej: 9:00):");
+  if (horaInicio === null || horaInicio.trim() === "") return;
+  
+  const horaFin = prompt("Hora de fin (ej: 9:30):");
+  if (horaFin === null || horaFin.trim() === "") return;
+  
+  const asignatura = prompt("Asignatura (ej: Matemáticas):");
+  if (asignatura === null) return;
+  
+  const cursoGrupo = prompt("Curso/Grupo (ej: 3ºA):");
+  if (cursoGrupo === null) return;
+  
+  // Resolve profesor ID
+  const profesorId = resolveProfesorId(profesor.trim());
+  
+  // Check if record already exists
+  const tabla = getTabla();
+  const existingRecord = tabla.find((t) =>
+    t.profesorId === profesorId &&
+    normalizeDay(t.diaSemana) === normalizeDay(diaSemana.trim()) &&
+    t.horaInicio === normalizeTime(horaInicio.trim()) &&
+    t.horaFin === normalizeTime(horaFin.trim())
+  );
+  
+  if (existingRecord) {
+    const replace = confirm(
+      `Ya existe un registro con los mismos datos:\n` +
+      `Profesor: ${profesor}\n` +
+      `Día: ${diaSemana}\n` +
+      `Horario: ${horaInicio} - ${horaFin}\n\n` +
+      `¿Deseas reemplazar el registro existente?`
+    );
+    if (!replace) return;
+    
+    // Remove existing record and add new one
+    const updated = tabla.filter((t) => t.id !== existingRecord.id);
+    const newRecord = {
+      id: generateId(),
+      profesorId: profesorId,
+      profesorNombre: profesor.trim(),
+      diaSemana: normalizeDay(diaSemana.trim()),
+      horaInicio: normalizeTime(horaInicio.trim()),
+      horaFin: normalizeTime(horaFin.trim()),
+      asignatura: asignatura.trim(),
+      cursoGrupo: cursoGrupo.trim(),
+    };
+    setTabla([...updated, newRecord]);
+    alert("Registro actualizado correctamente.");
+  } else {
+    // Add new record
+    const newRecord = {
+      id: generateId(),
+      profesorId: profesorId,
+      profesorNombre: profesor.trim(),
+      diaSemana: normalizeDay(diaSemana.trim()),
+      horaInicio: normalizeTime(horaInicio.trim()),
+      horaFin: normalizeTime(horaFin.trim()),
+      asignatura: asignatura.trim(),
+      cursoGrupo: cursoGrupo.trim(),
+    };
+    setTabla([...tabla, newRecord]);
+    alert("Registro añadido correctamente.");
+  }
+  
+  renderDataset("tabla");
+  refreshProfesorOptions();
+};
+
+const updateStats = () => {
+  const from = el.statsFrom.value ? fromIso(el.statsFrom.value) : null;
+  const to = el.statsTo.value ? fromIso(el.statsTo.value) : null;
+  const profesorId = el.statsProfesor.value;
+  const profesores = getProfesores();
+
+  const filtered = getSustituciones().filter((s) => {
+    const date = fromIso(s.fecha);
+    if (from && date < from) return false;
+    if (to && date > to) return false;
+    if (profesorId && s.profesorAusenteId !== profesorId && s.profesorSustitutoId !== profesorId) {
+      return false;
+    }
+    return true;
+  });
+
+  el.statTotal.textContent = filtered.length;
+
+  const countBy = (key) => {
+    const map = {};
+    filtered.forEach((s) => {
+      const id = s[key];
+      if (!id) return;
+      map[id] = (map[id] || 0) + 1;
+    });
+    return Object.entries(map)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([id, count]) => {
+        const prof = profesores.find((p) => p.id === id);
+        return { name: prof ? prof.displayName : id, count };
+      });
+  };
+
+  const topAbsent = countBy("profesorAusenteId");
+  const topSub = countBy("profesorSustitutoId");
+
+  const renderList = (list) =>
+    list.length
+      ? list
+          .map(
+            (item) => `<div class="stat-item"><span>${item.name}</span><span>${item.count}</span></div>`
+          )
+          .join("")
+      : "Sin datos";
+
+  el.statTopAbsent.innerHTML = renderList(topAbsent);
+  el.statTopSub.innerHTML = renderList(topSub);
+
+  const allSubCounts = {};
+  filtered.forEach((s) => {
+    if (s.profesorSustitutoId) {
+      allSubCounts[s.profesorSustitutoId] = (allSubCounts[s.profesorSustitutoId] || 0) + 1;
+    }
+  });
+
+  const rankingList = Object.entries(allSubCounts)
+    .filter(([, count]) => count > 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([id, count]) => {
+      const prof = profesores.find((p) => p.id === id);
+      return { name: prof ? prof.displayName : id, count };
+    });
+
+  const renderRanking = (list) =>
+    list.length
+      ? list
+          .map(
+            (item) => `<div class="stat-ranking-item"><span class="stat-ranking-name">${item.name}</span><span class="stat-ranking-count">${item.count}</span></div>`
+          )
+          .join("")
+      : "Sin datos";
+
+  el.statRankingSub.innerHTML = renderRanking(rankingList);
+};
+
+const renderPrintTable = () => {
+  const from = el.printFrom.value ? fromIso(el.printFrom.value) : null;
+  const to = el.printTo.value ? fromIso(el.printTo.value) : null;
+  const selected = el.printDate.value ? fromIso(el.printDate.value) : state.activeDate;
+  const dateList = [];
+
+  if (from && to) {
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+      dateList.push(new Date(d));
+    }
+  } else {
+    dateList.push(selected);
+  }
+
+  const profesores = getProfesores();
+  const sustituciones = getSustituciones();
+
+  el.printTable.innerHTML = dateList
+    .map((date) => {
+      const dateKey = toIso(date);
+      const daySubstitutions = sustituciones.filter(s => s.fecha === dateKey);
+      
+      if (daySubstitutions.length === 0) {
+        return `
+          <h3 class="print-date-header">${getDayName(date)} · ${formatDate(date)}</h3>
+          <p class="print-no-data">No hay sustituciones programadas.</p>
+        `;
+      }
+
+      const substitutionsByTeacher = {};
+      daySubstitutions.forEach(sub => {
+        const ausente = profesores.find(p => p.id === sub.profesorAusenteId);
+        const teacherName = ausente ? ausente.displayName : 'Desconocido';
+        
+        if (!substitutionsByTeacher[teacherName]) {
+          substitutionsByTeacher[teacherName] = [];
+        }
+        substitutionsByTeacher[teacherName].push(sub);
+      });
+
+      let cardsHTML = '';
+      
+      Object.entries(substitutionsByTeacher).forEach(([teacherName, subs]) => {
+        cardsHTML += `
+          <div class="print-sub-card">
+            <div class="print-card-header">
+              <div class="print-teacher-info">
+                <div class="print-teacher-avatar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="8" r="4"></circle>
+                    <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="print-teacher-name">${teacherName}</h3>
+                  <span class="print-substitution-count">${subs.length} ${subs.length === 1 ? 'tramo' : 'tramos'}</span>
+                </div>
+              </div>
+            </div>
+            <table class="print-tramo-table">
+              <thead>
+                <tr>
+                  <th>Tramo</th>
+                  <th>Sustituto</th>
+                  <th>Grupo/Materia</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tramos.map(tramo => {
+                  const substitution = subs.find(s => s.horaInicio === tramo.start && s.horaFin === tramo.end);
+                  const isRecreo = tramo.blocked;
+                  
+                  if (substitution) {
+                    const sustituto = profesores.find(p => p.id === substitution.profesorSustitutoId);
+                    const extra = profesores.find(p => p.id === substitution.profesorExtraId);
+                    
+                    return `
+                      <tr class="${isRecreo ? 'print-tramo-recreo' : ''}">
+                        <td class="print-tramo-time">
+                          ${tramo.start} - ${tramo.end}${isRecreo ? ' · Recreo' : ''}
+                        </td>
+                        <td class="print-tramo-sustituto">
+                          ${sustituto ? sustituto.displayName : '-'}
+                          ${extra ? `<br><small>+${extra.displayName}</small>` : ''}
+                        </td>
+                        <td class="print-tramo-grupo">
+                          ${substitution.cursoGrupoMateria || '-'}
+                        </td>
+                      </tr>
+                    `;
+                  } else {
+                    return `
+                      <tr class="${isRecreo ? 'print-tramo-recreo' : ''}">
+                        <td class="print-tramo-time">
+                          ${tramo.start} - ${tramo.end}${isRecreo ? ' · Recreo' : ''}
+                        </td>
+                        <td class="print-tramo-sustituto">-</td>
+                        <td class="print-tramo-grupo">-</td>
+                      </tr>
+                    `;
+                  }
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      });
+
+      return `
+        <h3 class="print-date-header">${getDayName(date)} · ${formatDate(date)}</h3>
+        <div class="print-cards-grid">${cardsHTML}</div>
+      `;
+    })
+    .join("");
+};
+
+const initNavigation = () => {
+  const mainHeader = document.querySelector(".main-header");
+  document.querySelectorAll(".nav-item").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".nav-item").forEach((b) => b.classList.remove("is-active"));
+      btn.classList.add("is-active");
+      const page = btn.dataset.page;
+      document.querySelectorAll(".page").forEach((section) => {
+        section.classList.toggle("is-hidden", section.id !== `page-${page}`);
+      });
+      // Hide header on profesores page, show on others
+      if (mainHeader) {
+        mainHeader.style.display = page === "inicio" ? "" : "none";
+      }
+      // Cargar datos de la tabla al entrar en la página de profesores
+      if (page === "profesores") {
+        renderDataset("tabla");
+      }
+    });
+  });
+};
+
+const initImports = () => {
+  document.querySelectorAll("[data-import]").forEach((btn) => {
+    btn.addEventListener("click", () => openImportModal(btn.dataset.import));
+  });
+  document.querySelectorAll("[data-view]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.datasetViewSearch = "";
+      renderDataset(btn.dataset.view);
+    });
+  });
+
+  // Event delegation for dataset search input to prevent focus loss
+  document.addEventListener("input", (e) => {
+    if (e.target.id === "datasetSearch") {
+      state.datasetViewSearch = e.target.value;
+      const activeType = document.querySelector(".page:not(.is-hidden)")?.id?.replace("page-", "");
+      if (activeType && ["profesores", "materias", "tabla"].includes(activeType)) {
+        renderDataset(activeType);
+      }
+    }
+  });
+
+  // Event delegation for Add buttons
+  document.addEventListener("click", (e) => {
+    if (e.target.id === "btnAddActividad" || e.target.closest("#btnAddActividad")) {
+      addNewTablaRecord();
+    }
+  });
+
+  document.querySelectorAll("[data-clear]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const type = btn.dataset.clear;
+      if (!type) {
+        console.error("Error: Botón sin atributo data-clear");
+        return;
+      }
+      const ok = window.confirm("¿Seguro que deseas borrar este dataset?");
+      if (!ok) return;
+      try {
+        if (type === "profesores") {
+          setProfesores([]);
+        } else if (type === "materias") {
+          setMaterias([]);
+        } else if (type === "tabla") {
+          setTabla([]);
+        }
+        renderDataset(type);
+        refreshProfesorOptions();
+        renderDashboard();
+        alert(`${datasetConfig[type]?.label || type} borrado correctamente.`);
+      } catch (error) {
+        console.error("Error al borrar dataset:", error);
+        alert("Error al borrar el dataset. Revisa la consola.");
+      }
+    });
+  });
+};
+
+const initEvents = () => {
+  el.ctaNueva.addEventListener("click", () => openModal("new"));
+
+  el.modalClose.addEventListener("click", closeModal);
+  el.modalCancel.addEventListener("click", closeModal);
+  el.modal.querySelector(".modal__overlay").addEventListener("click", closeModal);
+  el.substitutionForm.addEventListener("submit", handleSubmit);
+
+  el.formFecha.addEventListener("change", () => {
+    updateFormDay();
+    updateMateriaInfo();
+    refreshProfesorOptions();
+    const ausenteId = el.formProfesorAusente.value;
+    const currentSustituto = el.formProfesorSustituto.value;
+    refreshSustitutoOptions(ausenteId, currentSustituto);
+  });
+  el.formHoraInicio.addEventListener("change", () => {
+    updateHoraFin();
+    updateMateriaInfo();
+    refreshProfesorOptions();
+    const ausenteId = el.formProfesorAusente.value;
+    const currentSustituto = el.formProfesorSustituto.value;
+    refreshSustitutoOptions(ausenteId, currentSustituto);
+  });
+  el.formProfesorAusente.addEventListener("change", () => {
+    updateMateriaInfo();
+    // Obtener el nuevo profesor ausente y actualizar las opciones de sustituto
+    const nuevoAusenteId = el.formProfesorAusente.value;
+    const currentSustituto = el.formProfesorSustituto.value;
+    refreshSustitutoOptions(nuevoAusenteId, currentSustituto);
+  });
+  el.formProfesorSustituto.addEventListener("change", () => {
+    updateMateriaInfo();
+  });
+
+  el.importClose.addEventListener("click", closeImportModal);
+  el.importCancel.addEventListener("click", closeImportModal);
+  el.importModal.querySelector(".modal__overlay").addEventListener("click", closeImportModal);
+   el.importFile.addEventListener("change", (event) => loadImportFile(event.target.files[0]));
+  el.importConfirm.addEventListener("click", applyImport);
+
+  el.statsApply.addEventListener("click", updateStats);
+  el.printGenerate.addEventListener("click", renderPrintTable);
+  el.printBtn.addEventListener("click", printAsPng);
+  el.exportPdf.addEventListener("click", async () => {
+    renderPrintTable();
+    await exportAsPdf();
+  });
+
+  // Backup buttons
+  const btnBackup = document.getElementById("btnBackup");
+  const btnRestore = document.getElementById("btnRestore");
+  const backupFile = document.getElementById("backupFile");
+
+  if (btnBackup) {
+    btnBackup.addEventListener("click", createBackup);
+  }
+
+  if (btnRestore) {
+    btnRestore.addEventListener("click", () => {
+      backupFile.click();
+    });
+  }
+
+  if (backupFile) {
+    backupFile.addEventListener("change", (e) => {
+      if (e.target.files.length > 0) {
+        restoreBackup(e.target.files[0]);
+      }
+    });
+  }
+};
+
+const createBackup = () => {
+  const backupData = {
+    version: "1.0",
+    fecha_backup: new Date().toISOString(),
+    storage_keys: {
+      profesores: getProfesores(),
+      materias: getMaterias(),
+      tabla: getTabla(),
+      sustituciones: getSustituciones(),
+    },
+  };
+
+  const blob = new Blob([JSON.stringify(backupData, null, 2)], {
+    type: "application/json",
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const fecha = new Date().toISOString().split("T")[0];
+  a.href = url;
+  a.download = `backup_sustituciones_${fecha}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  const totalItems =
+    backupData.storage_keys.profesores.length +
+    backupData.storage_keys.materias.length +
+    backupData.storage_keys.tabla.length +
+    backupData.storage_keys.sustituciones.length;
+
+  alert(
+    `✅ Backup creado correctamente\n\n📊 Resumen:\n• Profesores: ${backupData.storage_keys.profesores.length}\n• Materias: ${backupData.storage_keys.materias.length}\n• Tabla sustituciones: ${backupData.storage_keys.tabla.length}\n• Sustituciones: ${backupData.storage_keys.sustituciones.length}\n\nTotal: ${totalItems} registros`
+  );
+};
+
+const restoreBackup = (file) => {
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    try {
+      const backupData = JSON.parse(e.target.result);
+
+      if (!backupData.storage_keys) {
+        alert("❌ Error: El archivo no es un backup válido.");
+        return;
+      }
+
+      const confirmRestore = confirm(
+        `⚠️ ¿Estás seguro de restaurar el backup?\n\nSe sobrescribirán todos los datos actuales.\n\n📅 Backup del: ${new Date(backupData.fecha_backup).toLocaleString("es-ES")}`
+      );
+
+      if (!confirmRestore) return;
+
+      if (backupData.storage_keys.profesores) {
+        setProfesores(backupData.storage_keys.profesores);
+      }
+      if (backupData.storage_keys.materias) {
+        setMaterias(backupData.storage_keys.materias);
+      }
+      if (backupData.storage_keys.tabla) {
+        setTabla(backupData.storage_keys.tabla);
+      }
+      if (backupData.storage_keys.sustituciones) {
+        setSustituciones(backupData.storage_keys.sustituciones);
+      }
+
+      refreshProfesorOptions();
+      renderDashboard();
+      renderCalendar();
+      updateStats();
+      renderPrintTable();
+
+      alert("✅ Backup restaurado correctamente.\n\nPor favor, actualiza la página para ver todos los cambios.");
+      location.reload();
+    } catch (error) {
+      console.error("Error al restaurar backup:", error);
+      alert("❌ Error al leer el archivo. Asegúrate de que es un archivo JSON válido.");
+    }
+  };
+
+  reader.readAsText(file);
+};
+
+const printAsPng = async () => {
+  const printContent = document.getElementById("printView");
+  if (!printContent) {
+    alert("No hay contenido para imprimir.");
+    return;
+  }
+
+  const originalWidth = printContent.style.width;
+  printContent.style.width = "1200px";
+  printContent.style.position = "fixed";
+  printContent.style.left = "-9999px";
+  printContent.style.top = "0";
+  printContent.style.zIndex = "-1";
+
+  try {
+    const canvas = await html2canvas(printContent, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: "#ffffff",
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    
+    const printWindow = window.open("", "_blank");
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+        <meta charset="UTF-8">
+        <title>Imprimir Sustituciones</title>
+        <style>
+          body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+          }
+          .print-image {
+            max-width: 100%;
+            height: auto;
+            page-break-after: always;
+          }
+          @media print {
+            body {
+              padding: 0;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <img src="${imgData}" class="print-image" />
+        <script>
+          window.onload = function() {
+            window.print();
+          };
+        </script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  } catch (error) {
+    console.error("Error al generar imagen:", error);
+    alert("Error al generar la imagen para imprimir.");
+  }
+
+  printContent.style.width = originalWidth;
+  printContent.style.position = "";
+  printContent.style.left = "";
+  printContent.style.top = "";
+  printContent.style.zIndex = "";
+};
+
+const exportAsPdf = async () => {
+  const printContent = document.getElementById("printView");
+  if (!printContent) {
+    alert("No hay contenido para exportar.");
+    return;
+  }
+
+  const printTable = document.getElementById("printTable");
+  if (!printTable || printTable.innerHTML.trim() === "") {
+    alert("No hay sustituciones para exportar.");
+    return;
+  }
+
+  const originalWidth = printContent.style.width;
+  printContent.style.width = "1200px";
+  printContent.style.position = "fixed";
+  printContent.style.left = "-9999px";
+  printContent.style.top = "0";
+  printContent.style.zIndex = "-1";
+
+  try {
+    const canvas = await html2canvas(printContent, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: "#ffffff",
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    const fechaArchivo = new Date().toISOString().split('T')[0];
+
+    // Convertir a blob para descargar
+    const response = await fetch(imgData);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    // Crear enlace de descarga automática
+    const downloadLink = document.createElement('a');
+    downloadLink.href = blobUrl;
+    downloadLink.download = `sustituciones_${fechaArchivo}.png`;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(blobUrl);
+
+    alert("Imagen descargada correctamente.");
+
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Error al generar el archivo.");
+  }
+
+  printContent.style.width = originalWidth;
+  printContent.style.position = "";
+  printContent.style.left = "";
+  printContent.style.top = "";
+  printContent.style.zIndex = "";
+};
+
+const initConsejoEscolar = () => {
+  const btn = document.getElementById("consejoEscolarBtn");
+  const panel = document.getElementById("consejoPanel");
+  const calculateBtn = document.getElementById("consejoCalculate");
+
+  if (btn && panel) {
+    btn.addEventListener("click", () => {
+      panel.style.display = panel.style.display === "none" ? "block" : "none";
+    });
+  }
+
+  if (calculateBtn) {
+    calculateBtn.addEventListener("click", calculateConsejoEscolar);
+  }
+
+  const printBtn = document.getElementById("consejoPrint");
+  if (printBtn) {
+    printBtn.addEventListener("click", printConsejoEscolar);
+  }
+};
+
+const calculateConsejoEscolar = () => {
+  const consejoFrom = document.getElementById("consejoFrom").value;
+  const consejoTo = document.getElementById("consejoTo").value;
+
+  if (!consejoFrom || !consejoTo) {
+    alert("Por favor, selecciona ambas fechas.");
+    return;
+  }
+
+  const from = fromIso(consejoFrom);
+  const to = fromIso(consejoTo);
+
+  if (from > to) {
+    alert("La fecha 'desde' debe ser anterior a 'hasta'.");
+    return;
+  }
+
+  const sustituciones = getSustituciones();
+  const profesores = getProfesores();
+
+  const filteredSubs = sustituciones.filter(s => {
+    const date = fromIso(s.fecha);
+    return date >= from && date <= to;
+  });
+
+  const totalHorasClase = 5;
+  const diasLaborables = [];
+  for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+    const dayOfWeek = d.getDay();
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+      diasLaborables.push(new Date(d));
+    }
+  }
+
+  const totalHorasPeriodo = diasLaborables.length * totalHorasClase;
+
+  const horasConSustitucion = new Set();
+  filteredSubs.forEach(s => {
+    const key = `${s.fecha}-${s.horaInicio}`;
+    horasConSustitucion.add(key);
+  });
+
+  const porcentajeHoras = totalHorasPeriodo > 0
+    ? ((horasConSustitucion.size / totalHorasPeriodo) * 100).toFixed(1)
+    : 0;
+
+  document.getElementById("consejoHorasSustitucion").textContent = `${porcentajeHoras}%`;
+  document.getElementById("consejoHorasDetail").textContent = `${horasConSustitucion.size} / ${totalHorasPeriodo} horas`;
+
+  const profesoresAusentes = new Set();
+  filteredSubs.forEach(s => {
+    if (s.profesorAusenteId) {
+      profesoresAusentes.add(s.profesorAusenteId);
+    }
+  });
+
+  const porcentajeProfesores = profesores.length > 0
+    ? ((profesoresAusentes.size / profesores.length) * 100).toFixed(1)
+    : 0;
+
+  document.getElementById("consejoProfesoresAusentes").textContent = `${porcentajeProfesores}%`;
+  document.getElementById("consejoProfesoresDetail").textContent = `${profesoresAusentes.size} / ${profesores.length} profesores`;
+};
+
+const printConsejoEscolar = () => {
+  const consejoFrom = document.getElementById("consejoFrom").value;
+  const consejoTo = document.getElementById("consejoTo").value;
+  const horasValue = document.getElementById("consejoHorasSustitucion").textContent;
+  const horasDetail = document.getElementById("consejoHorasDetail").textContent;
+  const profesValue = document.getElementById("consejoProfesoresAusentes").textContent;
+  const profesDetail = document.getElementById("consejoProfesoresDetail").textContent;
+
+  if (!consejoFrom || !consejoTo) {
+    alert("Primero debes calcular los datos seleccionando las fechas.");
+    return;
+  }
+
+  if (horasValue === "--%") {
+    alert("Primero debes calcular los datos.");
+    return;
+  }
+
+  const printWindow = window.open("", "_blank");
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <title>Informe Consejo Escolar</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          padding: 40px;
+          color: #333;
+        }
+        h1 {
+          text-align: center;
+          color: #1b1f2a;
+          margin-bottom: 10px;
+        }
+        .date-range {
+          text-align: center;
+          margin-bottom: 30px;
+          color: #666;
+        }
+        table {
+          width: 100%;
+          max-width: 600px;
+          margin: 0 auto;
+          border-collapse: collapse;
+        }
+        th, td {
+          padding: 12px 16px;
+          text-align: left;
+          border-bottom: 1px solid #ddd;
+        }
+        th {
+          background-color: #5b63ff;
+          color: white;
+        }
+        .percentage {
+          font-size: 2rem;
+          font-weight: bold;
+          color: #15803d;
+        }
+        .detail {
+          color: #666;
+          font-size: 0.9rem;
+        }
+        .footer {
+          margin-top: 40px;
+          text-align: center;
+          font-size: 0.85rem;
+          color: #999;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Informe de Sustituciones</h1>
+      <p class="date-range">Período: ${formatDate(fromIso(consejoFrom))} - ${formatDate(fromIso(consejoTo))}</p>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Indicador</th>
+            <th>Porcentaje</th>
+            <th>Detalle</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Horas con sustitución</td>
+            <td class="percentage">${horasValue}</td>
+            <td class="detail">${horasDetail}</td>
+          </tr>
+          <tr>
+            <td>Profesores ausentes</td>
+            <td class="percentage">${profesValue}</td>
+            <td class="detail">${profesDetail}</td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <p class="footer">Generado por Gestión de Sustituciones - CEIP Noreña</p>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+  setTimeout(() => {
+    printWindow.print();
+  }, 500);
+};
+
+const init = () => {
+  if (window.pdfjsLib) {
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  }
+  initNavigation();
+  initImports();
+  initEvents();
+  initConsejoEscolar();
+  refreshHoraInicioOptions();
+  refreshProfesorOptions();
+  updateHoraFin();
+  state.activeDate = new Date();
+  state.calendarDate = new Date();
+  setActiveDate(state.activeDate);
+  updateStats();
+  renderPrintTable();
+};
+
+document.addEventListener("DOMContentLoaded", init);

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Sustituciones - CEIP Noreña</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.19.3/dist/xlsx.full.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="sidebar__brand">
+          <div class="brand-icon">GS</div>
+          <div>
+            <div class="brand-title">Gestión de Sustituciones</div>
+            <div class="brand-sub">CEIP Noreña</div>
+          </div>
+        </div>
+        <nav class="sidebar__nav">
+          <button class="nav-item is-active" data-page="inicio">
+            <span class="nav-icon">🏠</span>
+            <span>Inicio</span>
+          </button>
+          <button class="nav-item" data-page="profesores">
+            <span class="nav-icon">👩‍🏫</span>
+            <span>Profesores</span>
+          </button>
+          <button class="nav-item" data-page="estadisticas">
+            <span class="nav-icon">📊</span>
+            <span>Estadísticas</span>
+          </button>
+          <button class="nav-item" data-page="impresion">
+            <span class="nav-icon">🖨️</span>
+            <span>Impresión</span>
+          </button>
+        </nav>
+        <div class="sidebar__footer">
+          <div class="tip-card backup-card">
+            <div class="tip-title">💾 Copia de seguridad</div>
+            <p style="font-size: 0.85rem; margin-bottom: 10px;">Guarda tus datos periódicamente para no perderlos.</p>
+            <div class="backup-actions">
+              <button class="btn btn-soft" id="btnBackup">
+                📥 Guardar backup
+              </button>
+              <button class="btn btn-outline" id="btnRestore">
+                📤 Restaurar backup
+              </button>
+              <input type="file" id="backupFile" accept=".json" style="display: none;" />
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+<header class="main-header">
+          <div class="header-left">
+            <h1>Gestión de sustituciones</h1>
+            <div class="mini-calendar" id="miniCalendar"></div>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" id="ctaNueva">
+              <span class="btn-icon">＋</span>
+              Nueva sustitución
+            </button>
+          </div>
+        </header>
+
+        <section class="page" id="page-inicio">
+          <div class="cards-header">
+            <h2>Dashboard diario</h2>
+          </div>
+
+          <div class="substitution-grid" id="substitutionGrid"></div>
+        </section>
+
+        <section class="page is-hidden" id="page-profesores">
+          <div class="section-header">
+            <h2>Tabla de Datos</h2>
+            <p>Importa y gestiona la tabla de datos del centro.</p>
+          </div>
+          <div class="import-grid">
+            <div class="import-card">
+              <div class="import-card__header">
+                <h3>Tabla de Datos</h3>
+                <span class="chip chip-soft">CSV</span>
+              </div>
+              <p>Importa el archivo CSV con los datos del centro.</p>
+              <div class="import-actions">
+                <button class="btn btn-primary" data-import="tabla">Importar tabla</button>
+                <button class="btn btn-outline" data-view="tabla">Ver Tabla Importada</button>
+                <button class="btn btn-danger" data-clear="tabla">Borrar</button>
+              </div>
+            </div>
+          </div>
+          <div class="dataset-search-container">
+            <input type="text" id="datasetSearch" value="" placeholder="Filtrar..." />
+            <button class="btn btn-primary btn-add-profesor" id="btnAddActividad">
+              <span class="btn-icon">+</span>
+              Añadir actividad
+            </button>
+          </div>
+          <div class="data-table" id="datasetTable"></div>
+        </section>
+
+        <section class="page is-hidden" id="page-estadisticas">
+          <div class="section-header">
+            <h2>Estadísticas</h2>
+            <p>Resumen de sustituciones y tendencias del centro.</p>
+          </div>
+          <div class="filters">
+            <label>
+              Desde
+              <input type="date" id="statsFrom" />
+            </label>
+            <label>
+              Hasta
+              <input type="date" id="statsTo" />
+            </label>
+            <label>
+              Profesor
+              <select id="statsProfesor"></select>
+            </label>
+
+            <button class="btn btn-primary" id="statsApply">Aplicar filtros</button>
+            <button class="btn btn-success" id="consejoEscolarBtn">Consejo Escolar. Datos</button>
+          </div>
+          <div class="consejo-panel" id="consejoPanel" style="display: none;">
+            <div class="consejo-filters">
+              <label>
+                Desde
+                <input type="date" id="consejoFrom" />
+              </label>
+              <label>
+                Hasta
+                <input type="date" id="consejoTo" />
+              </label>
+              <button class="btn btn-primary" id="consejoCalculate">Calcular</button>
+              <button class="btn btn-success" id="consejoPrint">Imprimir datos para Consejo</button>
+            </div>
+            <div class="consejo-results">
+              <div class="consejo-card">
+                <div class="consejo-title">Horas con sustitución</div>
+                <div class="consejo-value" id="consejoHorasSustitucion">--%</div>
+                <div class="consejo-detail" id="consejoHorasDetail">0 / 0 horas</div>
+              </div>
+              <div class="consejo-card">
+                <div class="consejo-title">Profesores ausentes</div>
+                <div class="consejo-value" id="consejoProfesoresAusentes">--%</div>
+                <div class="consejo-detail" id="consejoProfesoresDetail">0 / 0 profesores</div>
+              </div>
+            </div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-title">Total sustituciones</div>
+              <div class="stat-value" id="statTotal">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title">Top profesores ausentes</div>
+              <div class="stat-list" id="statTopAbsent"></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-title">Top profesores sustitutos</div>
+              <div class="stat-list" id="statTopSub"></div>
+            </div>
+            <div class="stat-card stat-full">
+              <div class="stat-title">Ranking completo de sustituciones</div>
+              <div class="stat-list" id="statRankingSub"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page is-hidden" id="page-impresion">
+          <div class="section-header">
+            <h2>Impresión</h2>
+            <p>Genera la hoja diaria o por rango para compartir.</p>
+          </div>
+          <div class="print-controls">
+            <label>
+              Dia activo
+              <input type="date" id="printDate" />
+            </label>
+            <label>
+              Desde
+              <input type="date" id="printFrom" />
+            </label>
+            <label>
+              Hasta
+              <input type="date" id="printTo" />
+            </label>
+            <button class="btn btn-primary" id="printGenerate">Actualizar vista</button>
+            <button class="btn btn-outline" id="printBtn">Imprimir</button>
+            <button class="btn btn-outline" id="exportPdf">Enviar por correo</button>
+          </div>
+          <div class="print-view" id="printView">
+            <div class="print-content" id="printTable"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal" id="substitutionModal" aria-hidden="true">
+      <div class="modal__overlay"></div>
+      <div class="modal__content">
+        <div class="modal__header">
+          <h3 id="modalTitle">Nueva Sustitución</h3>
+          <button class="icon-btn" id="modalClose">✕</button>
+        </div>
+        <form id="substitutionForm">
+          <div class="form-group">
+            <label>Fecha</label>
+            <input type="date" id="formFecha" required />
+            <div class="form-help" id="formDiaSemana">--</div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+            <label>Hora Inicio</label>
+              <select id="formHoraInicio" required></select>
+            </div>
+            <div class="form-group">
+              <label>Hora Fin</label>
+              <input type="text" id="formHoraFin" readonly />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Profesor Ausente</label>
+            <select id="formProfesorAusente" required></select>
+            <div class="form-help" id="materiaInfo">--</div>
+          </div>
+          <div class="form-group">
+            <label>Profesor Sustituto</label>
+            <select id="formProfesorSustituto"></select>
+          </div>
+          <div class="form-group">
+            <label>Profesores del centro (casos excepcionales)</label>
+            <select id="formProfesorExtra"></select>
+          </div>
+          <div class="form-group">
+            <label>Curso y Grupo/Materia</label>
+            <input type="text" id="formCursoGrupo" />
+          </div>
+          <div class="modal__actions">
+            <button type="button" class="btn btn-outline" id="modalCancel">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+          <div class="form-error" id="formError"></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="importModal" aria-hidden="true">
+      <div class="modal__overlay"></div>
+      <div class="modal__content modal__content--wide">
+        <div class="modal__header">
+          <h3 id="importTitle">Importar</h3>
+          <button class="icon-btn" id="importClose">✕</button>
+        </div>
+        <div class="import-body">
+          <div class="import-step">
+            <label class="file-drop" for="importFile">
+              <input type="file" id="importFile" accept=".xlsx,.xls,.csv,.pdf" />
+              <span>Selecciona o arrastra un archivo (.xlsx, .xls, .csv, .pdf)</span>
+            </label>
+            <div class="import-meta" id="importMeta">Sin archivo seleccionado</div>
+          </div>
+          <div class="import-step">
+            <h4>Mapeo de columnas</h4>
+            <div class="mapping-grid" id="mappingGrid"></div>
+          </div>
+          <div class="import-step">
+            <h4>Vista previa</h4>
+            <div class="preview-table" id="previewTable"></div>
+          </div>
+        </div>
+        <div class="modal__actions">
+          <button class="btn btn-outline" id="importCancel">Cancelar</button>
+          <button class="btn btn-primary" id="importConfirm" disabled>Confirmar importación</button>
+        </div>
+        <div class="form-error" id="importError"></div>
+      </div>
+    </div>
+  </body>
+</html>
