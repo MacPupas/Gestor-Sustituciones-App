@@ -1,8 +1,112 @@
+const STORAGE_KEY = "gs_use_supabase";
+const SUPABASE_URL = "https://pxpujmdlobwopqqbudwi.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cHVqbWRsb2J3b3BxcWJ1ZHdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExOTE4NjYsImV4cCI6MjA4Njc2Nzg2Nn0.f1R38JNM09UkI-2hzng5iYNUbCHq4cyjZXfngr1q64E";
+
 const storageKeys = {
   profesores: "gs_profesores",
   materias: "gs_materias",
   tabla: "gs_tabla_sust",
   sustituciones: "gs_sustituciones",
+};
+
+const useSupabase = () => localStorage.getItem(STORAGE_KEY) === "true";
+
+const supabaseFetch = async (table) => {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+      },
+    });
+    if (!res.ok) return [];
+    return res.json();
+  } catch (e) {
+    console.error("Supabase fetch error:", e);
+    return [];
+  }
+};
+
+const supabaseSync = async () => {
+  if (!useSupabase()) return;
+  const tables = {
+    profesores: await supabaseFetch("profesores"),
+    materias: await supabaseFetch("materias"),
+    tabla_horario: await supabaseFetch("tabla_horario"),
+    sustituciones: await supabaseFetch("sustituciones"),
+  };
+  if (tables.profesores.length > 0) setProfesores(tables.profesores);
+  if (tables.materias.length > 0) setMaterias(tables.materias);
+  if (tables.tabla_horario.length > 0) setTabla(tables.tabla_horario);
+  if (tables.sustituciones.length > 0) setSustituciones(tables.sustituciones);
+};
+
+const supabaseSave = async (table, data) => {
+  if (!useSupabase()) return;
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=id`, {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+      },
+    });
+    const existing = await supabaseFetch(table);
+    for (const item of existing) {
+      await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${item.id}`, {
+        method: "DELETE",
+        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+      });
+    }
+    for (const item of data) {
+      await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+        method: "POST",
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify(item),
+      });
+    }
+  } catch (e) {
+    console.error("Supabase save error:", e);
+  }
+};
+
+let cachedData = { profesores: [], materias: [], tabla: [], sustituciones: [] };
+
+const getProfesores = () => cachedData.profesores;
+const getMaterias = () => cachedData.materias;
+const getTabla = () => cachedData.tabla;
+const getSustituciones = () => cachedData.sustituciones;
+
+const setProfesores = (data) => {
+  cachedData.profesores = data;
+  localStorage.setItem(storageKeys.profesores, JSON.stringify(data));
+  supabaseSave("profesores", data);
+};
+const setMaterias = (data) => {
+  cachedData.materias = data;
+  localStorage.setItem(storageKeys.materias, JSON.stringify(data));
+  supabaseSave("materias", data);
+};
+const setTabla = (data) => {
+  cachedData.tabla = data;
+  localStorage.setItem(storageKeys.tabla, JSON.stringify(data));
+  supabaseSave("tabla_horario", data);
+};
+const setSustituciones = (data) => {
+  cachedData.sustituciones = data;
+  localStorage.setItem(storageKeys.sustituciones, JSON.stringify(data));
+  supabaseSave("sustituciones", data);
+};
+
+const loadCachedData = () => {
+  cachedData.profesores = JSON.parse(localStorage.getItem(storageKeys.profesores) || "[]");
+  cachedData.materias = JSON.parse(localStorage.getItem(storageKeys.materias) || "[]");
+  cachedData.tabla = JSON.parse(localStorage.getItem(storageKeys.tabla) || "[]");
+  cachedData.sustituciones = JSON.parse(localStorage.getItem(storageKeys.sustituciones) || "[]");
 };
 
 const dayNames = [
@@ -137,30 +241,7 @@ const datasetConfig = {
   },
 };
 
-const storage = {
-  get(key, fallback) {
-    const raw = localStorage.getItem(key);
-    if (!raw) return fallback;
-    try {
-      return JSON.parse(raw);
-    } catch (error) {
-      return fallback;
-    }
-  },
-  set(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
-  },
-};
 
-const getProfesores = () => storage.get(storageKeys.profesores, []);
-const getMaterias = () => storage.get(storageKeys.materias, []);
-const getTabla = () => storage.get(storageKeys.tabla, []);
-const getSustituciones = () => storage.get(storageKeys.sustituciones, []);
-
-const setProfesores = (data) => storage.set(storageKeys.profesores, data);
-const setMaterias = (data) => storage.set(storageKeys.materias, data);
-const setTabla = (data) => storage.set(storageKeys.tabla, data);
-const setSustituciones = (data) => storage.set(storageKeys.sustituciones, data);
 
 const toIso = (date) => {
   const year = date.getFullYear();
@@ -2430,7 +2511,11 @@ const printConsejoEscolar = () => {
   }, 500);
 };
 
-const init = () => {
+const init = async () => {
+  loadCachedData();
+  if (useSupabase()) {
+    await supabaseSync();
+  }
   if (window.pdfjsLib) {
     window.pdfjsLib.GlobalWorkerOptions.workerSrc =
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
@@ -2439,6 +2524,7 @@ const init = () => {
   initImports();
   initEvents();
   initConsejoEscolar();
+  initSupabaseToggle();
   refreshHoraInicioOptions();
   refreshProfesorOptions();
   updateHoraFin();
@@ -2447,6 +2533,28 @@ const init = () => {
   setActiveDate(state.activeDate);
   updateStats();
   renderPrintTable();
+};
+
+const initSupabaseToggle = () => {
+  const backupCard = document.querySelector('.backup-card');
+  if (!backupCard) return;
+  const isEnabled = useSupabase();
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = `btn ${isEnabled ? 'btn-danger' : 'btn-outline'}`;
+  toggleBtn.id = 'btnSupabaseToggle';
+  toggleBtn.textContent = isEnabled ? '☁️ Supabase ON' : '☁️ Activar Supabase';
+  toggleBtn.style.marginTop = '10px';
+  toggleBtn.onclick = async () => {
+    const nowEnabled = !useSupabase();
+    localStorage.setItem(STORAGE_KEY, nowEnabled.toString());
+    if (nowEnabled) {
+      await supabaseSync();
+    }
+    toggleBtn.textContent = nowEnabled ? '☁️ Supabase ON' : '☁️ Activar Supabase';
+    toggleBtn.className = `btn ${nowEnabled ? 'btn-danger' : 'btn-outline'}`;
+    alert(nowEnabled ? 'Supabase activado. Datos sincronizados.' : 'Supabase desactivado. Solo modo local.');
+  };
+  backupCard.appendChild(toggleBtn);
 };
 
 document.addEventListener("DOMContentLoaded", init);
