@@ -29,48 +29,68 @@ const supabaseFetch = async (table) => {
 
 const supabaseSync = async () => {
   if (!useSupabase()) return;
+  console.log("[Supabase] Starting sync...");
   const tables = {
     profesores: await supabaseFetch("profesores"),
     materias: await supabaseFetch("materias"),
     tabla_horario: await supabaseFetch("tabla_horario"),
     sustituciones: await supabaseFetch("sustituciones"),
   };
-  if (tables.profesores.length > 0) setProfesores(tables.profesores);
-  if (tables.materias.length > 0) setMaterias(tables.materias);
-  if (tables.tabla_horario.length > 0) setTabla(tables.tabla_horario);
-  if (tables.sustituciones.length > 0) setSustituciones(tables.sustituciones);
+  console.log("[Supabase] Fetched:", tables);
+  
+  // If Supabase has data, use it. Otherwise, upload local data
+  const localProfesores = JSON.parse(localStorage.getItem(storageKeys.profesores) || "[]");
+  const localMaterias = JSON.parse(localStorage.getItem(storageKeys.materias) || "[]");
+  const localTabla = JSON.parse(localStorage.getItem(storageKeys.tabla) || "[]");
+  const localSustituciones = JSON.parse(localStorage.getItem(storageKeys.sustituciones) || "[]");
+  
+  if (tables.profesores.length > 0) {
+    setProfesores(tables.profesores);
+  } else if (localProfesores.length > 0) {
+    await supabaseSave("profesores", localProfesores);
+    console.log("[Supabase] Uploaded local profesores");
+  }
+  if (tables.materias.length > 0) {
+    setMaterias(tables.materias);
+  } else if (localMaterias.length > 0) {
+    await supabaseSave("materias", localMaterias);
+  }
+  if (tables.tabla_horario.length > 0) {
+    setTabla(tables.tabla_horario);
+  } else if (localTabla.length > 0) {
+    await supabaseSave("tabla_horario", localTabla);
+  }
+  if (tables.sustituciones.length > 0) {
+    setSustituciones(tables.sustituciones);
+  } else if (localSustituciones.length > 0) {
+    await supabaseSave("sustituciones", localSustituciones);
+  }
+  console.log("[Supabase] Sync complete");
 };
 
 const supabaseSave = async (table, data) => {
   if (!useSupabase()) return;
+  if (!data || data.length === 0) return;
+  console.log(`[Supabase] Saving to ${table}:`, data.length, 'records');
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=id`, {
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
-      },
-    });
-    const existing = await supabaseFetch(table);
-    for (const item of existing) {
-      await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${item.id}`, {
-        method: "DELETE",
-        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
-      });
-    }
     for (const item of data) {
-      await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=id`, {
         method: "POST",
         headers: {
           apikey: SUPABASE_KEY,
           Authorization: `Bearer ${SUPABASE_KEY}`,
           "Content-Type": "application/json",
-          Prefer: "return=minimal",
+          Prefer: "resolution=merge-duplicates",
         },
         body: JSON.stringify(item),
       });
+      if (!res.ok) {
+        const err = await res.text();
+        console.error(`[Supabase] Error saving to ${table}:`, res.status, err);
+      }
     }
   } catch (e) {
-    console.error("Supabase save error:", e);
+    console.error("[Supabase] Save error:", e);
   }
 };
 
@@ -2548,11 +2568,18 @@ const initSupabaseToggle = () => {
     const nowEnabled = !useSupabase();
     localStorage.setItem(STORAGE_KEY, nowEnabled.toString());
     if (nowEnabled) {
+      // Test connection first
+      const test = await supabaseFetch("profesores");
+      console.log("[Supabase] Connection test:", test);
+      if (test === null || (test && test.error)) {
+        alert("Error conectando a Supabase. Revisa la consola.");
+        return;
+      }
       await supabaseSync();
     }
     toggleBtn.textContent = nowEnabled ? '☁️ Supabase ON' : '☁️ Activar Supabase';
     toggleBtn.className = `btn ${nowEnabled ? 'btn-danger' : 'btn-outline'}`;
-    alert(nowEnabled ? 'Supabase activado. Datos sincronizados.' : 'Supabase desactivado. Solo modo local.');
+    alert(nowEnabled ? 'Supabase activado. Abre la consola (F12) para ver logs de sincronización.' : 'Supabase desactivado. Solo modo local.');
   };
   backupCard.appendChild(toggleBtn);
 };
