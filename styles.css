@@ -1449,7 +1449,7 @@ select {
 
   .sidebar.is-open {
     display: flex;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(219, 234, 254, 0.85);
   }
 
   .sidebar.is-open::before {
