@@ -740,6 +740,8 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
     return asignaturasSustituibles.some(a => asignaturaNormalizada.includes(a));
   });
 
+  console.log("[DEBUG] disponiblesTramo:", disponiblesTramo.length, disponiblesTramo.slice(0, 3));
+
   // Profesores que ya están ocupados en este día y tramo (como sustitutos o extras)
   const occupied = sustituciones
     .filter(
