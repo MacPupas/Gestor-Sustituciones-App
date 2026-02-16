@@ -795,7 +795,7 @@ const renderDashboard = () => {
   const profesores = getProfesores();
   const dayName = getDayName(state.activeDate);
 
-  console.log("[DEBUG] renderDashboard:", { dateKey, profesoresLength: profesores.length });
+  console.log("[DEBUG] renderDashboard:", { dateKey, profesoresLength: profesores.length, sampleProf: profesores[0] });
 
   // Obtener sustituciones del día
   const daySubstitutions = getSustituciones().filter(s => s.fecha === dateKey);
@@ -875,6 +875,8 @@ const renderDashboard = () => {
         const ausente = profesores.find(p => p.id === substitution.profesorAusenteId);
         const sustituto = profesores.find(p => p.id === substitution.profesorSustitutoId);
         const extra = profesores.find(p => p.id === substitution.profesorExtraId);
+
+        console.log("[DEBUG] sustituto lookup:", { sustitutoId: substitution.profesorSustitutoId, found: !!sustituto, profKeys: Object.keys(profesores[0] || {}) });
 
         return `
                   <tr class="${isRecreo ? 'tramo-recreo' : ''}" data-id="${substitution.id}">
