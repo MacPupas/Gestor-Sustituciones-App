@@ -10,8 +10,7 @@ const storageKeys = {
 };
 
 const useSupabase = () => {
-  const val = localStorage.getItem(STORAGE_KEY);
-  return val === "true";
+  return false;
 };
 
 const supabaseFetch = async (table) => {
