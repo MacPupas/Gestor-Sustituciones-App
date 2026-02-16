@@ -708,7 +708,7 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
   const tabla = getTabla();
 
   // Asignaturas que pueden ser sustituidas
-  const asignaturasSustituibles = ['refuerzo pedagógico', 'refuerzo educativo', 'coordinación', 'mayores', 'biblioteca', 'dirección', 'director', 'jefatura'];
+  const asignaturasSustituibles = ['refuerzo pedagógico', 'refuerzo educativo', 'coordinación', 'mayores', 'biblioteca', 'dirección', 'director', 'jefatura', 'función directiva'];
 
   // Contar sustituciones históricas (para mostrar el número)
   const sustitucionCount = {};
