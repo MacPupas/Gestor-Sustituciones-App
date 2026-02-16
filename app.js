@@ -730,13 +730,11 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
 
   // Obtener profesores de la tabla que en este tramo:
   // Solo los que tienen asignaturas especiales: "Refuerzo Pedagógico", "Coordinación", "Mayores", "Biblioteca", "Dirección", etc.
-  console.log("[DEBUG] Tabla sample:", tabla.slice(0, 3));
   console.log("[DEBUG] Searching for:", { dia, start, end });
-  console.log("[DEBUG] normalizeDay test:", normalizeDay("martes"), normalizeDay("jueves"));
   
-  // Mostrar qué días hay en la tabla
-  const diasUnicos = [...new Set(tabla.map(t => t.diaSemana))];
-  console.log("[DEBUG] Días en tabla:", diasUnicos.slice(0, 10));
+  // Buscar si hay algún registro que coincida con el día
+  const registrosDia = tabla.filter(t => normalizeDay(t.diaSemana) === dia);
+  console.log("[DEBUG] Registros del día:", registrosDia.length, "primeros:", registrosDia.slice(0, 3).map(t => ({dia: t.diaSemana, hora: t.horaInicio + '-' + t.horaFin, asig: t.asignatura})));
   
   const disponiblesTramo = tabla.filter(t => {
     const normalizedDia = normalizeDay(t.diaSemana);
