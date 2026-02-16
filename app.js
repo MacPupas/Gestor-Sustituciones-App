@@ -122,6 +122,7 @@ const supabaseSave = async (table, data) => {
         payload.profesorid = payload.profesorId;
         payload.profesornombre = payload.profesorNombre;
         payload.cursogrupo = payload.cursoGrupo;
+        // asignatura ya tiene el nombre correcto, no se renombra
         delete payload.diaSemana;
         delete payload.horaInicio;
         delete payload.horaFin;
@@ -723,15 +724,26 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
   });
 
   // Obtener profesores de la tabla que en este tramo:
-  // временный: показывать всех profesores del día como sustitutos
-  const disponiblesTramo = tabla.filter(t => {
+  // Filtrar por asignaturas especiales o mostrar todos si no hay datos de asignatura
+  const asignaturasSustituibles = ['refuerzo pedagógico', 'refuerzo educativo', 'coordinación', 'mayores', 'biblioteca', 'dirección', 'director', 'jefatura', 'función directiva'];
+  
+  let disponiblesTramo = tabla.filter(t => {
     const normalizedDia = normalizeDay(t.diaSemana);
     const matchDia = normalizedDia === dia;
     const matchHora = t.horaInicio === start && t.horaFin === end;
     return matchDia && matchHora;
   });
 
-  console.log("[DEBUG] disponiblesTramo:", disponiblesTramo.length, disponiblesTramo.slice(0, 3));
+  // Si hay registros con asignatura, filtrar por asignaturas especiales
+  const tieneAsignatura = disponiblesTramo.some(t => t.asignatura && t.asignatura.trim() !== '');
+  if (tieneAsignatura) {
+    disponiblesTramo = disponiblesTramo.filter(t => {
+      const asignaturaNormalizada = (t.asignatura || '').toLowerCase().trim();
+      return asignaturasSustituibles.some(a => asignaturaNormalizada.includes(a));
+    });
+  }
+
+  console.log("[DEBUG] disponiblesTramo:", disponiblesTramo.length);
 
   // Profesores que ya están ocupados en este día y tramo (como sustitutos o extras)
   const occupied = sustituciones
