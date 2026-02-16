@@ -1435,20 +1435,41 @@ select {
 
   .sidebar {
     display: none;
-    width: 100%;
-    height: auto;
-    position: relative;
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
     flex-direction: column;
-    margin-top: 50px;
+    background: white;
+    z-index: 999;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+    margin-top: 0;
   }
 
   .sidebar.is-open {
     display: flex;
   }
 
+  .sidebar.is-open::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 280px;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: -1;
+  }
+
   .sidebar__nav {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
+  }
+
+  .nav-item {
+    justify-content: flex-start;
+    padding: 14px 16px;
+    border-bottom: 1px solid #f3f4f6;
   }
 
   .sidebar__footer {
