@@ -149,6 +149,7 @@ const supabaseSave = async (table, data) => {
         delete payload.profesorSustitutoId;
         delete payload.profesorExtraId;
         delete payload.cursoGrupoMateria;
+        console.log("[DEBUG] Saving sustitucion:", payload);
       }
       if (table === 'profesores') {
         delete payload.displayName;
