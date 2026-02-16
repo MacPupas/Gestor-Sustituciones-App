@@ -109,6 +109,12 @@ const supabaseSync = async () => {
 const supabaseSave = async (table, data) => {
   if (!useSupabase()) return;
   if (!data || data.length === 0) return;
+  
+  console.log("[DEBUG] supabaseSave called for:", table, "with", data.length, "records");
+  if (table === 'sustituciones' && data.length > 0) {
+    console.log("[DEBUG] Sample sustitucion data:", JSON.stringify(data[0]));
+  }
+  
   try {
     for (const item of data) {
       // Clona el objeto para evitar modificar el estado local
