@@ -109,12 +109,6 @@ const supabaseSync = async () => {
 const supabaseSave = async (table, data) => {
   if (!useSupabase()) return;
   if (!data || data.length === 0) return;
-  
-  console.log("[DEBUG] supabaseSave called for:", table, "with", data.length, "records");
-  if (table === 'sustituciones' && data.length > 0) {
-    console.log("[DEBUG] Sample sustitucion data:", JSON.stringify(data[0]));
-  }
-  
   try {
     for (const item of data) {
       // Clona el objeto para evitar modificar el estado local
@@ -138,22 +132,10 @@ const supabaseSave = async (table, data) => {
         delete payload.materia;
       }
       if (table === 'sustituciones') {
+        // Los datos ya vienen en formato de Supabase (minúsculas) desde localStorage
+        // No hace falta renombrar, solo eliminar campos extra
         delete payload.createdAt;
         delete payload.updatedAt;
-        payload.diasemana = payload.diaSemana;
-        payload.horainicio = payload.horaInicio;
-        payload.horafin = payload.horaFin;
-        payload.profesorausenteid = payload.profesorAusenteId;
-        payload.profesorsustitutoid = payload.profesorSustitutoId;
-        payload.profesorextraid = payload.profesorExtraId;
-        payload.cursogrupomateria = payload.cursoGrupoMateria;
-        delete payload.diaSemana;
-        delete payload.horaInicio;
-        delete payload.horaFin;
-        delete payload.profesorAusenteId;
-        delete payload.profesorSustitutoId;
-        delete payload.profesorExtraId;
-        delete payload.cursoGrupoMateria;
         
         console.log("[DEBUG] Saving sustitucion payload:", payload);
         
