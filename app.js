@@ -37,13 +37,13 @@ const supabaseSync = async () => {
     sustituciones: await supabaseFetch("sustituciones"),
   };
   console.log("[Supabase] Fetched:", tables);
-  
+
   // If Supabase has data, use it. Otherwise, upload local data
   const localProfesores = JSON.parse(localStorage.getItem(storageKeys.profesores) || "[]");
   const localMaterias = JSON.parse(localStorage.getItem(storageKeys.materias) || "[]");
   const localTabla = JSON.parse(localStorage.getItem(storageKeys.tabla) || "[]");
   const localSustituciones = JSON.parse(localStorage.getItem(storageKeys.sustituciones) || "[]");
-  
+
   if (tables.profesores.length > 0) {
     setProfesores(tables.profesores);
   } else if (localProfesores.length > 0) {
@@ -74,6 +74,22 @@ const supabaseSave = async (table, data) => {
   console.log(`[Supabase] Saving to ${table}:`, data.length, 'records');
   try {
     for (const item of data) {
+      // Clona el objeto para evitar modificar el estado local
+      const payload = { ...item };
+
+      // Elimina columnas que no existen en Supabase (solución temporal)
+      if (table === 'materias' || table === 'tabla_horario') {
+        delete payload.cursoGrupo;
+        delete payload.diaSemana; // También falta en la tabla_horario real
+      }
+      if (table === 'sustituciones') {
+        delete payload.createdAt; // La BD usa created_at y updated_at, deja que use los defaults
+        delete payload.updatedAt;
+      }
+      if (table === 'profesores') {
+        delete payload.displayName; // Por si acaso queda algo en cache
+      }
+
       const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=id`, {
         method: "POST",
         headers: {
@@ -82,7 +98,7 @@ const supabaseSave = async (table, data) => {
           "Content-Type": "application/json",
           Prefer: "resolution=merge-duplicates",
         },
-        body: JSON.stringify(item),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
         const err = await res.text();
@@ -338,7 +354,7 @@ const resolveProfesorId = (value) => {
   const byId = profesores.find((p) => p.id === normalized);
   if (byId) return byId.id;
   const byName = profesores.find(
-    (p) => normalizeText(p.displayName) === normalizeText(normalized)
+    (p) => normalizeText(p.profesor) === normalizeText(normalized)
   );
   if (byName) return byName.id;
   const newProf = {
@@ -347,7 +363,7 @@ const resolveProfesorId = (value) => {
     puesto: "",
     movilAvisos: "",
     cuenta: "",
-    displayName: normalized,
+
   };
   const updated = [...profesores, newProf];
   setProfesores(updated);
@@ -363,7 +379,7 @@ const findProfesorMatch = (profesores, id, nombre) => {
   if (nombre) {
     const normalized = normalizeText(nombre);
     return profesores.find(
-      (p) => normalizeText(p.displayName) === normalized
+      (p) => normalizeText(p.profesor) === normalized
     );
   }
   return null;
@@ -504,7 +520,7 @@ const updateMateriaInfo = () => {
       : materia.asignatura || materia.cursoGrupo || "Sin materia";
     el.materiaInfo.textContent = label;
     el.materiaInfo.style.color = "#2563eb";
-    
+
     // Rellenar el campo Curso/Grupo con la información
     const cursoGrupoValue = materia.cursoGrupo && materia.asignatura
       ? `${materia.cursoGrupo} / ${materia.asignatura}`
@@ -539,7 +555,7 @@ const refreshProfesorOptions = () => {
   });
 
   // Obtener profesores que tienen clase en este tramo desde la tabla importada
-  let profesoresTramo = tabla.filter(t => 
+  let profesoresTramo = tabla.filter(t =>
     normalizeDay(t.diaSemana) === dia &&
     t.horaInicio === start &&
     t.horaFin === end
@@ -578,7 +594,7 @@ const refreshProfesorOptions = () => {
   }
 
   const options = ["<option value=\"\">Seleccionar</option>"];
-  
+
   // Siempre generar opciones, aunque estén vacías
   // Mostrar solo el nombre del profesor (sin materia en el dropdown)
   profesoresTramo.forEach((t) => {
@@ -588,7 +604,7 @@ const refreshProfesorOptions = () => {
   });
 
   const extraOptions = ["<option value=\"\"></option>"];
-  
+
   // Profesores del centro (casos excepcionales) - todos los de la tabla
   const uniqueProfesores = [...new Map(tabla.map(t => [t.profesorId, t])).values()];
   uniqueProfesores.forEach((t) => {
@@ -644,10 +660,10 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
     const matchDia = normalizeDay(t.diaSemana) === dia;
     const matchHora = t.horaInicio === start && t.horaFin === end;
     if (!matchDia || !matchHora) return false;
-    
+
     // Si no tiene curso/grupo, está disponible
     if (!t.cursoGrupo || t.cursoGrupo.trim() === '') return true;
-    
+
     // Si tiene una de las asignaturas especial, también está disponible
     const asignaturaNormalizada = (t.asignatura || '').toLowerCase().trim();
     return asignaturasSustituibles.some(a => asignaturaNormalizada.includes(a));
@@ -671,7 +687,7 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
   );
 
   const options = ["<option value=\"\">Sin asignar</option>"];
-  
+
   // Mostrar candidatos disponibles de la tabla importada con su materia en azul
   if (filteredEntries.length > 0) {
     filteredEntries.forEach((entry) => {
@@ -684,7 +700,7 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
     // Si no hay nadie disponible, mostrar mensaje
     options.push(`<option value="" disabled>No hay profesores disponibles en este tramo</option>`);
   }
-  
+
   el.formProfesorSustituto.innerHTML = options.join("");
   if (selected) {
     el.formProfesorSustituto.value = selected;
@@ -695,10 +711,10 @@ const renderDashboard = () => {
   const dateKey = toIso(state.activeDate);
   const profesores = getProfesores();
   const dayName = getDayName(state.activeDate);
-  
+
   // Obtener sustituciones del día
   const daySubstitutions = getSustituciones().filter(s => s.fecha === dateKey);
-  
+
   if (daySubstitutions.length === 0) {
     el.substitutionGrid.innerHTML = `
       <div class="empty-substitutions">
@@ -709,13 +725,13 @@ const renderDashboard = () => {
     `;
     return;
   }
-  
+
   // Agrupar sustituciones por profesor ausente (guardando también el ID)
   const substitutionsByTeacher = {};
   daySubstitutions.forEach(sub => {
     const ausente = profesores.find(p => p.id === sub.profesorAusenteId);
-    const teacherName = ausente ? ausente.displayName : 'Desconocido';
-    
+    const teacherName = ausente ? ausente.profesor : 'Desconocido';
+
     if (!substitutionsByTeacher[teacherName]) {
       substitutionsByTeacher[teacherName] = {
         ausenteId: sub.profesorAusenteId,
@@ -724,9 +740,9 @@ const renderDashboard = () => {
     }
     substitutionsByTeacher[teacherName].substitutions.push(sub);
   });
-  
+
   let dashboardHTML = '';
-  
+
   Object.entries(substitutionsByTeacher).forEach(([teacherName, data]) => {
     const ausenteId = data.ausenteId;
     const substitutions = data.substitutions;
@@ -767,22 +783,22 @@ const renderDashboard = () => {
           </thead>
           <tbody>
             ${tramos.map(tramo => {
-              const substitution = substitutions.find(s => s.horaInicio === tramo.start && s.horaFin === tramo.end);
-              const isRecreo = tramo.blocked;
-              
-              if (substitution) {
-                const ausente = profesores.find(p => p.id === substitution.profesorAusenteId);
-                const sustituto = profesores.find(p => p.id === substitution.profesorSustitutoId);
-                const extra = profesores.find(p => p.id === substitution.profesorExtraId);
-                
-                return `
+      const substitution = substitutions.find(s => s.horaInicio === tramo.start && s.horaFin === tramo.end);
+      const isRecreo = tramo.blocked;
+
+      if (substitution) {
+        const ausente = profesores.find(p => p.id === substitution.profesorAusenteId);
+        const sustituto = profesores.find(p => p.id === substitution.profesorSustitutoId);
+        const extra = profesores.find(p => p.id === substitution.profesorExtraId);
+
+        return `
                   <tr class="${isRecreo ? 'tramo-recreo' : ''}" data-id="${substitution.id}">
                     <td class="tramo-time">
                       ${tramo.start} - ${tramo.end}${isRecreo ? ' · Recreo' : ''}
                     </td>
                     <td class="tramo-sustituto">
-                      ${sustituto ? sustituto.displayName : '-'}
-                      ${extra ? `<br><small>+${extra.displayName}</small>` : ''}
+                      ${sustituto ? sustituto.profesor : '-'}
+                      ${extra ? `<br><small>+${extra.profesor}</small>` : ''}
                     </td>
                     <td class="tramo-grupo">
                       ${substitution.cursoGrupoMateria || '-'}
@@ -805,9 +821,9 @@ const renderDashboard = () => {
                     </td>
                   </tr>
                 `;
-              } else {
-                // Tramo sin sustitución
-                return `
+      } else {
+        // Tramo sin sustitución
+        return `
                   <tr class="${isRecreo ? 'tramo-recreo' : ''}" data-tramo="${tramo.start}-${tramo.end}" data-ausente-id="${ausenteId}">
                     <td class="tramo-time">
                       ${tramo.start} - ${tramo.end}${isRecreo ? ' · Recreo' : ''}
@@ -826,16 +842,16 @@ const renderDashboard = () => {
                     </td>
                   </tr>
                 `;
-              }
-            }).join('')}
+      }
+    }).join('')}
           </tbody>
         </table>
       </div>
     `;
   });
-  
+
   el.substitutionGrid.innerHTML = dashboardHTML;
-  
+
   // Event listeners para botones de eliminar todos
   el.substitutionGrid.querySelectorAll('.btn-delete-all').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -843,14 +859,14 @@ const renderDashboard = () => {
       if (confirm(`¿Estás seguro de eliminar todas las sustituciones de ${teacherName}?`)) {
         const teacherSubstitutions = daySubstitutions.filter(sub => {
           const ausente = profesores.find(p => p.id === sub.profesorAusenteId);
-          return ausente && ausente.displayName === teacherName;
+          return ausente && ausente.profesor === teacherName;
         });
-        
+
         const allSubstitutions = getSustituciones();
-        const updated = allSubstitutions.filter(sub => 
+        const updated = allSubstitutions.filter(sub =>
           !teacherSubstitutions.some(teacherSub => teacherSub.id === sub.id)
         );
-        
+
         setSustituciones(updated);
         renderDashboard();
         updateStats();
@@ -858,7 +874,7 @@ const renderDashboard = () => {
       }
     });
   });
-  
+
   // Event listeners para botones de editar
   el.substitutionGrid.querySelectorAll('.btn-edit').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -867,7 +883,7 @@ const renderDashboard = () => {
       if (substitution) openModal('edit', substitution);
     });
   });
-  
+
   // Event listeners para botones de eliminar individual
   el.substitutionGrid.querySelectorAll('.btn-delete').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -882,14 +898,14 @@ const renderDashboard = () => {
       }
     });
   });
-  
+
   // Event listeners para botones de añadir sustitución
   el.substitutionGrid.querySelectorAll('.btn-add').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const tramo = btn.dataset.tramo;
       const ausenteId = btn.dataset.ausenteId;
       const [start, end] = tramo.split('-');
-      
+
       setActiveDate(state.activeDate);
       openModal('new');
       el.formHoraInicio.value = start;
@@ -903,7 +919,7 @@ const renderDashboard = () => {
       refreshSustitutoOptions(ausenteId || "");
     });
   });
-  
+
   // Event listeners para celdas editables
   el.substitutionGrid.querySelectorAll('.tramo-sustituto, .tramo-grupo').forEach(cell => {
     cell.addEventListener('click', (e) => {
@@ -911,7 +927,7 @@ const renderDashboard = () => {
       const id = row.dataset.id;
       const ausenteId = row.dataset.ausenteId;
       const substitution = getSustituciones().find(s => s.id === id);
-      
+
       if (substitution) {
         openModal('edit', substitution);
       } else {
@@ -941,14 +957,14 @@ const renderCalendar = () => {
   const month = date.getMonth();
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
-  
+
   const sustituciones = getSustituciones();
   const datesWithSubs = new Set(sustituciones.map(s => s.fecha));
-  
+
   // Convertir a sistema de semana empezando en lunes (lunes=0, domingo=6)
   const firstDayOfWeek = firstDay.getDay();
   const startDay = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-  
+
   const totalDays = lastDay.getDate();
   const prevMonthDays = new Date(year, month, 0).getDate();
 
@@ -1068,17 +1084,17 @@ const handleSubmit = (event) => {
     const updated = sustituciones.map((s) =>
       s.id === state.editingId
         ? {
-            ...s,
-            fecha,
-            diaSemana,
-            horaInicio,
-            horaFin,
-            profesorAusenteId: ausenteId,
-            profesorSustitutoId: sustitutoId,
-            profesorExtraId: extraId,
-            cursoGrupoMateria,
-            updatedAt: new Date().toISOString(),
-          }
+          ...s,
+          fecha,
+          diaSemana,
+          horaInicio,
+          horaFin,
+          profesorAusenteId: ausenteId,
+          profesorSustitutoId: sustitutoId,
+          profesorExtraId: extraId,
+          cursoGrupoMateria,
+          updatedAt: new Date().toISOString(),
+        }
         : s
     );
     setSustituciones(updated);
@@ -1216,8 +1232,8 @@ const buildMappingUI = () => {
         <select data-map="${field.key}">
           <option value="">Sin asignar</option>
           ${state.importColumns
-            .map((col) => `<option value="${col}">${col}</option>`)
-            .join("")}
+          .map((col) => `<option value="${col}">${col}</option>`)
+          .join("")}
         </select>
       </label>
     `
@@ -1264,7 +1280,7 @@ const buildMappingUI = () => {
       const match = state.importColumns.find((col) => {
         const normalizedCol = normalizeColumn(col);
         return fieldVariants.has(normalizedCol) ||
-               Array.from(fieldVariants).some(v => normalizedCol.includes(v));
+          Array.from(fieldVariants).some(v => normalizedCol.includes(v));
       });
       if (match) {
         select.value = match;
@@ -1326,7 +1342,6 @@ const applyImport = () => {
         puesto: row.puesto || "",
         movilAvisos: row.movilAvisos || "",
         cuenta: row.cuenta || "",
-        displayName: row.profesor || "",
       };
       return prof;
     });
@@ -1375,10 +1390,10 @@ const renderProfesoresCards = (profesores) => {
   const search = state.datasetViewSearch.toLowerCase();
   const filtered = search
     ? profesores.filter((p) =>
-        Object.values(p).some((val) =>
-          String(val || "").toLowerCase().includes(search)
-        )
+      Object.values(p).some((val) =>
+        String(val || "").toLowerCase().includes(search)
       )
+    )
     : profesores;
 
   if (!filtered.length) {
@@ -1395,7 +1410,7 @@ const renderProfesoresCards = (profesores) => {
           </svg>
         </div>
         <div class="profesor-info">
-          <h3 class="profesor-nombre">${prof.profesor || prof.displayName || 'Sin nombre'}</h3>
+          <h3 class="profesor-nombre">${prof.profesor || 'Sin nombre'}</h3>
           <span class="profesor-puesto">${prof.puesto || 'Sin puesto'}</span>
         </div>
       </div>
@@ -1437,12 +1452,12 @@ const renderProfesoresCards = (profesores) => {
 
 const renderDataset = (type) => {
   state.datasetViewType = type;
-  
+
   // Si es la página de profesores, mostrar la tabla de datos
   if (type === "profesores") {
     type = "tabla";
   }
-  
+
   const data =
     type === "profesores"
       ? getProfesores()
@@ -1475,12 +1490,12 @@ const renderDataset = (type) => {
     const search = state.datasetViewSearch.toLowerCase();
     const filtered = search
       ? data.filter((row) =>
-          Object.values(row).some((val) =>
-            String(val || "")
-              .toLowerCase()
-              .includes(search)
-          )
+        Object.values(row).some((val) =>
+          String(val || "")
+            .toLowerCase()
+            .includes(search)
         )
+      )
       : data;
 
     if (!filtered.length) {
@@ -1501,7 +1516,7 @@ const renderDataset = (type) => {
     const body = filtered
       .map((row) => {
         const prof = profesores.find((p) => p.id === row.profesorId);
-        const profesorName = row.profesorNombre || (prof ? prof.displayName : row.profesorId || "-");
+        const profesorName = row.profesorNombre || (prof ? prof.profesor : row.profesorId || "-");
         return `
           <tr>
             <td>${profesorName}</td>
@@ -1531,12 +1546,12 @@ const renderDataset = (type) => {
     const search = state.datasetViewSearch.toLowerCase();
     const filtered = search
       ? data.filter((row) =>
-          Object.values(row).some((val) =>
-            String(val || "")
-              .toLowerCase()
-              .includes(search)
-          )
+        Object.values(row).some((val) =>
+          String(val || "")
+            .toLowerCase()
+            .includes(search)
         )
+      )
       : data;
 
     if (!filtered.length) {
@@ -1557,7 +1572,7 @@ const renderDataset = (type) => {
     const body = filtered
       .map((row) => {
         const prof = profesores.find((p) => p.id === row.profesorId);
-        const profesorName = row.profesorNombre || (prof ? prof.displayName : row.profesorId || "-");
+        const profesorName = row.profesorNombre || (prof ? prof.profesor : row.profesorId || "-");
         return `
           <tr>
             <td>${profesorName}</td>
@@ -1585,12 +1600,12 @@ const renderDataset = (type) => {
   const search = state.datasetViewSearch.toLowerCase();
   const filtered = search
     ? data.filter((row) =>
-        Object.values(row).some((val) =>
-          String(val || "")
-            .toLowerCase()
-            .includes(search)
-        )
+      Object.values(row).some((val) =>
+        String(val || "")
+          .toLowerCase()
+          .includes(search)
       )
+    )
     : data;
 
   if (!data.length) {
@@ -1598,7 +1613,7 @@ const renderDataset = (type) => {
     return;
   }
 
-const headers = Object.keys(data[0]);
+  const headers = Object.keys(data[0]);
   const headerRow = headers.map((h) => `<th>${h}</th>`).join("");
   const body = filtered
     .map((row) => {
@@ -1625,30 +1640,29 @@ const editProfesor = (id) => {
   const profesores = getProfesores();
   const prof = profesores.find((p) => p.id === id);
   if (!prof) return;
-  
+
   // Simple prompt-based editing (can be enhanced with a modal later)
   const nuevoProfesor = prompt("Nombre y apellidos:", prof.profesor);
   if (nuevoProfesor === null) return; // Cancelled
-  
+
   const nuevoPuesto = prompt("Puesto:", prof.puesto);
   if (nuevoPuesto === null) return;
-  
+
   const nuevoMovil = prompt("Móvil avisos emergencia:", prof.movilAvisos);
   if (nuevoMovil === null) return;
-  
+
   const nuevaCuenta = prompt("Cuenta Google/Microsoft:", prof.cuenta);
   if (nuevaCuenta === null) return;
-  
+
   const updated = profesores.map((p) =>
     p.id === id
       ? {
-          ...p,
-          profesor: nuevoProfesor || p.profesor,
-          puesto: nuevoPuesto || p.puesto,
-          movilAvisos: nuevoMovil || p.movilAvisos,
-          cuenta: nuevaCuenta || p.cuenta,
-          displayName: nuevoProfesor || p.displayName,
-        }
+        ...p,
+        profesor: nuevoProfesor || p.profesor,
+        puesto: nuevoPuesto || p.puesto,
+        movilAvisos: nuevoMovil || p.movilAvisos,
+        cuenta: nuevaCuenta || p.cuenta,
+      }
       : p
   );
   setProfesores(updated);
@@ -1660,7 +1674,7 @@ const editProfesor = (id) => {
 const deleteProfesor = (id, name) => {
   const ok = confirm(`¿Seguro que deseas eliminar a ${name || "este profesor"}?`);
   if (!ok) return;
-  
+
   const profesores = getProfesores();
   const updated = profesores.filter((p) => p.id !== id);
   setProfesores(updated);
@@ -1672,25 +1686,24 @@ const deleteProfesor = (id, name) => {
 const addNewProfesor = () => {
   const profesor = prompt("Nombre y apellidos del profesor:");
   if (profesor === null || profesor.trim() === "") return;
-  
+
   const puesto = prompt("Puesto:", "Profesor/a");
   if (puesto === null) return;
-  
+
   const movilAvisos = prompt("Móvil avisos emergencia:");
   if (movilAvisos === null) return;
-  
+
   const cuenta = prompt("Cuenta Google/Microsoft:");
   if (cuenta === null) return;
-  
+
   const newProf = {
     id: generateId(),
     profesor: profesor.trim(),
     puesto: puesto.trim() || "Profesor/a",
     movilAvisos: movilAvisos.trim(),
     cuenta: cuenta.trim(),
-    displayName: profesor.trim(),
   };
-  
+
   const profesores = getProfesores();
   setProfesores([...profesores, newProf]);
   renderDataset("profesores");
@@ -1701,25 +1714,25 @@ const addNewProfesor = () => {
 const addNewTablaRecord = () => {
   const profesor = prompt("Nombre y apellidos del profesor:");
   if (profesor === null || profesor.trim() === "") return;
-  
+
   const diaSemana = prompt("Día de la semana (ej: lunes):");
   if (diaSemana === null || diaSemana.trim() === "") return;
-  
+
   const horaInicio = prompt("Hora de inicio (ej: 9:00):");
   if (horaInicio === null || horaInicio.trim() === "") return;
-  
+
   const horaFin = prompt("Hora de fin (ej: 9:30):");
   if (horaFin === null || horaFin.trim() === "") return;
-  
+
   const asignatura = prompt("Asignatura (ej: Matemáticas):");
   if (asignatura === null) return;
-  
+
   const cursoGrupo = prompt("Curso/Grupo (ej: 3ºA):");
   if (cursoGrupo === null) return;
-  
+
   // Resolve profesor ID
   const profesorId = resolveProfesorId(profesor.trim());
-  
+
   // Check if record already exists
   const tabla = getTabla();
   const existingRecord = tabla.find((t) =>
@@ -1728,7 +1741,7 @@ const addNewTablaRecord = () => {
     t.horaInicio === normalizeTime(horaInicio.trim()) &&
     t.horaFin === normalizeTime(horaFin.trim())
   );
-  
+
   if (existingRecord) {
     const replace = confirm(
       `Ya existe un registro con los mismos datos:\n` +
@@ -1738,7 +1751,7 @@ const addNewTablaRecord = () => {
       `¿Deseas reemplazar el registro existente?`
     );
     if (!replace) return;
-    
+
     // Remove existing record and add new one
     const updated = tabla.filter((t) => t.id !== existingRecord.id);
     const newRecord = {
@@ -1768,7 +1781,7 @@ const addNewTablaRecord = () => {
     setTabla([...tabla, newRecord]);
     alert("Registro añadido correctamente.");
   }
-  
+
   renderDataset("tabla");
   refreshProfesorOptions();
 };
@@ -1803,7 +1816,7 @@ const updateStats = () => {
       .slice(0, 5)
       .map(([id, count]) => {
         const prof = profesores.find((p) => p.id === id);
-        return { name: prof ? prof.displayName : id, count };
+        return { name: prof ? prof.profesor : id, count };
       });
   };
 
@@ -1813,10 +1826,10 @@ const updateStats = () => {
   const renderList = (list) =>
     list.length
       ? list
-          .map(
-            (item) => `<div class="stat-item"><span>${item.name}</span><span>${item.count}</span></div>`
-          )
-          .join("")
+        .map(
+          (item) => `<div class="stat-item"><span>${item.name}</span><span>${item.count}</span></div>`
+        )
+        .join("")
       : "Sin datos";
 
   el.statTopAbsent.innerHTML = renderList(topAbsent);
@@ -1834,16 +1847,16 @@ const updateStats = () => {
     .sort((a, b) => b[1] - a[1])
     .map(([id, count]) => {
       const prof = profesores.find((p) => p.id === id);
-      return { name: prof ? prof.displayName : id, count };
+      return { name: prof ? prof.profesor : id, count };
     });
 
   const renderRanking = (list) =>
     list.length
       ? list
-          .map(
-            (item) => `<div class="stat-ranking-item"><span class="stat-ranking-name">${item.name}</span><span class="stat-ranking-count">${item.count}</span></div>`
-          )
-          .join("")
+        .map(
+          (item) => `<div class="stat-ranking-item"><span class="stat-ranking-name">${item.name}</span><span class="stat-ranking-count">${item.count}</span></div>`
+        )
+        .join("")
       : "Sin datos";
 
   el.statRankingSub.innerHTML = renderRanking(rankingList);
@@ -1870,7 +1883,7 @@ const renderPrintTable = () => {
     .map((date) => {
       const dateKey = toIso(date);
       const daySubstitutions = sustituciones.filter(s => s.fecha === dateKey);
-      
+
       if (daySubstitutions.length === 0) {
         return `
           <h3 class="print-date-header">${getDayName(date)} · ${formatDate(date)}</h3>
@@ -1881,8 +1894,8 @@ const renderPrintTable = () => {
       const substitutionsByTeacher = {};
       daySubstitutions.forEach(sub => {
         const ausente = profesores.find(p => p.id === sub.profesorAusenteId);
-        const teacherName = ausente ? ausente.displayName : 'Desconocido';
-        
+        const teacherName = ausente ? ausente.profesor : 'Desconocido';
+
         if (!substitutionsByTeacher[teacherName]) {
           substitutionsByTeacher[teacherName] = [];
         }
@@ -1890,7 +1903,7 @@ const renderPrintTable = () => {
       });
 
       let cardsHTML = '';
-      
+
       Object.entries(substitutionsByTeacher).forEach(([teacherName, subs]) => {
         cardsHTML += `
           <div class="print-sub-card">
@@ -1918,29 +1931,29 @@ const renderPrintTable = () => {
               </thead>
               <tbody>
                 ${tramos.map(tramo => {
-                  const substitution = subs.find(s => s.horaInicio === tramo.start && s.horaFin === tramo.end);
-                  const isRecreo = tramo.blocked;
-                  
-                  if (substitution) {
-                    const sustituto = profesores.find(p => p.id === substitution.profesorSustitutoId);
-                    const extra = profesores.find(p => p.id === substitution.profesorExtraId);
-                    
-                    return `
+          const substitution = subs.find(s => s.horaInicio === tramo.start && s.horaFin === tramo.end);
+          const isRecreo = tramo.blocked;
+
+          if (substitution) {
+            const sustituto = profesores.find(p => p.id === substitution.profesorSustitutoId);
+            const extra = profesores.find(p => p.id === substitution.profesorExtraId);
+
+            return `
                       <tr class="${isRecreo ? 'print-tramo-recreo' : ''}">
                         <td class="print-tramo-time">
                           ${tramo.start} - ${tramo.end}${isRecreo ? ' · Recreo' : ''}
                         </td>
                         <td class="print-tramo-sustituto">
-                          ${sustituto ? sustituto.displayName : '-'}
-                          ${extra ? `<br><small>+${extra.displayName}</small>` : ''}
+                          ${sustituto ? sustituto.profesor : '-'}
+                          ${extra ? `<br><small>+${extra.profesor}</small>` : ''}
                         </td>
                         <td class="print-tramo-grupo">
                           ${substitution.cursoGrupoMateria || '-'}
                         </td>
                       </tr>
                     `;
-                  } else {
-                    return `
+          } else {
+            return `
                       <tr class="${isRecreo ? 'print-tramo-recreo' : ''}">
                         <td class="print-tramo-time">
                           ${tramo.start} - ${tramo.end}${isRecreo ? ' · Recreo' : ''}
@@ -1949,8 +1962,8 @@ const renderPrintTable = () => {
                         <td class="print-tramo-grupo">-</td>
                       </tr>
                     `;
-                  }
-                }).join('')}
+          }
+        }).join('')}
               </tbody>
             </table>
           </div>
@@ -2084,7 +2097,7 @@ const initEvents = () => {
   el.importClose.addEventListener("click", closeImportModal);
   el.importCancel.addEventListener("click", closeImportModal);
   el.importModal.querySelector(".modal__overlay").addEventListener("click", closeImportModal);
-   el.importFile.addEventListener("change", (event) => loadImportFile(event.target.files[0]));
+  el.importFile.addEventListener("change", (event) => loadImportFile(event.target.files[0]));
   el.importConfirm.addEventListener("click", applyImport);
 
   el.statsApply.addEventListener("click", updateStats);
@@ -2229,7 +2242,7 @@ const printAsPng = async () => {
     });
 
     const imgData = canvas.toDataURL("image/png");
-    
+
     const printWindow = window.open("", "_blank");
     printWindow.document.write(`
       <!DOCTYPE html>
