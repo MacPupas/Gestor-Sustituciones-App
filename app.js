@@ -2720,8 +2720,17 @@ const init = async () => {
 
   // Toggle sidebar on mobile
   if (el.hamburgerBtn) {
+    const sidebar = document.querySelector('.sidebar');
     el.hamburgerBtn.addEventListener('click', () => {
-      document.querySelector('.sidebar').classList.toggle('is-open');
+      sidebar.classList.toggle('is-open');
+    });
+    // Close sidebar when clicking on overlay
+    document.addEventListener('click', (e) => {
+      if (sidebar.classList.contains('is-open') && 
+          !sidebar.contains(e.target) && 
+          !el.hamburgerBtn.contains(e.target)) {
+        sidebar.classList.remove('is-open');
+      }
     });
   }
 
