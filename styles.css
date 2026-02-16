@@ -140,14 +140,16 @@ p {
 }
 
 .backup-actions {
-  display: flex;
-  flex-direction: column;
-}
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
 
-.backup-actions .btn {
-  font-size: 0.8rem;
-  padding: 8px 12px;
-}
+  .backup-actions .btn {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+  }
 
 .backup-actions .btn-soft {
   background: #dbeafe;
@@ -1421,7 +1423,11 @@ select {
   }
 
   .sidebar__footer {
-    display: none;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
   }
 
   .main-header {
