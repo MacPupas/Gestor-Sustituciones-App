@@ -734,11 +734,14 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
   console.log("[DEBUG] Searching for:", { dia, start, end });
   console.log("[DEBUG] normalizeDay test:", normalizeDay("martes"), normalizeDay("jueves"));
   
+  // Mostrar qué días hay en la tabla
+  const diasUnicos = [...new Set(tabla.map(t => t.diaSemana))];
+  console.log("[DEBUG] Días en tabla:", diasUnicos.slice(0, 10));
+  
   const disponiblesTramo = tabla.filter(t => {
     const normalizedDia = normalizeDay(t.diaSemana);
     const matchDia = normalizedDia === dia;
     const matchHora = t.horaInicio === start && t.horaFin === end;
-    console.log("[DEBUG] Filtering:", { diaSemana: t.diaSemana, normalizedDia, matchDia, horaInicio: t.horaInicio, horaFin: t.horaFin, matchHora });
     if (!matchDia || !matchHora) return false;
 
     // Si tiene una de las asignaturas especial, está disponible
