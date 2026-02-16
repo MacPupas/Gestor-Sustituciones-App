@@ -876,7 +876,7 @@ const renderDashboard = () => {
         const sustituto = profesores.find(p => p.id === substitution.profesorSustitutoId);
         const extra = profesores.find(p => p.id === substitution.profesorExtraId);
 
-        console.log("[DEBUG] sustituto lookup:", { sustitutoId: substitution.profesorSustitutoId, found: !!sustituto, profKeys: Object.keys(profesores[0] || {}) });
+        console.log("[DEBUG] sustituto lookup:", { sustitutoId: substitution.profesorSustitutoId, found: !!sustituto, sustitutoData: sustituto });
 
         return `
                   <tr class="${isRecreo ? 'tramo-recreo' : ''}" data-id="${substitution.id}">
