@@ -48,10 +48,17 @@ const supabaseFetch = async (table) => {
         delete normalized.cursogrupo;
       }
       if (table === 'sustituciones') {
+        // Convertir de minúsculas (Supabase) a camelCase (app)
+        normalized.diaSemana = normalized.diasemana;
+        normalized.horaInicio = normalized.horainicio;
+        normalized.horaFin = normalized.horafin;
         normalized.profesorAusenteId = normalized.profesorausenteid;
         normalized.profesorSustitutoId = normalized.profesorsustitutoid;
         normalized.profesorExtraId = normalized.profesorextraid;
         normalized.cursoGrupoMateria = normalized.cursogrupomateria;
+        delete normalized.diasemana;
+        delete normalized.horainicio;
+        delete normalized.horafin;
         delete normalized.profesorausenteid;
         delete normalized.profesorsustitutoid;
         delete normalized.profesorextraid;
@@ -132,10 +139,25 @@ const supabaseSave = async (table, data) => {
         delete payload.materia;
       }
       if (table === 'sustituciones') {
-        // Los datos ya vienen en formato de Supabase (minúsculas) desde localStorage
-        // No hace falta renombrar, solo eliminar campos extra
+        // Convertir de camelCase (localStorage) a minúsculas (Supabase)
         delete payload.createdAt;
         delete payload.updatedAt;
+        
+        payload.diasemana = payload.diaSemana;
+        payload.horainicio = payload.horaInicio;
+        payload.horafin = payload.horaFin;
+        payload.profesorausenteid = payload.profesorAusenteId;
+        payload.profesorsustitutoid = payload.profesorSustitutoId;
+        payload.profesorextraid = payload.profesorExtraId;
+        payload.cursogrupomateria = payload.cursoGrupoMateria;
+        
+        delete payload.diaSemana;
+        delete payload.horaInicio;
+        delete payload.horaFin;
+        delete payload.profesorAusenteId;
+        delete payload.profesorSustitutoId;
+        delete payload.profesorExtraId;
+        delete payload.cursoGrupoMateria;
         
         console.log("[DEBUG] Saving sustitucion payload:", payload);
         
