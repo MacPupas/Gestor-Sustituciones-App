@@ -707,16 +707,10 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
   const sustituciones = getSustituciones();
   const tabla = getTabla();
 
-  console.log("[DEBUG] refreshSustitutoOptions:", { dia, start, end, tablaLength: tabla.length });
-
   if (!start || !end) {
-    console.log("[DEBUG] No hora seleccionada, saliendo");
     el.formProfesorSustituto.innerHTML = '<option value="">Selecciona una hora primero</option>';
     return;
   }
-
-  // Asignaturas que pueden ser sustituidas
-  const asignaturasSustituibles = ['refuerzo pedagógico', 'refuerzo educativo', 'coordinación', 'mayores', 'biblioteca', 'dirección', 'director', 'jefatura', 'función directiva'];
 
   // Contar sustituciones históricas (para mostrar el número)
   const sustitucionCount = {};
@@ -729,23 +723,12 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
   });
 
   // Obtener profesores de la tabla que en este tramo:
-  // Solo los que tienen asignaturas especiales: "Refuerzo Pedagógico", "Coordinación", "Mayores", "Biblioteca", "Dirección", etc.
-  console.log("[DEBUG] Searching for:", { dia, start, end });
-  
-  // Buscar si hay algún registro que coincida con el día
-  const registrosDia = tabla.filter(t => normalizeDay(t.diaSemana) === dia);
-  console.log("[DEBUG] Sample registro:", registrosDia[0] ? Object.keys(registrosDia[0]) : 'none');
-  console.log("[DEBUG] Registros del día:", registrosDia.length, "primeros:", registrosDia.slice(0, 3).map(t => ({dia: t.diaSemana, hora: t.horaInicio + '-' + t.horaFin, asig: t.asignatura, prof: t.profesorNombre})));
-  
+  // временный: показывать всех profesores del día como sustitutos
   const disponiblesTramo = tabla.filter(t => {
     const normalizedDia = normalizeDay(t.diaSemana);
     const matchDia = normalizedDia === dia;
     const matchHora = t.horaInicio === start && t.horaFin === end;
-    if (!matchDia || !matchHora) return false;
-
-    // Si tiene una de las asignaturas especial, está disponible
-    const asignaturaNormalizada = (t.asignatura || '').toLowerCase().trim();
-    return asignaturasSustituibles.some(a => asignaturaNormalizada.includes(a));
+    return matchDia && matchHora;
   });
 
   console.log("[DEBUG] disponiblesTramo:", disponiblesTramo.length, disponiblesTramo.slice(0, 3));
