@@ -730,6 +730,8 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
 
   // Obtener profesores de la tabla que en este tramo:
   // Solo los que tienen asignaturas especiales: "Refuerzo Pedagógico", "Coordinación", "Mayores", "Biblioteca", "Dirección", etc.
+  console.log("[DEBUG] Tabla sample:", tabla.slice(0, 3));
+  
   const disponiblesTramo = tabla.filter(t => {
     const matchDia = normalizeDay(t.diaSemana) === dia;
     const matchHora = t.horaInicio === start && t.horaFin === end;
