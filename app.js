@@ -109,7 +109,6 @@ const supabaseSync = async () => {
 const supabaseSave = async (table, data) => {
   if (!useSupabase()) return;
   if (!data || data.length === 0) return;
-  console.log(`[Supabase] Saving to ${table}:`, data.length, 'records');
   try {
     for (const item of data) {
       // Clona el objeto para evitar modificar el estado local
@@ -149,7 +148,6 @@ const supabaseSave = async (table, data) => {
         delete payload.profesorSustitutoId;
         delete payload.profesorExtraId;
         delete payload.cursoGrupoMateria;
-        console.log("[DEBUG] Saving sustitucion:", payload);
       }
       if (table === 'profesores') {
         delete payload.displayName;
@@ -726,7 +724,6 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
   });
 
   // Obtener profesores de la tabla que en este tramo:
-  // Filtrar por asignaturas especiales o mostrar todos si no hay datos de asignatura
   const asignaturasSustituibles = ['refuerzo pedagógico', 'refuerzo educativo', 'coordinación', 'mayores', 'biblioteca', 'dirección', 'director', 'jefatura', 'función directiva'];
   
   let disponiblesTramo = tabla.filter(t => {
@@ -736,8 +733,14 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
     return matchDia && matchHora;
   });
 
-  // Si hay registros con asignatura, filtrar por asignaturas especiales
-  const tieneAsignatura = disponiblesTramo.some(t => t.asignatura && t.asignatura.trim() !== '');
+  // Filtrar por asignaturas especiales (si existen registros con asignatura)
+  const conAsignatura = disponiblesTramo.filter(t => t.asignatura && t.asignatura.trim() !== '');
+  if (conAsignatura.length > 0) {
+    disponiblesTramo = disponiblesTramo.filter(t => {
+      const asignaturaNormalizada = (t.asignatura || '').toLowerCase().trim();
+      return asignaturasSustituibles.some(a => asignaturaNormalizada.includes(a));
+    });
+  }
 
   // Profesores que ya están ocupados en este día y tramo (como sustitutos o extras)
   const occupied = sustituciones
