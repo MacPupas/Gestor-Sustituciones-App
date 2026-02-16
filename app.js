@@ -209,6 +209,13 @@ const loadCachedData = () => {
   cachedData.materias = JSON.parse(localStorage.getItem(storageKeys.materias) || "[]");
   cachedData.tabla = JSON.parse(localStorage.getItem(storageKeys.tabla) || "[]");
   cachedData.sustituciones = JSON.parse(localStorage.getItem(storageKeys.sustituciones) || "[]");
+  console.log("[DEBUG] loadCachedData:", {
+    profesores: cachedData.profesores.length,
+    materias: cachedData.materias.length,
+    tabla: cachedData.tabla.length,
+    sustituciones: cachedData.sustituciones.length,
+    sampleSust: cachedData.sustituciones[0]
+  });
 };
 
 const dayNames = [
@@ -787,6 +794,8 @@ const renderDashboard = () => {
   const dateKey = toIso(state.activeDate);
   const profesores = getProfesores();
   const dayName = getDayName(state.activeDate);
+
+  console.log("[DEBUG] renderDashboard:", { dateKey, profesoresLength: profesores.length });
 
   // Obtener sustituciones del día
   const daySubstitutions = getSustituciones().filter(s => s.fecha === dateKey);
