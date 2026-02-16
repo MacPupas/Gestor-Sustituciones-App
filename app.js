@@ -795,7 +795,7 @@ const renderDashboard = () => {
   const profesores = getProfesores();
   const dayName = getDayName(state.activeDate);
 
-  console.log("[DEBUG] renderDashboard:", { dateKey, profesoresLength: profesores.length, sampleProf: profesores[0] });
+  console.log("[DEBUG] renderDashboard:", { dateKey, daySubstitutions: daySubstitutions.length, sampleSub: daySubstitutions[0] });
 
   // Obtener sustituciones del día
   const daySubstitutions = getSustituciones().filter(s => s.fecha === dateKey);
