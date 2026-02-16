@@ -1754,6 +1754,80 @@ select {
     width: 100%;
     justify-content: center;
   }
+
+  /* Substitution cards - mobile */
+  .substitution-cards {
+    width: 100%;
+    padding: 0;
+  }
+
+  .tramo-table {
+    width: 100%;
+    font-size: 0.75rem;
+    table-layout: fixed;
+  }
+
+  .tramo-table th,
+  .tramo-table td {
+    padding: 6px 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tramo-table th:nth-child(1),
+  .tramo-table td:nth-child(1) {
+    width: 22%;
+  }
+
+  .tramo-table th:nth-child(2),
+  .tramo-table td:nth-child(2) {
+    width: 35%;
+  }
+
+  .tramo-table th:nth-child(3),
+  .tramo-table td:nth-child(3) {
+    width: 28%;
+  }
+
+  .tramo-table th:nth-child(4),
+  .tramo-table td:nth-child(4) {
+    width: 15%;
+  }
+
+  .substitution-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 0;
+    width: 100%;
+  }
+
+  .tramo-time {
+    font-size: 0.7rem;
+  }
+
+  .tramo-sustituto,
+  .tramo-grupo {
+    font-size: 0.7rem;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    padding: 4px;
+  }
+
+  .btn-edit svg,
+  .btn-delete svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .substitution-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }
 
 .empty-profesores {
