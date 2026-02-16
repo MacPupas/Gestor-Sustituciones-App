@@ -861,14 +861,16 @@ const renderDashboard = () => {
         const sustituto = profesores.find(p => p.id === substitution.profesorSustitutoId);
         const extra = profesores.find(p => p.id === substitution.profesorExtraId);
 
+        console.log("[DEBUG] substitution data:", { sustitutoId: substitution.profesorSustitutoId, sustitutoFound: !!sustituto, keys: Object.keys(sustituto || {}), sustitutoData: sustituto });
+
         return `
                   <tr class="${isRecreo ? 'tramo-recreo' : ''}" data-id="${substitution.id}">
                     <td class="tramo-time">
                       ${tramo.start} - ${tramo.end}${isRecreo ? ' · Recreo' : ''}
                     </td>
                     <td class="tramo-sustituto">
-                      ${sustituto ? sustituto.profesor : '-'}
-                      ${extra ? `<br><small>+${extra.profesor}</small>` : ''}
+                      ${sustituto ? sustituto.profesor || sustituto.profesorNombre || 'SIN NOMBRE' : '-'}
+                      ${extra ? `<br><small>+${extra.profesor || extra.profesorNombre || 'SIN NOMBRE'}</small>` : ''}
                     </td>
                     <td class="tramo-grupo">
                       ${substitution.cursoGrupoMateria || '-'}
