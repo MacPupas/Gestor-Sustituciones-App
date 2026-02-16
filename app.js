@@ -334,6 +334,7 @@ const state = {
 };
 
 const el = {
+  hamburgerBtn: document.getElementById("hamburgerBtn"),
   miniCalendar: document.getElementById("miniCalendar"),
   ctaNueva: document.getElementById("ctaNueva"),
   substitutionGrid: document.getElementById("substitutionGrid"),
@@ -2716,6 +2717,14 @@ const init = async () => {
     window.pdfjsLib.GlobalWorkerOptions.workerSrc =
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
   }
+
+  // Toggle sidebar on mobile
+  if (el.hamburgerBtn) {
+    el.hamburgerBtn.addEventListener('click', () => {
+      document.querySelector('.sidebar').classList.toggle('is-open');
+    });
+  }
+
   initNavigation();
   initImports();
   initEvents();
