@@ -721,17 +721,13 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
   });
 
   // Obtener profesores de la tabla que en este tramo:
-  // 1. NO tienen curso/grupo asignado (están disponibles), O
-  // 2. Tienen como asignatura "Refuerzo Pedagógico", "Coordinación", "Mayores" o "Biblioteca"
+  // Solo los que tienen asignaturas especiales: "Refuerzo Pedagógico", "Coordinación", "Mayores", "Biblioteca", "Dirección", etc.
   const disponiblesTramo = tabla.filter(t => {
     const matchDia = normalizeDay(t.diaSemana) === dia;
     const matchHora = t.horaInicio === start && t.horaFin === end;
     if (!matchDia || !matchHora) return false;
 
-    // Si no tiene curso/grupo, está disponible
-    if (!t.cursoGrupo || t.cursoGrupo.trim() === '') return true;
-
-    // Si tiene una de las asignaturas especial, también está disponible
+    // Si tiene una de las asignaturas especial, está disponible
     const asignaturaNormalizada = (t.asignatura || '').toLowerCase().trim();
     return asignaturasSustituibles.some(a => asignaturaNormalizada.includes(a));
   });
