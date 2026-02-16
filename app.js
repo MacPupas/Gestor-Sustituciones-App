@@ -23,7 +23,41 @@ const supabaseFetch = async (table) => {
       },
     });
     if (!res.ok) return [];
-    return res.json();
+    const data = await res.json();
+    
+    // Renombrar columnas de Supabase al formato de la app
+    return data.map(item => {
+      const normalized = { ...item };
+      if (table === 'tabla_horario' || table === 'materias') {
+        normalized.diaSemana = normalized.diasemana;
+        normalized.horaInicio = normalized.horainicio;
+        normalized.horaFin = normalized.horafin;
+        normalized.profesorId = normalized.profesorid;
+        normalized.profesorNombre = normalized.profesornombre;
+        normalized.cursoGrupo = normalized.cursogrupo;
+        if (table === 'materias') {
+          normalized.materia = normalized.asignatura;
+        }
+        delete normalized.diasemana;
+        delete normalized.horainicio;
+        delete normalized.horafin;
+        delete normalized.profesorid;
+        delete normalized.profesornombre;
+        delete normalized.cursogrupo;
+        delete normalized.asignatura;
+      }
+      if (table === 'sustituciones') {
+        normalized.profesorAusenteId = normalized.profesorausenteid;
+        normalized.profesorSustitutoId = normalized.profesorsustitutoid;
+        normalized.profesorExtraId = normalized.profesorextraid;
+        normalized.cursoGrupoMateria = normalized.cursogrupomateria;
+        delete normalized.profesorausenteid;
+        delete normalized.profesorsustitutoid;
+        delete normalized.profesorextraid;
+        delete normalized.cursogrupomateria;
+      }
+      return normalized;
+    });
   } catch (e) {
     console.error("Supabase fetch error:", e);
     return [];
@@ -78,16 +112,35 @@ const supabaseSave = async (table, data) => {
   try {
     for (const item of data) {
       // Clona el objeto para evitar modificar el estado local
-      const payload = { ...item };
+      let payload = { ...item };
 
-      // Elimina columnas que no existen en Supabase (solución temporal)
+      // Renombrar columnas para coincidir con Supabase
       if (table === 'materias' || table === 'tabla_horario') {
+        payload.diasemana = payload.diaSemana;
+        payload.horainicio = payload.horaInicio;
+        payload.horafin = payload.horaFin;
+        payload.profesorid = payload.profesorId;
+        payload.profesornombre = payload.profesorNombre;
+        payload.cursogrupo = payload.cursoGrupo;
+        delete payload.diaSemana;
+        delete payload.horaInicio;
+        delete payload.horaFin;
+        delete payload.profesorId;
+        delete payload.profesorNombre;
         delete payload.cursoGrupo;
-        delete payload.diaSemana; // También falta en la tabla_horario real
+        delete payload.materia;
       }
       if (table === 'sustituciones') {
-        delete payload.createdAt; // La BD usa created_at y updated_at, deja que use los defaults
+        delete payload.createdAt;
         delete payload.updatedAt;
+        payload.profesorausenteid = payload.profesorAusenteId;
+        payload.profesorsustitutoid = payload.profesorSustitutoId;
+        payload.profesorextraid = payload.profesorExtraId;
+        payload.cursogrupomateria = payload.cursoGrupoMateria;
+        delete payload.profesorAusenteId;
+        delete payload.profesorSustitutoId;
+        delete payload.profesorExtraId;
+        delete payload.cursoGrupoMateria;
       }
       if (table === 'profesores') {
         delete payload.displayName;
