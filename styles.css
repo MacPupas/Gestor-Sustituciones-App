@@ -1758,7 +1758,9 @@ select {
   /* Substitution cards - mobile */
   .substitution-cards {
     width: 100%;
+    max-width: 100vw;
     padding: 0;
+    margin: 0 -12px;
   }
 
   .tramo-table {
