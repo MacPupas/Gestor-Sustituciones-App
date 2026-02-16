@@ -734,7 +734,8 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
   
   // Buscar si hay algún registro que coincida con el día
   const registrosDia = tabla.filter(t => normalizeDay(t.diaSemana) === dia);
-  console.log("[DEBUG] Registros del día:", registrosDia.length, "primeros:", registrosDia.slice(0, 3).map(t => ({dia: t.diaSemana, hora: t.horaInicio + '-' + t.horaFin, asig: t.asignatura})));
+  console.log("[DEBUG] Sample registro:", registrosDia[0] ? Object.keys(registrosDia[0]) : 'none');
+  console.log("[DEBUG] Registros del día:", registrosDia.length, "primeros:", registrosDia.slice(0, 3).map(t => ({dia: t.diaSemana, hora: t.horaInicio + '-' + t.horaFin, asig: t.asignatura, prof: t.profesorNombre})));
   
   const disponiblesTramo = tabla.filter(t => {
     const normalizedDia = normalizeDay(t.diaSemana);
