@@ -148,6 +148,26 @@ const supabaseSave = async (table, data) => {
         delete payload.profesorSustitutoId;
         delete payload.profesorExtraId;
         delete payload.cursoGrupoMateria;
+        
+        console.log("[DEBUG] Saving sustitucion payload:", payload);
+        
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=id`, {
+          method: "POST",
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json",
+            Prefer: "resolution=merge-duplicates",
+          },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const err = await res.text();
+          console.error("[Supabase] Error saving sustitucion:", res.status, err);
+        } else {
+          console.log("[Supabase] Saved sustitucion OK:", payload.id);
+        }
+        continue;
       }
       if (table === 'profesores') {
         delete payload.displayName;
