@@ -708,7 +708,7 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
   const tabla = getTabla();
 
   // Asignaturas que pueden ser sustituidas
-  const asignaturasSustituibles = ['refuerzo pedagógico', 'coordinación', 'mayores', 'biblioteca'];
+  const asignaturasSustituibles = ['refuerzo pedagógico', 'refuerzo educativo', 'coordinación', 'mayores', 'biblioteca', 'dirección', 'director', 'jefatura'];
 
   // Contar sustituciones históricas (para mostrar el número)
   const sustitucionCount = {};
@@ -1147,8 +1147,14 @@ const handleSubmit = (event) => {
   const cursoGrupoMateria = el.formCursoGrupo.value || "";
 
   const sustituciones = getSustituciones();
+  
+  // Eliminar sustitución existente para el mismo tramo (evitar duplicados)
+  const filtered = sustituciones.filter(s => 
+    !(s.fecha === fecha && s.horaInicio === horaInicio && s.horaFin === horaFin && s.id !== state.editingId)
+  );
+  
   if (state.editingId) {
-    const updated = sustituciones.map((s) =>
+    const updated = filtered.map((s) =>
       s.id === state.editingId
         ? {
           ...s,
@@ -1180,7 +1186,7 @@ const handleSubmit = (event) => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    setSustituciones([...sustituciones, newSub]);
+    setSustituciones([...filtered, newSub]);
   }
   closeModal();
   renderDashboard();
