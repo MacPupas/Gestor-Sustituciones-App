@@ -1147,14 +1147,8 @@ const handleSubmit = (event) => {
   const cursoGrupoMateria = el.formCursoGrupo.value || "";
 
   const sustituciones = getSustituciones();
-  
-  // Eliminar sustitución existente para el mismo tramo (evitar duplicados)
-  const filtered = sustituciones.filter(s => 
-    !(s.fecha === fecha && s.horaInicio === horaInicio && s.horaFin === horaFin && s.id !== state.editingId)
-  );
-  
   if (state.editingId) {
-    const updated = filtered.map((s) =>
+    const updated = sustituciones.map((s) =>
       s.id === state.editingId
         ? {
           ...s,
@@ -1186,7 +1180,7 @@ const handleSubmit = (event) => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    setSustituciones([...filtered, newSub]);
+    setSustituciones([...sustituciones, newSub]);
   }
   closeModal();
   renderDashboard();
