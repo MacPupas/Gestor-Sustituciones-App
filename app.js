@@ -709,6 +709,12 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
 
   console.log("[DEBUG] refreshSustitutoOptions:", { dia, start, end, tablaLength: tabla.length });
 
+  if (!start || !end) {
+    console.log("[DEBUG] No hora seleccionada, saliendo");
+    el.formProfesorSustituto.innerHTML = '<option value="">Selecciona una hora primero</option>';
+    return;
+  }
+
   // Asignaturas que pueden ser sustituidas
   const asignaturasSustituibles = ['refuerzo pedagógico', 'refuerzo educativo', 'coordinación', 'mayores', 'biblioteca', 'dirección', 'director', 'jefatura', 'función directiva'];
 
