@@ -70,16 +70,6 @@ p {
 
 .hamburger {
   display: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  color: #374151;
-}
-
-.hamburger svg {
-  width: 24px;
-  height: 24px;
 }
 
 .brand-icon {
@@ -1426,6 +1416,21 @@ select {
 
   .hamburger {
     display: block;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .hamburger svg {
+    width: 24px;
+    height: 24px;
+    display: block;
   }
 
   .sidebar {
@@ -1434,6 +1439,7 @@ select {
     height: auto;
     position: relative;
     flex-direction: column;
+    margin-top: 50px;
   }
 
   .sidebar.is-open {
