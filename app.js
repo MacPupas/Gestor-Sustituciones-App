@@ -113,6 +113,28 @@ const supabaseSync = async () => {
   console.log("[Supabase] Sync complete");
 };
 
+const supabaseDelete = async (table, id) => {
+  if (!useSupabase()) return;
+  if (!id) return;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+      method: "DELETE",
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+      },
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("[Supabase] Error deleting:", res.status, err);
+    } else {
+      console.log("[Supabase] Deleted:", id);
+    }
+  } catch (e) {
+    console.error("[Supabase] Delete error:", e);
+  }
+};
+
 const supabaseSave = async (table, data) => {
   if (!useSupabase()) return;
   if (!data || data.length === 0) return;
@@ -214,24 +236,47 @@ const getTabla = () => cachedData.tabla;
 const getSustituciones = () => cachedData.sustituciones;
 
 const setProfesores = (data) => {
+  const oldData = cachedData.profesores;
   cachedData.profesores = data;
   localStorage.setItem(storageKeys.profesores, JSON.stringify(data));
-  supabaseSave("profesores", data);
+  if (useSupabase()) {
+    const idsToDelete = oldData.filter(s => !data.find(d => d.id === s.id)).map(s => s.id);
+    idsToDelete.forEach(id => supabaseDelete("profesores", id));
+    supabaseSave("profesores", data);
+  }
 };
 const setMaterias = (data) => {
+  const oldData = cachedData.materias;
   cachedData.materias = data;
   localStorage.setItem(storageKeys.materias, JSON.stringify(data));
-  supabaseSave("materias", data);
+  if (useSupabase()) {
+    const idsToDelete = oldData.filter(s => !data.find(d => d.id === s.id)).map(s => s.id);
+    idsToDelete.forEach(id => supabaseDelete("materias", id));
+    supabaseSave("materias", data);
+  }
 };
 const setTabla = (data) => {
+  const oldData = cachedData.tabla;
   cachedData.tabla = data;
   localStorage.setItem(storageKeys.tabla, JSON.stringify(data));
-  supabaseSave("tabla_horario", data);
+  if (useSupabase()) {
+    const idsToDelete = oldData.filter(s => !data.find(d => d.id === s.id)).map(s => s.id);
+    idsToDelete.forEach(id => supabaseDelete("tabla_horario", id));
+    supabaseSave("tabla_horario", data);
+  }
 };
 const setSustituciones = (data) => {
+  const oldData = cachedData.sustituciones;
   cachedData.sustituciones = data;
   localStorage.setItem(storageKeys.sustituciones, JSON.stringify(data));
-  supabaseSave("sustituciones", data);
+  
+  if (useSupabase()) {
+    // Eliminar las sustituciones que ya no están
+    const idsToDelete = oldData.filter(s => !data.find(d => d.id === s.id)).map(s => s.id);
+    idsToDelete.forEach(id => supabaseDelete("sustituciones", id));
+    // Guardar las nuevas/actualizadas
+    supabaseSave("sustituciones", data);
+  }
 };
 
 const loadCachedData = () => {
