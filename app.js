@@ -517,6 +517,7 @@ const openModal = (mode = "new", data = null) => {
 };
 
 const closeModal = () => {
+  (document.activeElement || document.body).blur();
   el.modal.classList.remove("is-open");
   el.modal.setAttribute("aria-hidden", "true");
 };
@@ -538,6 +539,7 @@ const openImportModal = (type) => {
 };
 
 const closeImportModal = () => {
+  (document.activeElement || document.body).blur();
   el.importModal.classList.remove("is-open");
   el.importModal.setAttribute("aria-hidden", "true");
 };
