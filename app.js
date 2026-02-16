@@ -1968,14 +1968,18 @@ const updateStats = () => {
     filtered.forEach((s) => {
       const id = s[key];
       if (!id) return;
-      map[id] = (map[id] || 0) + 1;
+      if (!map[id]) {
+        map[id] = { dias: new Set(), sesiones: 0 };
+      }
+      map[id].sesiones++;
+      map[id].dias.add(s.fecha);
     });
     return Object.entries(map)
-      .sort((a, b) => b[1] - a[1])
+      .sort((a, b) => b[1].sesiones - a[1].sesiones)
       .slice(0, 5)
-      .map(([id, count]) => {
+      .map(([id, data]) => {
         const prof = profesores.find((p) => p.id === id);
-        return { name: prof ? prof.profesor : id, count };
+        return { name: prof ? prof.profesor : id, dias: data.dias.size, sesiones: data.sesiones };
       });
   };
 
@@ -1986,7 +1990,7 @@ const updateStats = () => {
     list.length
       ? list
         .map(
-          (item) => `<div class="stat-item"><span>${item.name}</span><span>${item.count}</span></div>`
+          (item) => `<div class="stat-item"><span>${item.name}</span><span>${item.dias} días / ${item.sesiones} sesiones</span></div>`
         )
         .join("")
       : "Sin datos";
