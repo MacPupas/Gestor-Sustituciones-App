@@ -209,13 +209,6 @@ const loadCachedData = () => {
   cachedData.materias = JSON.parse(localStorage.getItem(storageKeys.materias) || "[]");
   cachedData.tabla = JSON.parse(localStorage.getItem(storageKeys.tabla) || "[]");
   cachedData.sustituciones = JSON.parse(localStorage.getItem(storageKeys.sustituciones) || "[]");
-  console.log("[DEBUG] loadCachedData:", {
-    profesores: cachedData.profesores.length,
-    materias: cachedData.materias.length,
-    tabla: cachedData.tabla.length,
-    sustituciones: cachedData.sustituciones.length,
-    sampleSust: cachedData.sustituciones[0]
-  });
 };
 
 const dayNames = [
@@ -743,14 +736,6 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
 
   // Si hay registros con asignatura, filtrar por asignaturas especiales
   const tieneAsignatura = disponiblesTramo.some(t => t.asignatura && t.asignatura.trim() !== '');
-  if (tieneAsignatura) {
-    disponiblesTramo = disponiblesTramo.filter(t => {
-      const asignaturaNormalizada = (t.asignatura || '').toLowerCase().trim();
-      return asignaturasSustituibles.some(a => asignaturaNormalizada.includes(a));
-    });
-  }
-
-  console.log("[DEBUG] disponiblesTramo:", disponiblesTramo.length);
 
   // Profesores que ya están ocupados en este día y tramo (como sustitutos o extras)
   const occupied = sustituciones
@@ -795,10 +780,10 @@ const renderDashboard = () => {
   const profesores = getProfesores();
   const dayName = getDayName(state.activeDate);
 
-  console.log("[DEBUG] renderDashboard:", { dateKey, daySubstitutions: daySubstitutions.length, sampleSub: daySubstitutions[0] });
-
   // Obtener sustituciones del día
   const daySubstitutions = getSustituciones().filter(s => s.fecha === dateKey);
+
+  console.log("[DEBUG] renderDashboard:", { dateKey, daySubstitutions: daySubstitutions.length, sampleSub: daySubstitutions[0] });
 
   if (daySubstitutions.length === 0) {
     el.substitutionGrid.innerHTML = `
@@ -875,8 +860,6 @@ const renderDashboard = () => {
         const ausente = profesores.find(p => p.id === substitution.profesorAusenteId);
         const sustituto = profesores.find(p => p.id === substitution.profesorSustitutoId);
         const extra = profesores.find(p => p.id === substitution.profesorExtraId);
-
-        console.log("[DEBUG] sustituto lookup:", { sustitutoId: substitution.profesorSustitutoId, found: !!sustituto, sustitutoData: sustituto });
 
         return `
                   <tr class="${isRecreo ? 'tramo-recreo' : ''}" data-id="${substitution.id}">
