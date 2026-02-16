@@ -133,10 +133,16 @@ const supabaseSave = async (table, data) => {
       if (table === 'sustituciones') {
         delete payload.createdAt;
         delete payload.updatedAt;
+        payload.diasemana = payload.diaSemana;
+        payload.horainicio = payload.horaInicio;
+        payload.horafin = payload.horaFin;
         payload.profesorausenteid = payload.profesorAusenteId;
         payload.profesorsustitutoid = payload.profesorSustitutoId;
         payload.profesorextraid = payload.profesorExtraId;
         payload.cursogrupomateria = payload.cursoGrupoMateria;
+        delete payload.diaSemana;
+        delete payload.horaInicio;
+        delete payload.horaFin;
         delete payload.profesorAusenteId;
         delete payload.profesorSustitutoId;
         delete payload.profesorExtraId;
