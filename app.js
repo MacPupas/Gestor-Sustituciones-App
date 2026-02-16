@@ -35,8 +35,10 @@ const supabaseFetch = async (table) => {
         normalized.profesorId = normalized.profesorid;
         normalized.profesorNombre = normalized.profesornombre;
         normalized.cursoGrupo = normalized.cursogrupo;
+        // Keep "asignatura" for tabla_horario, rename for materias
         if (table === 'materias') {
           normalized.materia = normalized.asignatura;
+          delete normalized.asignatura;
         }
         delete normalized.diasemana;
         delete normalized.horainicio;
@@ -44,7 +46,6 @@ const supabaseFetch = async (table) => {
         delete normalized.profesorid;
         delete normalized.profesornombre;
         delete normalized.cursogrupo;
-        delete normalized.asignatura;
       }
       if (table === 'sustituciones') {
         normalized.profesorAusenteId = normalized.profesorausenteid;
@@ -783,8 +784,6 @@ const renderDashboard = () => {
   // Obtener sustituciones del día
   const daySubstitutions = getSustituciones().filter(s => s.fecha === dateKey);
 
-  console.log("[DEBUG] renderDashboard:", { dateKey, daySubstitutions: daySubstitutions.length, sampleSub: daySubstitutions[0] });
-
   if (daySubstitutions.length === 0) {
     el.substitutionGrid.innerHTML = `
       <div class="empty-substitutions">
@@ -860,8 +859,6 @@ const renderDashboard = () => {
         const ausente = profesores.find(p => p.id === substitution.profesorAusenteId);
         const sustituto = profesores.find(p => p.id === substitution.profesorSustitutoId);
         const extra = profesores.find(p => p.id === substitution.profesorExtraId);
-
-        console.log("[DEBUG] substitution data:", { sustitutoId: substitution.profesorSustitutoId, sustitutoFound: !!sustituto, keys: Object.keys(sustituto || {}), sustitutoData: sustituto });
 
         return `
                   <tr class="${isRecreo ? 'tramo-recreo' : ''}" data-id="${substitution.id}">
