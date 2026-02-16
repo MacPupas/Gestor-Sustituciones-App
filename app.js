@@ -9,7 +9,10 @@ const storageKeys = {
   sustituciones: "gs_sustituciones",
 };
 
-const useSupabase = () => localStorage.getItem(STORAGE_KEY) === "true";
+const useSupabase = () => {
+  const val = localStorage.getItem(STORAGE_KEY);
+  return val === "true";
+};
 
 const supabaseFetch = async (table) => {
   try {
