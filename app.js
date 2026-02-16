@@ -1029,6 +1029,17 @@ const renderDashboard = () => {
       const row = e.target.closest('tr');
       const id = row.dataset.id;
       const ausenteId = row.dataset.ausenteId;
+      const tramoData = row.dataset.tramo;
+      
+      // Verificar si es el recreo
+      if (tramoData) {
+        const [start, end] = tramoData.split('-');
+        const tramoRecreo = tramos.find(t => t.start === start && t.blocked);
+        if (tramoRecreo) {
+          return; // No permitir editar el recreo
+        }
+      }
+      
       const substitution = getSustituciones().find(s => s.id === id);
 
       if (substitution) {
