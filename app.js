@@ -10,7 +10,8 @@ const storageKeys = {
 };
 
 const useSupabase = () => {
-  return false;
+  const val = localStorage.getItem(STORAGE_KEY);
+  return val === "true";
 };
 
 const supabaseFetch = async (table) => {
@@ -89,7 +90,10 @@ const supabaseSave = async (table, data) => {
         delete payload.updatedAt;
       }
       if (table === 'profesores') {
-        delete payload.displayName; // Por si acaso queda algo en cache
+        delete payload.displayName;
+        delete payload.puesto;
+        delete payload.movilAvisos;
+        delete payload.cuenta;
       }
 
       const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=id`, {
