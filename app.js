@@ -246,6 +246,14 @@ const getBajaActiva = () => {
   return cachedData.bajas.find(b => !b.fechaFin);
 };
 
+const getDisplayNameForProfesor = (profesorId, profesorNombre) => {
+  const bajaActiva = getBajaActiva();
+  if (bajaActiva && bajaActiva.profesorBajaId === profesorId) {
+    return `${bajaActiva.profesorRelevistaNombre} <span class="baja-original">(${bajaActiva.profesorBajaNombre})</span>`;
+  }
+  return profesorNombre;
+};
+
 const setProfesores = (data) => {
   const oldData = cachedData.profesores;
   cachedData.profesores = data;
@@ -905,19 +913,20 @@ const renderDashboard = () => {
   daySubstitutions.forEach(sub => {
     const ausente = profesores.find(p => p.id === sub.profesorAusenteId);
     const teacherName = ausente ? ausente.profesor : 'Desconocido';
+    const displayName = getDisplayNameForProfesor(sub.profesorAusenteId, teacherName);
 
-    if (!substitutionsByTeacher[teacherName]) {
-      substitutionsByTeacher[teacherName] = {
+    if (!substitutionsByTeacher[displayName]) {
+      substitutionsByTeacher[displayName] = {
         ausenteId: sub.profesorAusenteId,
         substitutions: []
       };
     }
-    substitutionsByTeacher[teacherName].substitutions.push(sub);
+    substitutionsByTeacher[displayName].substitutions.push(sub);
   });
 
   let dashboardHTML = '';
 
-  Object.entries(substitutionsByTeacher).forEach(([teacherName, data]) => {
+  Object.entries(substitutionsByTeacher).forEach(([displayName, data]) => {
     const ausenteId = data.ausenteId;
     const substitutions = data.substitutions;
     dashboardHTML += `
@@ -931,11 +940,11 @@ const renderDashboard = () => {
               </svg>
             </div>
             <div>
-              <h3 class="teacher-name">${teacherName}</h3>
+              <h3 class="teacher-name">${displayName}</h3>
               <span class="substitution-count">${substitutions.length} ${substitutions.length === 1 ? 'tramo' : 'tramos'}</span>
             </div>
           </div>
-          <button class="btn-delete-all" data-teacher="${teacherName}" title="Eliminar todas las sustituciones de este profesor">
+          <button class="btn-delete-all" data-ausente-id="${ausenteId}" data-teacher="${displayName}" title="Eliminar todas las sustituciones de este profesor">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="3,6 5,6 21,6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -1029,11 +1038,12 @@ const renderDashboard = () => {
   // Event listeners para botones de eliminar todos
   el.substitutionGrid.querySelectorAll('.btn-delete-all').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const teacherName = btn.dataset.teacher;
-      if (confirm(`¿Estás seguro de eliminar todas las sustituciones de ${teacherName}?`)) {
+      const ausenteId = btn.dataset.ausenteId;
+      const displayName = btn.dataset.teacher;
+      const plainName = displayName.replace(/<[^>]*>/g, '');
+      if (confirm(`¿Estás seguro de eliminar todas las sustituciones de ${plainName}?`)) {
         const teacherSubstitutions = daySubstitutions.filter(sub => {
-          const ausente = profesores.find(p => p.id === sub.profesorAusenteId);
-          return ausente && ausente.profesor === teacherName;
+          return sub.profesorAusenteId === ausenteId;
         });
 
         const allSubstitutions = getSustituciones();
@@ -2084,16 +2094,17 @@ const renderPrintTable = () => {
       daySubstitutions.forEach(sub => {
         const ausente = profesores.find(p => p.id === sub.profesorAusenteId);
         const teacherName = ausente ? ausente.profesor : 'Desconocido';
+        const displayName = getDisplayNameForProfesor(sub.profesorAusenteId, teacherName);
 
-        if (!substitutionsByTeacher[teacherName]) {
-          substitutionsByTeacher[teacherName] = [];
+        if (!substitutionsByTeacher[displayName]) {
+          substitutionsByTeacher[displayName] = [];
         }
-        substitutionsByTeacher[teacherName].push(sub);
+        substitutionsByTeacher[displayName].push(sub);
       });
 
       let cardsHTML = '';
 
-      Object.entries(substitutionsByTeacher).forEach(([teacherName, subs]) => {
+      Object.entries(substitutionsByTeacher).forEach(([displayName, subs]) => {
         cardsHTML += `
           <div class="print-sub-card">
             <div class="print-card-header">
@@ -2105,7 +2116,7 @@ const renderPrintTable = () => {
                   </svg>
                 </div>
                 <div>
-                  <h3 class="print-teacher-name">${teacherName}</h3>
+                  <h3 class="print-teacher-name">${displayName}</h3>
                   <span class="print-substitution-count">${subs.length} ${subs.length === 1 ? 'tramo' : 'tramos'}</span>
                 </div>
               </div>
