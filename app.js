@@ -775,35 +775,35 @@ const refreshProfesorOptions = () => {
     }
   }
 
-  // Obtener todos los profesores únicos de la tabla, ordenados alfabéticamente
-  const uniqueProfesores = [...new Map(tabla.map(t => [t.profesorId, t])).values()]
-    .filter(t => t.profesorId && t.profesorNombre)
-    .sort((a, b) => (a.profesorNombre || '').localeCompare(b.profesorNombre || ''));
+  // Obtener todos los profesores de la tabla de profesores, ordenados alfabéticamente
+  const profesores = getProfesores()
+    .filter(p => p.id && p.profesor)
+    .sort((a, b) => (a.profesor || '').localeCompare(b.profesor || ''));
 
   const options = ["<option value=\"\">Seleccionar</option>"];
 
   // Mostrar todos los profesores ordenados alfabéticamente
-  uniqueProfesores.forEach((t) => {
-    const count = sustitucionCount[t.profesorId] || 0;
+  profesores.forEach((p) => {
+    const count = sustitucionCount[p.id] || 0;
     const countLabel = count > 0 ? ` <b style="color:#dc2626; font-weight:bold;">(${count})</b>` : '';
-    options.push(`<option value="${t.profesorId}">${t.profesorNombre}${countLabel}</option>`);
+    options.push(`<option value="${p.id}">${p.profesor}${countLabel}</option>`);
   });
 
   const extraOptions = ["<option value=\"\"></option>"];
 
-  // Profesores del centro (casos excepcionales) - todos los de la tabla
-  uniqueProfesores.forEach((t) => {
-    const count = sustitucionCount[t.profesorId] || 0;
+  // Profesores del centro (casos excepcionales)
+  profesores.forEach((p) => {
+    const count = sustitucionCount[p.id] || 0;
     const countLabel = count > 0 ? ` <b style="color:#dc2626; font-weight:bold;">(${count})</b>` : '';
-    extraOptions.push(`<option value="${t.profesorId}">${t.profesorNombre}${countLabel}</option>`);
+    extraOptions.push(`<option value="${p.id}">${p.profesor}${countLabel}</option>`);
   });
 
   el.formProfesorAusente.innerHTML = options.join("");
   el.formProfesorExtra.innerHTML = extraOptions.join("");
 
   const statsOptions = ["<option value=\"\">Todos</option>"];
-  uniqueProfesores.forEach((t) => {
-    statsOptions.push(`<option value="${t.profesorId}">${t.profesorNombre || 'Sin nombre'}</option>`);
+  profesores.forEach((p) => {
+    statsOptions.push(`<option value="${p.id}">${p.profesor}</option>`);
   });
   el.statsProfesor.innerHTML = statsOptions.join("");
 };
@@ -2788,14 +2788,13 @@ const printConsejoEscolar = () => {
 
 // Funciones para gestionar las bajas de profesores
 const refreshBajaOptions = () => {
-  const tabla = getTabla();
-  const uniqueProfesores = [...new Map(tabla.map(t => [t.profesorId, t])).values()]
-    .filter(t => t.profesorId && t.profesorNombre)
-    .sort((a, b) => (a.profesorNombre || '').localeCompare(b.profesorNombre || ''));
+  const profesores = getProfesores()
+    .filter(p => p.id && p.profesor)
+    .sort((a, b) => (a.profesor || '').localeCompare(b.profesor || ''));
   
   const options = ['<option value="">Seleccionar profesor...</option>'];
-  uniqueProfesores.forEach((t) => {
-    options.push(`<option value="${t.profesorId}">${t.profesorNombre}</option>`);
+  profesores.forEach((p) => {
+    options.push(`<option value="${p.id}">${p.profesor}</option>`);
   });
   
   if (el.bajaProfesorBaja) {
