@@ -2780,23 +2780,15 @@ const refreshBajaOptions = () => {
   if (el.bajaProfesorBaja) {
     el.bajaProfesorBaja.innerHTML = options.join("");
   }
-  if (el.bajaProfesorRelevista) {
-    el.bajaProfesorRelevista.innerHTML = options.join("");
-  }
 };
 
 const crearBaja = () => {
   const profesorBajaId = el.bajaProfesorBaja.value;
-  const profesorRelevistaId = el.bajaProfesorRelevista.value;
+  const profesorRelevistaNombre = el.bajaProfesorRelevista.value.trim();
   const fechaInicio = el.bajaFechaInicio.value;
   
-  if (!profesorBajaId || !profesorRelevistaId || !fechaInicio) {
+  if (!profesorBajaId || !profesorRelevistaNombre || !fechaInicio) {
     alert("Por favor, completa todos los campos obligatorios.");
-    return;
-  }
-  
-  if (profesorBajaId === profesorRelevistaId) {
-    alert("El profesor de baja no puede ser el mismo que el relevista.");
     return;
   }
   
@@ -2808,14 +2800,13 @@ const crearBaja = () => {
   
   const tabla = getTabla();
   const profesorBaja = tabla.find(t => t.profesorId === profesorBajaId);
-  const profesorRelevista = tabla.find(t => t.profesorId === profesorRelevistaId);
   
   const nuevaBaja = {
     id: generateId(),
     profesorBajaId: profesorBajaId,
     profesorBajaNombre: profesorBaja?.profesorNombre || "Desconocido",
-    profesorRelevistaId: profesorRelevistaId,
-    profesorRelevistaNombre: profesorRelevista?.profesorNombre || "Desconocido",
+    profesorRelevistaId: null,
+    profesorRelevistaNombre: profesorRelevistaNombre,
     fechaInicio: fechaInicio,
     fechaFin: null,
     createdAt: new Date().toISOString(),
