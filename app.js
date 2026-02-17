@@ -923,6 +923,7 @@ const renderDashboard = () => {
     if (!substitutionsByTeacher[displayName]) {
       substitutionsByTeacher[displayName] = {
         ausenteId: sub.profesorAusenteId,
+        teacherName: teacherName,
         substitutions: []
       };
     }
@@ -934,6 +935,7 @@ const renderDashboard = () => {
   Object.entries(substitutionsByTeacher).forEach(([displayName, data]) => {
     const ausenteId = data.ausenteId;
     const substitutions = data.substitutions;
+    const teacherName = data.teacherName;
     dashboardHTML += `
       <div class="substitution-card">
         <div class="card-header" data-ausente-id="${ausenteId}">
@@ -949,7 +951,7 @@ const renderDashboard = () => {
               <span class="substitution-count">${substitutions.length} ${substitutions.length === 1 ? 'tramo' : 'tramos'}</span>
             </div>
           </div>
-          <button class="btn-delete-all" data-ausente-id="${ausenteId}" data-teacher="${displayName}" title="Eliminar todas las sustituciones de este profesor">
+          <button class="btn-delete-all" data-ausente-id="${ausenteId}" data-teacher="${teacherName}" title="Eliminar todas las sustituciones de este profesor">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="3,6 5,6 21,6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
