@@ -43,6 +43,10 @@
             <span class="nav-icon">👩‍🏫</span>
             <span>Introducción Datos</span>
           </button>
+          <button class="nav-item" data-page="bajas">
+            <span class="nav-icon">🏥</span>
+            <span>Profesor de Baja</span>
+          </button>
           <button class="nav-item" data-page="estadisticas">
             <span class="nav-icon">📊</span>
             <span>Estadísticas</span>
@@ -118,6 +122,59 @@
             </button>
           </div>
           <div class="data-table" id="datasetTable"></div>
+        </section>
+
+        <section class="page is-hidden" id="page-bajas">
+          <div class="section-header">
+            <h2>Profesor de Baja</h2>
+            <p>Gestiona las bajas de profesores y sus sustituciones.</p>
+          </div>
+          
+          <div class="baja-form-card">
+            <div class="baja-form">
+              <div class="form-group">
+                <label>Profesor de Baja *</label>
+                <select id="bajaProfesorBaja" required>
+                  <option value="">Seleccionar profesor...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Profesor Relevista *</label>
+                <select id="bajaProfesorRelevista" required>
+                  <option value="">Seleccionar profesor...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Fecha de Inicio *</label>
+                <input type="date" id="bajaFechaInicio" required />
+              </div>
+              <div class="baja-form-actions">
+                <button class="btn btn-primary" id="btnCrearBaja">Crear Baja</button>
+                <button class="btn btn-success" id="btnRevertirBaja" disabled>Revertir Baja</button>
+              </div>
+            </div>
+            <div class="baja-active" id="bajaActive" style="display: none;">
+              <div class="baja-active-badge">Baja activa</div>
+              <div class="baja-active-info">
+                <div class="baja-info-row">
+                  <span class="baja-label">Profesor de baja:</span>
+                  <span class="baja-value" id="bajaActiveProfesor">-</span>
+                </div>
+                <div class="baja-info-row">
+                  <span class="baja-label">Relevista:</span>
+                  <span class="baja-value" id="bajaActiveRelevista">-</span>
+                </div>
+                <div class="baja-info-row">
+                  <span class="baja-label">Desde:</span>
+                  <span class="baja-value" id="bajaActiveFecha">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="baja-historical">
+            <button class="btn btn-outline" id="btnVerHistorico">Ver Histórico Bajas</button>
+          </div>
         </section>
 
         <section class="page is-hidden" id="page-estadisticas">
@@ -295,6 +352,31 @@
           <button class="btn btn-primary" id="importConfirm" disabled>Confirmar importación</button>
         </div>
         <div class="form-error" id="importError"></div>
+      </div>
+    </div>
+
+    <div class="modal" id="historicoBajasModal" aria-hidden="true">
+      <div class="modal__overlay"></div>
+      <div class="modal__content modal__content--wide">
+        <div class="modal__header">
+          <h3>Histórico de Bajas</h3>
+          <button class="icon-btn" id="historicoBajasClose">✕</button>
+        </div>
+        <div class="historico-bajas-table-container">
+          <table class="table" id="historicoBajasTable">
+            <thead>
+              <tr>
+                <th>Profesor de Baja</th>
+                <th>Profesor Relevista</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Duración</th>
+              </tr>
+            </thead>
+            <tbody id="historicoBajasBody">
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </body>
