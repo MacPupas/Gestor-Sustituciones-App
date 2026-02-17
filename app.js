@@ -775,24 +775,27 @@ const refreshProfesorOptions = () => {
     }
   }
 
+  // Obtener todos los profesores únicos de la tabla, ordenados alfabéticamente
+  const uniqueProfesores = [...new Map(tabla.map(t => [t.profesorId, t])).values()]
+    .filter(t => t.profesorId && t.profesorNombre)
+    .sort((a, b) => (a.profesorNombre || '').localeCompare(b.profesorNombre || ''));
+
   const options = ["<option value=\"\">Seleccionar</option>"];
 
-  // Siempre generar opciones, aunque estén vacías
-  // Mostrar solo el nombre del profesor (sin materia en el dropdown)
-  profesoresTramo.forEach((t) => {
+  // Mostrar todos los profesores ordenados alfabéticamente
+  uniqueProfesores.forEach((t) => {
     const count = sustitucionCount[t.profesorId] || 0;
     const countLabel = count > 0 ? ` <b style="color:#dc2626; font-weight:bold;">(${count})</b>` : '';
-    options.push(`<option value="${t.profesorId}">${t.profesorNombre || 'Sin nombre'}${countLabel}</option>`);
+    options.push(`<option value="${t.profesorId}">${t.profesorNombre}${countLabel}</option>`);
   });
 
   const extraOptions = ["<option value=\"\"></option>"];
 
   // Profesores del centro (casos excepcionales) - todos los de la tabla
-  const uniqueProfesores = [...new Map(tabla.map(t => [t.profesorId, t])).values()];
   uniqueProfesores.forEach((t) => {
     const count = sustitucionCount[t.profesorId] || 0;
     const countLabel = count > 0 ? ` <b style="color:#dc2626; font-weight:bold;">(${count})</b>` : '';
-    extraOptions.push(`<option value="${t.profesorId}">${t.profesorNombre || 'Sin nombre'}${countLabel}</option>`);
+    extraOptions.push(`<option value="${t.profesorId}">${t.profesorNombre}${countLabel}</option>`);
   });
 
   el.formProfesorAusente.innerHTML = options.join("");
@@ -2786,13 +2789,13 @@ const printConsejoEscolar = () => {
 // Funciones para gestionar las bajas de profesores
 const refreshBajaOptions = () => {
   const tabla = getTabla();
-  const uniqueProfesores = [...new Map(tabla.map(t => [t.profesorId, t])).values()];
+  const uniqueProfesores = [...new Map(tabla.map(t => [t.profesorId, t])).values()]
+    .filter(t => t.profesorId && t.profesorNombre)
+    .sort((a, b) => (a.profesorNombre || '').localeCompare(b.profesorNombre || ''));
   
   const options = ['<option value="">Seleccionar profesor...</option>'];
   uniqueProfesores.forEach((t) => {
-    if (t.profesorId && t.profesorNombre) {
-      options.push(`<option value="${t.profesorId}">${t.profesorNombre}</option>`);
-    }
+    options.push(`<option value="${t.profesorId}">${t.profesorNombre}</option>`);
   });
   
   if (el.bajaProfesorBaja) {
