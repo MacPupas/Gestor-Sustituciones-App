@@ -246,9 +246,14 @@ const getBajaActiva = () => {
   return cachedData.bajas.find(b => !b.fechaFin);
 };
 
+const getBajasActivas = () => {
+  return cachedData.bajas.filter(b => !b.fechaFin);
+};
+
 const getDisplayNameForProfesor = (profesorId, profesorNombre) => {
-  const bajaActiva = getBajaActiva();
-  if (bajaActiva && bajaActiva.profesorBajaId === profesorId) {
+  const bajasActivas = getBajasActivas();
+  const bajaActiva = bajasActivas.find(b => b.profesorBajaId === profesorId);
+  if (bajaActiva) {
     return `${bajaActiva.profesorRelevistaNombre} <span class="baja-original">(${bajaActiva.profesorBajaNombre})</span>`;
   }
   return profesorNombre;
@@ -2803,12 +2808,6 @@ const crearBaja = () => {
     return;
   }
   
-  const bajaActiva = getBajaActiva();
-  if (bajaActiva) {
-    alert("Ya existe una baja activa. Por favor, revierte la baja actual primero.");
-    return;
-  }
-  
   const tabla = getTabla();
   const profesorBaja = tabla.find(t => t.profesorId === profesorBajaId);
   
@@ -2837,22 +2836,49 @@ const crearBaja = () => {
 };
 
 const renderBajaActiva = () => {
-  const bajaActiva = getBajaActiva();
+  const bajasActivas = getBajasActivas();
   
-  if (bajaActiva && el.bajaActive) {
+  if (bajasActivas.length > 0 && el.bajaActive) {
     el.bajaActive.style.display = "block";
-    if (el.bajaActiveProfesor) el.bajaActiveProfesor.textContent = bajaActiva.profesorBajaNombre;
-    if (el.bajaActiveRelevista) el.bajaActiveRelevista.textContent = bajaActiva.profesorRelevistaNombre;
-    if (el.bajaActiveFecha) el.bajaActiveFecha.textContent = formatDate(new Date(bajaActiva.fechaInicio));
-    if (el.btnRevertirBaja) el.btnRevertirBaja.disabled = false;
+    
+    // Generar HTML para cada baja activa
+    const bajasHTML = bajasActivas.map(baja => `
+      <div class="baja-info-row">
+        <span class="baja-label">Profesor de baja:</span>
+        <span class="baja-value">${baja.profesorBajaNombre}</span>
+        <span class="baja-label" style="margin-top:4px">Relevista:</span>
+        <span class="baja-value">${baja.profesorRelevistaNombre}</span>
+        <span class="baja-label" style="margin-top:4px">Desde:</span>
+        <span class="baja-value">${formatDate(new Date(baja.fechaInicio))}</span>
+        <button class="btn btn-sm btn-danger" onclick="revertirBaja('${baja.id}')" style="margin-top:8px;padding:4px 8px;font-size:0.8rem">Revertir</button>
+      </div>
+    `).join('');
+    
+    el.bajaActive.innerHTML = `
+      <div class="baja-active-badge">${bajasActivas.length} baja${bajasActivas.length > 1 ? 's' : ''} activa${bajasActivas.length > 1 ? 's' : ''}</div>
+      <div class="baja-active-info" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px">
+        ${bajasHTML}
+      </div>
+    `;
+    
+    if (el.btnRevertirBaja) el.btnRevertirBaja.style.display = "none";
   } else if (el.bajaActive) {
     el.bajaActive.style.display = "none";
-    if (el.btnRevertirBaja) el.btnRevertirBaja.disabled = true;
+    if (el.btnRevertirBaja) {
+      el.btnRevertirBaja.style.display = "inline-flex";
+      el.btnRevertirBaja.disabled = true;
+    }
   }
 };
 
-const revertirBaja = () => {
-  const bajaActiva = getBajaActiva();
+const revertirBaja = (bajaId) => {
+  let bajaActiva;
+  
+  if (bajaId) {
+    bajaActiva = cachedData.bajas.find(b => b.id === bajaId);
+  } else {
+    bajaActiva = getBajaActiva();
+  }
   
   if (!bajaActiva) {
     alert("No hay ninguna baja activa para revertir.");
