@@ -1830,12 +1830,12 @@ select {
 
   .tramo-table th:nth-child(2),
   .tramo-table td:nth-child(2) {
-    width: 45%;
+    width: 50%;
   }
 
   .tramo-table th:nth-child(3),
   .tramo-table td:nth-child(3) {
-    width: 30%;
+    width: 25%;
   }
 
   .substitution-grid {
