@@ -622,6 +622,7 @@ const openModal = (mode = "new", data = null) => {
     // Establecer el valor del ausente AL FINAL para asegurar que se seleccione correctamente
     el.formProfesorAusente.value = ausenteId;
   } else {
+    state.editingId = null;
     // Limpiar todos los campos del formulario
     el.formFecha.value = toIso(state.activeDate);
     el.formHoraInicio.value = "";
