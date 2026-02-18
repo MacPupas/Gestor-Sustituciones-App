@@ -760,7 +760,7 @@ p {
 .tramo-sustituto {
   font-weight: 500;
   color: var(--text);
-  min-width: 120px;
+  min-width: 132px;
   cursor: pointer;
   padding: 4px 2px;
   border-radius: 4px;
