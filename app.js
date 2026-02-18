@@ -2146,6 +2146,14 @@ const renderPrintTable = () => {
 
 const initNavigation = () => {
   const mainHeader = document.querySelector(".main-header");
+  const mainTitle = mainHeader?.querySelector("h1");
+  const pageTitles = {
+    inicio: "Gestión de sustituciones",
+    profesores: "Tabla de Datos",
+    bajas: "Profesor de Baja",
+    estadisticas: "Estadísticas",
+    impresion: "Impresión"
+  };
   document.querySelectorAll(".nav-item").forEach((btn) => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".nav-item").forEach((b) => b.classList.remove("is-active"));
@@ -2154,9 +2162,16 @@ const initNavigation = () => {
       document.querySelectorAll(".page").forEach((section) => {
         section.classList.toggle("is-hidden", section.id !== `page-${page}`);
       });
-      // Hide header on profesores page, show on others
+      // Update header title based on page
+      if (mainTitle) {
+        mainTitle.textContent = pageTitles[page] || "Gestión de sustituciones";
+      }
+      // Show/hide actions based on page
       if (mainHeader) {
-        mainHeader.style.display = page === "inicio" ? "" : "none";
+        const headerActions = mainHeader.querySelector(".header-actions");
+        if (headerActions) {
+          headerActions.style.display = page === "inicio" ? "" : "none";
+        }
       }
       // Cargar datos de la tabla al entrar en la página de profesores
       if (page === "profesores") {
