@@ -1113,6 +1113,10 @@ p {
   margin-bottom: 20px;
 }
 
+.section-header h2 {
+  margin-left: 30px;
+}
+
 .import-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
