@@ -971,7 +971,6 @@ const renderDashboard = () => {
               <th>Tramo</th>
               <th>Sustituto</th>
               <th>Grupo/Materia</th>
-              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -990,32 +989,18 @@ const renderDashboard = () => {
                       ${tramo.start} - ${tramo.end}${isRecreo ? ' · Recreo' : ''}
                     </td>
                     <td class="tramo-sustituto">
-                      ${sustituto ? sustituto.profesor || sustituto.profesorNombre || 'SIN NOMBRE' : '-'}
-                      ${extra ? `<br><small>+${extra.profesor || extra.profesorNombre || 'SIN NOMBRE'}</small>` : ''}
+                      <span class="tramo-sustituto-content">
+                        ${sustituto ? sustituto.profesor || sustituto.profesorNombre || 'SIN NOMBRE' : '-'}
+                        ${extra ? `<br><small>+${extra.profesor || extra.profesorNombre || 'SIN NOMBRE'}</small>` : ''}
+                      </span>
+                      <button class="btn-delete-tramo" data-id="${substitution.id}" title="Eliminar tramo">🗑️</button>
                     </td>
                     <td class="tramo-grupo">
                       ${substitution.cursoGrupoMateria || '-'}
                     </td>
-                    <td class="tramo-actions">
-                      <button class="btn-edit" data-id="${substitution.id}" title="Editar">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                      </button>
-                      <button class="btn-delete" data-id="${substitution.id}" title="Eliminar">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <polyline points="3,6 5,6 21,6"></polyline>
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                          <line x1="10" y1="11" x2="10" y2="17"></line>
-                          <line x1="14" y1="11" x2="14" y2="17"></line>
-                        </svg>
-                      </button>
-                    </td>
                   </tr>
                 `;
       } else {
-        // Tramo sin sustitución
         return `
                   <tr class="${isRecreo ? 'tramo-recreo' : ''}" data-tramo="${tramo.start}-${tramo.end}" data-ausente-id="${ausenteId}">
                     <td class="tramo-time">
@@ -1023,16 +1008,6 @@ const renderDashboard = () => {
                     </td>
                     <td class="tramo-sustituto">-</td>
                     <td class="tramo-grupo">-</td>
-                    <td class="tramo-actions">
-                      ${!isRecreo ? `
-                        <button class="btn-add" data-ausente-id="${ausenteId}" data-tramo="${tramo.start}-${tramo.end}" title="Añadir sustitución">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                          </svg>
-                        </button>
-                      ` : ''}
-                    </td>
                   </tr>
                 `;
       }
@@ -1069,18 +1044,10 @@ const renderDashboard = () => {
     });
   });
 
-  // Event listeners para botones de editar
-  el.substitutionGrid.querySelectorAll('.btn-edit').forEach(btn => {
+  // Event listeners para botones de eliminar tramo (papelera junto al nombre)
+  el.substitutionGrid.querySelectorAll('.btn-delete-tramo').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const id = btn.dataset.id;
-      const substitution = getSustituciones().find(s => s.id === id);
-      if (substitution) openModal('edit', substitution);
-    });
-  });
-
-  // Event listeners para botones de eliminar individual
-  el.substitutionGrid.querySelectorAll('.btn-delete').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const id = btn.dataset.id;
       if (confirm('¿Estás seguro de eliminar esta sustitución?')) {
         const allSubstitutions = getSustituciones();
@@ -1090,27 +1057,6 @@ const renderDashboard = () => {
         updateStats();
         renderPrintTable();
       }
-    });
-  });
-
-  // Event listeners para botones de añadir sustitución
-  el.substitutionGrid.querySelectorAll('.btn-add').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const tramo = btn.dataset.tramo;
-      const ausenteId = btn.dataset.ausenteId;
-      const [start, end] = tramo.split('-');
-
-      setActiveDate(state.activeDate);
-      openModal('new');
-      el.formHoraInicio.value = start;
-      el.formHoraFin.value = end;
-      updateHoraFin();
-      // Establecer el profesor ausente
-      refreshProfesorOptions();
-      el.formProfesorAusente.value = ausenteId || "";
-      updateFormDay();
-      updateMateriaInfo();
-      refreshSustitutoOptions(ausenteId || "");
     });
   });
 
