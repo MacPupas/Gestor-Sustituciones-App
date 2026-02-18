@@ -202,6 +202,10 @@ p {
   margin-bottom: 24px;
 }
 
+.main-header h1 {
+  margin-left: 30px;
+}
+
 .header-left {
   display: flex;
   align-items: center;
