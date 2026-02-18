@@ -259,6 +259,15 @@ const getDisplayNameForProfesor = (profesorId, profesorNombre) => {
   return profesorNombre;
 };
 
+const formatNombreApellidos = (nombreCompleto) => {
+  if (!nombreCompleto) return '-';
+  const parts = nombreCompleto.trim().split(',');
+  if (parts.length >= 2) {
+    return `${parts[0].trim()}<br><small>${parts[1].trim()}</small>`;
+  }
+  return nombreCompleto;
+};
+
 const setProfesores = (data) => {
   const oldData = cachedData.profesores;
   cachedData.profesores = data;
@@ -990,8 +999,8 @@ const renderDashboard = () => {
                     </td>
                     <td class="tramo-sustituto">
                       <span class="tramo-sustituto-content">
-                        ${sustituto ? sustituto.profesor || sustituto.profesorNombre || 'SIN NOMBRE' : '-'}
-                        ${extra ? `<br><small>+${extra.profesor || extra.profesorNombre || 'SIN NOMBRE'}</small>` : '<br>'}
+                        ${sustituto ? formatNombreApellidos(sustituto.profesor || sustituto.profesorNombre) : '-'}
+                        ${extra ? `<br><small>+${formatNombreApellidos(extra.profesor || extra.profesorNombre)}</small>` : '<br>'}
                       </span>
                       <button class="btn-delete-tramo" data-id="${substitution.id}" title="Eliminar tramo">🗑️</button>
                     </td>
