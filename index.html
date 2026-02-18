@@ -15,9 +15,35 @@
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <script src="app.js" defer></script>
   </head>
   <body>
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+      <div class="modal-content" style="max-width: 400px;">
+        <h2 style="text-align: center; margin-bottom: 20px;">Iniciar Sesión</h2>
+        <form id="loginForm">
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px;">Email</label>
+            <input type="email" id="loginEmail" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+          </div>
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 5px;">Contraseña</label>
+            <input type="password" id="loginPassword" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+          </div>
+          <p id="loginError" style="color: red; margin-bottom: 10px; display: none;"></p>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- User Info & Logout -->
+    <div id="userInfo" style="display: none; position: fixed; top: 10px; right: 10px; z-index: 1000; background: white; padding: 8px 12px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <span id="userEmail" style="margin-right: 10px; font-size: 0.9rem;"></span>
+      <button id="logoutBtn" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.8rem;">Cerrar sesión</button>
+    </div>
+
     <div class="app">
       <button class="hamburger" id="hamburgerBtn" aria-label="Menú">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
