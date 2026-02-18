@@ -799,7 +799,7 @@ p {
 
 .tramo-grupo {
   color: var(--text);
-  min-width: 180px;
+  min-width: 220px;
   cursor: pointer;
   padding: 4px 6px;
   border-radius: 4px;
