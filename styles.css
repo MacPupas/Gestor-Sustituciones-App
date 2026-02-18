@@ -552,7 +552,7 @@ p {
 }
 
 .card-header {
-  background: linear-gradient(135deg, #9d4ff5 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #943df7 0%, #a855f7 100%);
   color: white;
   padding: 20px;
   display: flex;
@@ -645,7 +645,7 @@ p {
 }
 
 .card-header {
-  background: linear-gradient(135deg, #9d4ff5 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #943df7 0%, #a855f7 100%);
   color: white;
   padding: 20px;
   display: flex;
