@@ -762,14 +762,14 @@ p {
   color: var(--text);
   min-width: 120px;
   cursor: pointer;
-  padding: 4px 6px;
+  padding: 4px 2px;
   border-radius: 4px;
   transition: all 0.2s ease;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
+  gap: 2px;
 }
 
 .tramo-sustituto-content {
@@ -1816,7 +1816,7 @@ select {
 
   .tramo-table th,
   .tramo-table td {
-    padding: 6px 4px;
+    padding: 6px 2px;
     font-size: 0.75rem;
     white-space: nowrap;
     overflow: hidden;
@@ -1830,12 +1830,12 @@ select {
 
   .tramo-table th:nth-child(2),
   .tramo-table td:nth-child(2) {
-    width: 50%;
+    width: 45%;
   }
 
   .tramo-table th:nth-child(3),
   .tramo-table td:nth-child(3) {
-    width: 25%;
+    width: 30%;
   }
 
   .substitution-grid {
