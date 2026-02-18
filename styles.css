@@ -17,6 +17,14 @@
   --gradient: linear-gradient(135deg, #5b63ff 0%, #8b5cf6 60%, #60a5fa 100%);
 }
 
+#loginModal {
+  display: none;
+}
+
+#loginModal.is-open {
+  display: flex;
+}
+
 * {
   box-sizing: border-box;
 }
