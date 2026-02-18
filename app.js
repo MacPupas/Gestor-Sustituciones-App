@@ -986,7 +986,7 @@ const renderDashboard = () => {
         return `
                   <tr class="${isRecreo ? 'tramo-recreo' : ''}" data-id="${substitution.id}">
                     <td class="tramo-time">
-                      ${tramo.start} - ${tramo.end}${isRecreo ? ' · Recreo' : ''}
+                      ${tramo.start}<br>${tramo.end}${isRecreo ? ' · Recreo' : ''}
                     </td>
                     <td class="tramo-sustituto">
                       <span class="tramo-sustituto-content">
@@ -1004,7 +1004,7 @@ const renderDashboard = () => {
         return `
                   <tr class="${isRecreo ? 'tramo-recreo' : ''}" data-tramo="${tramo.start}-${tramo.end}" data-ausente-id="${ausenteId}">
                     <td class="tramo-time">
-                      ${tramo.start} - ${tramo.end}${isRecreo ? ' · Recreo' : ''}
+                      ${tramo.start}<br>${tramo.end}${isRecreo ? ' · Recreo' : ''}
                     </td>
                     <td class="tramo-sustituto">-</td>
                     <td class="tramo-grupo">-</td>
@@ -2097,7 +2097,7 @@ const renderPrintTable = () => {
             return `
                       <tr class="${isRecreo ? 'print-tramo-recreo' : ''}">
                         <td class="print-tramo-time">
-                          ${tramo.start} - ${tramo.end}${isRecreo ? ' · Recreo' : ''}
+                          ${tramo.start}<br>${tramo.end}${isRecreo ? ' · Recreo' : ''}
                         </td>
                         <td class="print-tramo-sustituto">
                           ${sustituto ? sustituto.profesor : '-'}
@@ -2112,7 +2112,7 @@ const renderPrintTable = () => {
             return `
                       <tr class="${isRecreo ? 'print-tramo-recreo' : ''}">
                         <td class="print-tramo-time">
-                          ${tramo.start} - ${tramo.end}${isRecreo ? ' · Recreo' : ''}
+                          ${tramo.start}<br>${tramo.end}${isRecreo ? ' · Recreo' : ''}
                         </td>
                         <td class="print-tramo-sustituto">-</td>
                         <td class="print-tramo-grupo">-</td>
