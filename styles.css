@@ -780,8 +780,8 @@ p {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 0.8rem;
-  padding: 2px 4px;
+  font-size: 0.65rem;
+  padding: 1px 3px;
   border-radius: 4px;
   opacity: 0.5;
   transition: opacity 0.2s ease;
