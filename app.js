@@ -2909,13 +2909,62 @@ const revertirBaja = (bajaId) => {
   alert("Baja revertida correctamente.");
 };
 
+const editarBajaHistorico = (bajaId) => {
+  const bajas = getBajas();
+  const baja = bajas.find(b => b.id === bajaId);
+  if (!baja) return;
+
+  const profesorBajaNombre = prompt("Profesor de baja:", baja.profesorBajaNombre);
+  if (profesorBajaNombre === null) return;
+
+  const profesorRelevistaNombre = prompt("Profesor relevista:", baja.profesorRelevistaNombre);
+  if (profesorRelevistaNombre === null) return;
+
+  const fechaInicio = prompt("Fecha inicio (YYYY-MM-DD):", baja.fechaInicio);
+  if (fechaInicio === null) return;
+
+  const fechaFin = prompt("Fecha fin (YYYY-MM-DD, dejar vacío si en curso):", baja.fechaFin || "");
+  if (fechaFin === null) return;
+
+  const updated = bajas.map(b => {
+    if (b.id === bajaId) {
+      return {
+        ...b,
+        profesorBajaNombre: profesorBajaNombre.trim() || b.profesorBajaNombre,
+        profesorRelevistaNombre: profesorRelevistaNombre.trim() || b.profesorRelevistaNombre,
+        fechaInicio: fechaInicio.trim() || b.fechaInicio,
+        fechaFin: fechaFin.trim() || null,
+      };
+    }
+    return b;
+  });
+
+  setBajas(updated);
+  renderBajaActiva();
+  mostrarHistoricoBajas();
+};
+
+const eliminarBajaHistorico = (bajaId) => {
+  const bajas = getBajas();
+  const baja = bajas.find(b => b.id === bajaId);
+  if (!baja) return;
+
+  const ok = confirm(`¿Estás seguro de eliminar la baja de ${baja.profesorBajaNombre}?`);
+  if (!ok) return;
+
+  const updated = bajas.filter(b => b.id !== bajaId);
+  setBajas(updated);
+  renderBajaActiva();
+  mostrarHistoricoBajas();
+};
+
 const mostrarHistoricoBajas = () => {
   const bajas = getBajas();
   
   if (!el.historicoBajasBody) return;
   
   if (bajas.length === 0) {
-    el.historicoBajasBody.innerHTML = '<tr><td colspan="5" class="empty-historico">No hay bajas registradas.</td></tr>';
+    el.historicoBajasBody.innerHTML = '<tr><td colspan="6" class="empty-historico">No hay bajas registradas.</td></tr>';
   } else {
     const rows = bajas.map(b => {
       const diasDuracion = b.fechaFin 
@@ -2929,11 +2978,22 @@ const mostrarHistoricoBajas = () => {
           <td>${formatDate(new Date(b.fechaInicio))}</td>
           <td>${b.fechaFin ? formatDate(new Date(b.fechaFin)) : "En curso"}</td>
           <td>${typeof diasDuracion === 'number' ? diasDuracion + " días" : diasDuracion}</td>
+          <td>
+            <button class="btn btn-sm btn-edit-baja" data-id="${b.id}" title="Editar">✏️</button>
+            <button class="btn btn-sm btn-danger btn-delete-baja" data-id="${b.id}" title="Eliminar">🗑️</button>
+          </td>
         </tr>
       `;
     }).join("");
     
     el.historicoBajasBody.innerHTML = rows;
+
+    el.historicoBajasBody.querySelectorAll('.btn-edit-baja').forEach(btn => {
+      btn.addEventListener('click', () => editarBajaHistorico(btn.dataset.id));
+    });
+    el.historicoBajasBody.querySelectorAll('.btn-delete-baja').forEach(btn => {
+      btn.addEventListener('click', () => eliminarBajaHistorico(btn.dataset.id));
+    });
   }
   
   if (el.historicoBajasModal) {

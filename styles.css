@@ -2403,6 +2403,34 @@ select {
   color: var(--muted);
 }
 
+.btn-edit-baja,
+.btn-delete-baja {
+  padding: 4px 8px;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 2px;
+}
+
+.btn-edit-baja {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.btn-edit-baja:hover {
+  background: #bae6fd;
+}
+
+.btn-delete-baja {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.btn-delete-baja:hover {
+  background: #fecaca;
+}
+
 @media (max-width: 768px) {
   .baja-form {
     grid-template-columns: 1fr;
