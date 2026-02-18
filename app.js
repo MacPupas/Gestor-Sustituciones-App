@@ -991,7 +991,7 @@ const renderDashboard = () => {
                     <td class="tramo-sustituto">
                       <span class="tramo-sustituto-content">
                         ${sustituto ? sustituto.profesor || sustituto.profesorNombre || 'SIN NOMBRE' : '-'}
-                        ${extra ? `<br><small>+${extra.profesor || extra.profesorNombre || 'SIN NOMBRE'}</small>` : ''}
+                        ${extra ? `<br><small>+${extra.profesor || extra.profesorNombre || 'SIN NOMBRE'}</small>` : '<br>'}
                       </span>
                       <button class="btn-delete-tramo" data-id="${substitution.id}" title="Eliminar tramo">🗑️</button>
                     </td>
