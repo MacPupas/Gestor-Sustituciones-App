@@ -549,9 +549,6 @@ p {
   overflow: hidden;
   margin-bottom: 24px;
   border: 1px solid var(--border);
-  max-width: 50%;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .card-header {
