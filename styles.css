@@ -124,6 +124,12 @@ p {
   font-size: 1.1rem;
 }
 
+.nav-icon img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
 .sidebar__footer {
   margin-top: auto;
 }
