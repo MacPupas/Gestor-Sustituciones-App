@@ -1824,7 +1824,8 @@ select {
     grid-template-columns: 1fr;
     gap: 12px;
     padding: 0;
-    width: 100%;
+    width: 110%;
+    margin-left: -5%;
   }
 
   .tramo-time {
