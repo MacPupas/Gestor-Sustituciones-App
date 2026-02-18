@@ -206,7 +206,7 @@ p {
   display: flex;
   align-items: center;
   gap: 24px;
-  margin-left: auto;
+  padding-left: 20px;
 }
 
 .mini-calendar {
