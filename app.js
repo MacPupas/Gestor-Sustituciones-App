@@ -2146,8 +2146,13 @@ const renderPrintTable = () => {
 
 const initNavigation = () => {
   const mainHeader = document.querySelector(".main-header");
+  const sidebar = document.querySelector(".sidebar");
   document.querySelectorAll(".nav-item").forEach((btn) => {
     btn.addEventListener("click", () => {
+      // Cerrar sidebar al hacer clic en cualquier elemento del menú
+      if (sidebar) {
+        sidebar.classList.remove("is-open");
+      }
       document.querySelectorAll(".nav-item").forEach((b) => b.classList.remove("is-active"));
       btn.classList.add("is-active");
       const page = btn.dataset.page;
