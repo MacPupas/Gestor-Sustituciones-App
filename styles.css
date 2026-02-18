@@ -1750,7 +1750,7 @@ select {
 
   .calendar-day,
   .calendar-cell {
-    aspect-ratio: 1;
+    aspect-ratio: 1.1;
     display: flex;
     align-items: center;
     justify-content: center;
