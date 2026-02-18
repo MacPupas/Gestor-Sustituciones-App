@@ -2327,9 +2327,20 @@ const initEvents = () => {
 };
 
 const createBackup = () => {
+  const allStorage = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    try {
+      allStorage[key] = JSON.parse(localStorage.getItem(key));
+    } catch {
+      allStorage[key] = localStorage.getItem(key);
+    }
+  }
+
   const backupData = {
     version: "1.0",
     fecha_backup: new Date().toISOString(),
+    all_localStorage: allStorage,
     storage_keys: {
       profesores: getProfesores(),
       materias: getMaterias(),
@@ -2357,10 +2368,11 @@ const createBackup = () => {
     backupData.storage_keys.profesores.length +
     backupData.storage_keys.materias.length +
     backupData.storage_keys.tabla.length +
-    backupData.storage_keys.sustituciones.length;
+    backupData.storage_keys.sustituciones.length +
+    (backupData.storage_keys.bajas?.length || 0);
 
   alert(
-    `✅ Backup creado correctamente\n\n📊 Resumen:\n• Profesores: ${backupData.storage_keys.profesores.length}\n• Materias: ${backupData.storage_keys.materias.length}\n• Tabla sustituciones: ${backupData.storage_keys.tabla.length}\n• Sustituciones: ${backupData.storage_keys.sustituciones.length}\n\nTotal: ${totalItems} registros`
+    `✅ Backup completo creado correctamente\n\n📊 Resumen:\n• Profesores: ${backupData.storage_keys.profesores.length}\n• Materias: ${backupData.storage_keys.materias.length}\n• Tabla sustituciones: ${backupData.storage_keys.tabla.length}\n• Sustituciones: ${backupData.storage_keys.sustituciones.length}\n• Bajas: ${backupData.storage_keys.bajas?.length || 0}\n\nTotal: ${totalItems} registros\n\n📦 Backup completo: ${Object.keys(backupData.all_localStorage).length} elementos`
   );
 };
 
@@ -2379,7 +2391,7 @@ const restoreBackup = (file) => {
       }
 
       const confirmRestore = confirm(
-        `⚠️ ¿Estás seguro de restaurar el backup?\n\nSe sobrescribirán todos los datos actuales.\n\n📅 Backup del: ${new Date(backupData.fecha_backup).toLocaleString("es-ES")}`
+        `⚠️ ¿Estás seguro de restaurar el backup completo?\n\nSe sobrescribirán TODOS los datos actuales (configuración, profesores, materias, sustituciones, etc.)\n\n📅 Backup del: ${new Date(backupData.fecha_backup).toLocaleString("es-ES")}`
       );
 
       if (!confirmRestore) return;
@@ -2400,13 +2412,24 @@ const restoreBackup = (file) => {
         setBajas(backupData.storage_keys.bajas);
       }
 
+      if (backupData.all_localStorage) {
+        Object.keys(backupData.all_localStorage).forEach(key => {
+          const value = backupData.all_localStorage[key];
+          if (typeof value === 'string') {
+            localStorage.setItem(key, value);
+          } else {
+            localStorage.setItem(key, JSON.stringify(value));
+          }
+        });
+      }
+
       refreshProfesorOptions();
       renderDashboard();
       renderCalendar();
       updateStats();
       renderPrintTable();
 
-      alert("✅ Backup restaurado correctamente.\n\nPor favor, actualiza la página para ver todos los cambios.");
+      alert("✅ Backup completo restaurado correctamente.\n\nPor favor, actualiza la página para ver todos los cambios.");
       location.reload();
     } catch (error) {
       console.error("Error al restaurar backup:", error);
