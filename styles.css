@@ -1736,7 +1736,8 @@ select {
 
 @media (max-width: 768px) {
   .mini-calendar {
-    width: 100%;
+    width: 110%;
+    margin-left: -5%;
     min-width: unset;
     padding: 12px;
     box-sizing: border-box;
