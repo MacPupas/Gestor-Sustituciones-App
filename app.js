@@ -1510,7 +1510,7 @@ const applyImport = () => {
   }
 
   if (state.importType === "materias") {
-    const materias = mapped.map((row) => {
+    const newMaterias = mapped.map((row) => {
       return {
         id: generateId(),
         diaSemana: normalizeDay(row.diaSemana),
@@ -1522,11 +1522,12 @@ const applyImport = () => {
         materia: row.materia || "",
       };
     });
-    setMaterias(materias);
+    const existingMaterias = getMaterias();
+    setMaterias([...existingMaterias, ...newMaterias]);
   }
 
   if (state.importType === "tabla") {
-    const tabla = mapped.map((row) => {
+    const newTabla = mapped.map((row) => {
       const profesorId = resolveProfesorId(row.profesor);
       return {
         id: generateId(),
@@ -1539,7 +1540,8 @@ const applyImport = () => {
         cursoGrupo: row.cursoGrupo || "",
       };
     });
-    setTabla(tabla);
+    const existingTabla = getTabla();
+    setTabla([...existingTabla, ...newTabla]);
   }
 
   refreshProfesorOptions();
