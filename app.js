@@ -2235,6 +2235,50 @@ const initImports = () => {
       }
     });
   });
+
+  // Exportar tabla a CSV
+  document.querySelectorAll("[data-export='csv']").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const tabla = getTabla();
+      if (!tabla || tabla.length === 0) {
+        alert("No hay datos para exportar.");
+        return;
+      }
+
+      const profesores = getProfesores();
+      
+      // Preparar datos con nombres de profesores
+      const dataToExport = tabla.map(row => {
+        const prof = profesores.find((p) => p.id === row.profesorId);
+        return {
+          Profesor: row.profesorNombre || (prof ? prof.profesor : row.profesorId || ""),
+          Día: row.diaSemana || "",
+          "Hora Inicio": row.horaInicio || "",
+          "Hora Fin": row.horaFin || "",
+          Asignatura: row.asignatura || "",
+          "Curso/Grupo": row.cursoGrupo || ""
+        };
+      });
+
+      // Convertir a CSV usando PapaParse
+      const csv = Papa.unparse(dataToExport, {
+        header: true,
+        delimiter: ";",
+        newline: "\n"
+      });
+
+      // Crear blob y descargar
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `tabla_datos_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    });
+  });
 };
 
 const initEvents = () => {
