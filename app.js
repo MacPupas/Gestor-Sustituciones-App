@@ -3334,14 +3334,19 @@ const migrateTablaIds = () => {
 };
 
 const init = async () => {
-  loadData();
-  
-  // Migrar IDs antiguos antes de sincronizar con Supabase
-  migrateTablaIds();
-  
-  if (useSupabase()) {
-    await supabaseSync();
+  try {
+    loadData();
+    
+    // Migrar IDs antiguos antes de sincronizar con Supabase
+    migrateTablaIds();
+    
+    if (useSupabase()) {
+      await supabaseSync();
+    }
+  } catch (error) {
+    console.error("[Init] Error durante la inicialización:", error);
   }
+  
   if (window.pdfjsLib) {
     window.pdfjsLib.GlobalWorkerOptions.workerSrc =
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
