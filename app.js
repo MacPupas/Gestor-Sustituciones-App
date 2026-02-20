@@ -17,18 +17,40 @@ const useSupabase = () => {
 
 const supabaseFetch = async (table) => {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*&limit=10000`, {
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
-      },
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    console.log(`[DEBUG] Supabase fetch ${table}: ${data.length} registros`);
+    // Usar paginación para traer todos los registros (el servidor limita a 1000 por petición)
+    const allData = [];
+    const limit = 1000;
+    let offset = 0;
+    let hasMore = true;
+    
+    while (hasMore) {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*&limit=${limit}&offset=${offset}`, {
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+        },
+      });
+      
+      if (!res.ok) {
+        console.error(`[Supabase] Error fetching ${table}:`, res.status);
+        break;
+      }
+      
+      const data = await res.json();
+      allData.push(...data);
+      
+      // Si recibimos menos de `limit` registros, hemos llegado al final
+      if (data.length < limit) {
+        hasMore = false;
+      } else {
+        offset += limit;
+      }
+    }
+    
+    console.log(`[DEBUG] Supabase fetch ${table}: ${allData.length} registros totales`);
     
     // Renombrar columnas de Supabase al formato de la app
-    return data.map(item => {
+    return allData.map(item => {
       const normalized = { ...item };
       if (table === 'tabla_horario' || table === 'materias') {
         normalized.diaSemana = normalized.diasemana;
