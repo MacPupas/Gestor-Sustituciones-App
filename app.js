@@ -1,6 +1,7 @@
 const STORAGE_KEY = "gs_use_supabase";
 const SUPABASE_URL = "https://pxpujmdlobwopqqbudwi.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cHVqbWRsb2J3b3BxcWJ1ZHdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExOTE4NjYsImV4cCI6MjA4Njc2Nzg2Nn0.f1R38JNM09UkI-2hzng5iYNUbCHq4cyjZXfngr1q64E";
+const DELETED_SUST_KEY = "gs_deleted_sustituciones_ids";
 
 const storageKeys = {
   profesores: "gs_profesores",
@@ -9,6 +10,24 @@ const storageKeys = {
   sustituciones: "gs_sustituciones",
   bajas: "gs_bajas",
 };
+
+// Devuelve el Set de IDs de sustituciones borradas en este dispositivo
+const getDeletedSustitutionIds = () => {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(DELETED_SUST_KEY) || "[]"));
+  } catch { return new Set(); }
+};
+
+// Añade IDs al registro de sustituciones borradas (máx. 500 entradas)
+const addDeletedSustitutionIds = (ids) => {
+  const existing = getDeletedSustitutionIds();
+  ids.forEach(id => existing.add(id));
+  let arr = [...existing];
+  if (arr.length > 500) arr = arr.slice(arr.length - 500);
+  localStorage.setItem(DELETED_SUST_KEY, JSON.stringify(arr));
+};
+
+
 
 const useSupabase = () => {
   const val = localStorage.getItem(STORAGE_KEY);
@@ -175,28 +194,36 @@ const supabaseSync = async () => {
     }
   }
 
-  // Sincronizar sustituciones: localStorage es la fuente de verdad.
-  // Registros en Supabase que no están en local → fueron borrados localmente → borrar de Supabase.
-  // Registros en local que no están en Supabase → nuevos locales → subir a Supabase.
+  // Sincronizar sustituciones con soporte multi-dispositivo usando tombstones.
+  // - ID en deletedIds + en Supabase → borrar de Supabase (fue eliminado intencionalmente)
+  // - ID en Supabase, no en local, no en deletedIds → vino de otro dispositivo → añadir al local
+  // - ID en local, no en Supabase → nuevo local → subir a Supabase
   {
-    // Actualizar la caché local con los datos de localStorage (sin merge con remoto)
-    cachedData.sustituciones = localSustituciones;
+    const deletedIds = getDeletedSustitutionIds();
 
-    // Registros remotos que ya NO están en local (fueron borrados) → eliminar de Supabase
-    const remoteOnlySustituciones = tables.sustituciones.filter(
-      rs => !localSustituciones.some(ls => ls.id === rs.id)
-    );
-    if (remoteOnlySustituciones.length > 0) {
-      console.log(`[Supabase] Eliminando ${remoteOnlySustituciones.length} sustituciones borradas localmente`);
-      await Promise.all(remoteOnlySustituciones.map(rs => supabaseDelete("sustituciones", rs.id)));
+    // Registros remotos marcados como borrados → eliminar de Supabase si aún están ahí
+    const remoteToDelete = tables.sustituciones.filter(rs => deletedIds.has(rs.id));
+    if (remoteToDelete.length > 0) {
+      console.log(`[Supabase] Borrando ${remoteToDelete.length} sustituciones eliminadas en este dispositivo`);
+      await Promise.all(remoteToDelete.map(rs => supabaseDelete("sustituciones", rs.id)));
     }
 
-    // Registros locales que NO están en remoto → subir a Supabase
-    const localOnlySustituciones = localSustituciones.filter(
+    // Registros remotos nuevos (no en local, no borrados) → añadir al local (vinieron de otro dispositivo)
+    const remoteNew = tables.sustituciones.filter(
+      rs => !deletedIds.has(rs.id) && !localSustituciones.some(ls => ls.id === rs.id)
+    );
+
+    // Estado final del local = local actual + nuevos de remoto
+    const merged = [...localSustituciones, ...remoteNew];
+    cachedData.sustituciones = merged;
+    localStorage.setItem(storageKeys.sustituciones, JSON.stringify(merged));
+
+    // Registros locales que no están en Supabase → subir
+    const localOnly = localSustituciones.filter(
       ls => !tables.sustituciones.some(rs => rs.id === ls.id)
     );
-    if (localOnlySustituciones.length > 0) {
-      await supabaseSave("sustituciones", localOnlySustituciones);
+    if (localOnly.length > 0) {
+      await supabaseSave("sustituciones", localOnly);
     }
   }
 
@@ -422,9 +449,10 @@ const setSustituciones = async (data) => {
   localStorage.setItem(storageKeys.sustituciones, JSON.stringify(data));
 
   if (useSupabase()) {
-    // Eliminar las sustituciones que ya no están (await para garantizar que se completan)
     const idsToDelete = oldData.filter(s => !data.find(d => d.id === s.id)).map(s => s.id);
     if (idsToDelete.length > 0) {
+      // Registrar como borrados para que otros navegadores no los restauren en el sync
+      addDeletedSustitutionIds(idsToDelete);
       await Promise.all(idsToDelete.map(id => supabaseDelete("sustituciones", id)));
     }
     // Guardar las nuevas/actualizadas
