@@ -51,8 +51,21 @@ CREATE TABLE IF NOT EXISTS sustituciones (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Tabla de Bajas
+CREATE TABLE IF NOT EXISTS bajas (
+  id TEXT PRIMARY KEY,
+  profesorBajaId TEXT,
+  profesorBajaNombre TEXT,
+  profesorRelevistaId TEXT,
+  profesorRelevistaNombre TEXT,
+  fechaInicio TEXT,
+  fechaFin TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Habilitar RLS (opcional, para producción)
 -- ALTER TABLE profesores ENABLE ROW LEVEL SECURITY;
 -- ALTER TABLE materias ENABLE ROW LEVEL SECURITY;
 -- ALTER TABLE tabla_horario ENABLE ROW LEVEL SECURITY;
 -- ALTER TABLE sustituciones ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE bajas ENABLE ROW LEVEL SECURITY;

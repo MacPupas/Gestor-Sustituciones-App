@@ -111,11 +111,15 @@ const supabaseFetch = async (table) => {
 
       if (table === 'bajas') {
         // Convertir de minúsculas (Supabase) a camelCase (app)
+        normalized.profesorBajaId = normalized.profesorbajaid;
         normalized.profesorBajaNombre = normalized.profesorbajanombre;
+        normalized.profesorRelevistaId = normalized.profesorrelevistaid;
         normalized.profesorRelevistaNombre = normalized.profesorrelevistanombre;
         normalized.fechaInicio = normalized.fechainicio;
         normalized.fechaFin = normalized.fechafin;
+        delete normalized.profesorbajaid;
         delete normalized.profesorbajanombre;
+        delete normalized.profesorrelevistaid;
         delete normalized.profesorrelevistanombre;
         delete normalized.fechainicio;
         delete normalized.fechafin;
@@ -337,12 +341,16 @@ const supabaseSave = async (table, data) => {
 
       if (table === 'bajas') {
         // Convertir de camelCase a minúsculas para Supabase
+        payload.profesorbajaid = payload.profesorBajaId;
         payload.profesorbajanombre = payload.profesorBajaNombre;
+        payload.profesorrelevistaid = payload.profesorRelevistaId;
         payload.profesorrelevistanombre = payload.profesorRelevistaNombre;
         payload.fechainicio = payload.fechaInicio;
         payload.fechafin = payload.fechaFin;
 
+        delete payload.profesorBajaId;
         delete payload.profesorBajaNombre;
+        delete payload.profesorRelevistaId;
         delete payload.profesorRelevistaNombre;
         delete payload.fechaInicio;
         delete payload.fechaFin;
