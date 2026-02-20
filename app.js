@@ -1040,7 +1040,12 @@ const renderDashboard = () => {
   const dayName = getDayName(state.activeDate);
 
   // Obtener sustituciones del día
-  const daySubstitutions = getSustituciones().filter(s => s.fecha === dateKey);
+  const allSustituciones = getSustituciones();
+  console.log(`[renderDashboard] Total sustituciones cargadas: ${allSustituciones.length}`);
+  console.log(`[renderDashboard] Fecha actual (dateKey): ${dateKey}`);
+  
+  const daySubstitutions = allSustituciones.filter(s => s.fecha === dateKey);
+  console.log(`[renderDashboard] Sustituciones para ${dateKey}: ${daySubstitutions.length}`);
 
   if (daySubstitutions.length === 0) {
     el.substitutionGrid.innerHTML = `
@@ -3370,7 +3375,7 @@ const migrateTablaIds = () => {
 
 const init = async () => {
   try {
-    loadData();
+    loadCachedData();
     
     // Migrar IDs antiguos antes de sincronizar con Supabase
     migrateTablaIds();
