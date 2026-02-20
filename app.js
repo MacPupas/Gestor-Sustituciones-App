@@ -2040,15 +2040,6 @@ const addNewTablaRecord = () => {
   // Resolve profesor ID
   const profesorId = resolveProfesorId(profesor.trim());
 
-  // Check if record already exists
-  const tabla = getTabla();
-  const existingRecord = tabla.find((t) =>
-    t.profesorId === profesorId &&
-    normalizeDay(t.diaSemana) === normalizeDay(diaSemana.trim()) &&
-    t.horaInicio === normalizeTime(horaInicio.trim()) &&
-    t.horaFin === normalizeTime(horaFin.trim())
-  );
-
   const normalizedDia = normalizeDay(diaSemana.trim());
   const normalizedHoraInicio = normalizeTime(horaInicio.trim());
   const normalizedHoraFin = normalizeTime(horaFin.trim());
