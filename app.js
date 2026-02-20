@@ -585,6 +585,19 @@ const getTramoByStart = (start) => tramos.find((t) => t.start === start);
 
 const generateId = () => `id_${Math.random().toString(36).slice(2, 10)}`;
 
+// Generar ID determinístico basado en el contenido del registro
+// Esto permite importar el mismo archivo múltiples veces sin crear duplicados
+const generateDeterministicId = (profesorId, diaSemana, horaInicio, horaFin, asignatura = "", cursoGrupo = "") => {
+  const str = `${profesorId}|${normalizeDay(diaSemana)}|${horaInicio}|${horaFin}|${asignatura}|${cursoGrupo}`;
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return `id_${Math.abs(hash).toString(36)}`;
+};
+
 const buildDisplayName = (prof) => {
   return prof.profesor || "";
 };
@@ -1597,21 +1610,41 @@ const applyImport = () => {
   }
 
   if (state.importType === "tabla") {
+    const existingTabla = getTabla();
+    const existingIds = new Set(existingTabla.map(t => t.id));
+    
     const newTabla = mapped.map((row) => {
       const profesorId = resolveProfesorId(row.profesor);
+      const diaSemana = normalizeDay(row.diaSemana);
+      const horaInicio = normalizeTime(row.horaInicio);
+      const horaFin = normalizeTime(row.horaFin);
+      const asignatura = row.asignatura || "";
+      const cursoGrupo = row.cursoGrupo || "";
+      
+      // Generar ID determinístico para evitar duplicados
+      const deterministicId = generateDeterministicId(profesorId, diaSemana, horaInicio, horaFin, asignatura, cursoGrupo);
+      
       return {
-        id: generateId(),
+        id: deterministicId,
         profesorId: profesorId,
         profesorNombre: row.profesor || "",
-        diaSemana: normalizeDay(row.diaSemana),
-        horaInicio: normalizeTime(row.horaInicio),
-        horaFin: normalizeTime(row.horaFin),
-        asignatura: row.asignatura || "",
-        cursoGrupo: row.cursoGrupo || "",
+        diaSemana: diaSemana,
+        horaInicio: horaInicio,
+        horaFin: horaFin,
+        asignatura: asignatura,
+        cursoGrupo: cursoGrupo,
       };
+    }).filter(newRow => {
+      // Filtrar duplicados: no agregar si ya existe un registro con el mismo ID
+      if (existingIds.has(newRow.id)) {
+        return false;
+      }
+      existingIds.add(newRow.id);
+      return true;
     });
-    const existingTabla = getTabla();
+    
     setTabla([...existingTabla, ...newTabla]);
+    alert(`Importación completada: ${newTabla.length} registros nuevos añadidos`);
   }
 
   refreshProfesorOptions();
@@ -1838,11 +1871,11 @@ const renderDataset = (type) => {
     `;
 
     const body = filtered
-      .map((row, index) => {
+      .map((row) => {
         const prof = profesores.find((p) => String(p.id) === String(row.profesorId));
         const profesorName = row.profesorNombre || (prof ? prof.profesor : row.profesorId || "-");
-        // Generar ID único basado en el contenido si no tiene id
-        const rowId = row.id || `row-${row.profesorId || 'unknown'}-${normalizeDay(row.diaSemana)}-${row.horaInicio}-${row.horaFin}-${index}`;
+        // Todos los registros deben tener un ID (determinístico o generado)
+        const rowId = row.id;
         return `
           <tr data-row-id="${rowId}">
             <td><input type="checkbox" class="row-checkbox" data-row-id="${rowId}"></td>
@@ -2016,6 +2049,33 @@ const addNewTablaRecord = () => {
     t.horaFin === normalizeTime(horaFin.trim())
   );
 
+  const normalizedDia = normalizeDay(diaSemana.trim());
+  const normalizedHoraInicio = normalizeTime(horaInicio.trim());
+  const normalizedHoraFin = normalizeTime(horaFin.trim());
+  const normalizedAsignatura = asignatura.trim();
+  const normalizedCursoGrupo = cursoGrupo.trim();
+  
+  // Generar ID determinístico
+  const deterministicId = generateDeterministicId(
+    profesorId, 
+    normalizedDia, 
+    normalizedHoraInicio, 
+    normalizedHoraFin, 
+    normalizedAsignatura, 
+    normalizedCursoGrupo
+  );
+
+  // Check if record already exists (by ID or by content)
+  const tabla = getTabla();
+  const existingRecord = tabla.find((t) =>
+    t.id === deterministicId || (
+      t.profesorId === profesorId &&
+      normalizeDay(t.diaSemana) === normalizedDia &&
+      t.horaInicio === normalizedHoraInicio &&
+      t.horaFin === normalizedHoraFin
+    )
+  );
+
   if (existingRecord) {
     const replace = confirm(
       `Ya existe un registro con los mismos datos:\n` +
@@ -2029,28 +2089,28 @@ const addNewTablaRecord = () => {
     // Remove existing record and add new one
     const updated = tabla.filter((t) => t.id !== existingRecord.id);
     const newRecord = {
-      id: generateId(),
+      id: deterministicId,
       profesorId: profesorId,
       profesorNombre: profesor.trim(),
-      diaSemana: normalizeDay(diaSemana.trim()),
-      horaInicio: normalizeTime(horaInicio.trim()),
-      horaFin: normalizeTime(horaFin.trim()),
-      asignatura: asignatura.trim(),
-      cursoGrupo: cursoGrupo.trim(),
+      diaSemana: normalizedDia,
+      horaInicio: normalizedHoraInicio,
+      horaFin: normalizedHoraFin,
+      asignatura: normalizedAsignatura,
+      cursoGrupo: normalizedCursoGrupo,
     };
     setTabla([...updated, newRecord]);
     alert("Registro actualizado correctamente.");
   } else {
     // Add new record
     const newRecord = {
-      id: generateId(),
+      id: deterministicId,
       profesorId: profesorId,
       profesorNombre: profesor.trim(),
-      diaSemana: normalizeDay(diaSemana.trim()),
-      horaInicio: normalizeTime(horaInicio.trim()),
-      horaFin: normalizeTime(horaFin.trim()),
-      asignatura: asignatura.trim(),
-      cursoGrupo: cursoGrupo.trim(),
+      diaSemana: normalizedDia,
+      horaInicio: normalizedHoraInicio,
+      horaFin: normalizedHoraFin,
+      asignatura: normalizedAsignatura,
+      cursoGrupo: normalizedCursoGrupo,
     };
     setTabla([...tabla, newRecord]);
     alert("Registro añadido correctamente.");
@@ -2416,17 +2476,14 @@ const initImports = () => {
       const profesores = getProfesores();
       const selectedProfesor = state.selectedProfesorFilter;
       
-      // Filtrar registros a eliminar - generar IDs de la misma forma que en el renderizado
-      const updatedTabla = tabla.filter((row, index) => {
-        // Generar ID único basado en el contenido (misma lógica que en renderDataset)
-        const rowId = row.id || `row-${row.profesorId || 'unknown'}-${normalizeDay(row.diaSemana)}-${row.horaInicio}-${row.horaFin}-${index}`;
-        
+      // Filtrar registros a eliminar usando el ID del registro
+      const updatedTabla = tabla.filter((row) => {
         // Si hay filtro de profesor activo, solo borrar las filas visibles seleccionadas
         if (selectedProfesor && String(row.profesorId) !== String(selectedProfesor)) {
           return true; // Mantener filas de otros profesores
         }
         
-        return !state.selectedRows.has(rowId);
+        return !state.selectedRows.has(row.id);
       });
 
       setTabla(updatedTabla);
@@ -3242,8 +3299,46 @@ const mostrarHistoricoBajas = () => {
   }
 };
 
+// Migrar registros antiguos para asegurar que todos tengan IDs determinísticos
+const migrateTablaIds = () => {
+  const tabla = getTabla();
+  let needsMigration = false;
+  
+  const migratedTabla = tabla.map((row) => {
+    // Si ya tiene un ID determinístico o válido, mantenerlo
+    if (row.id && row.id.startsWith('id_')) {
+      return row;
+    }
+    
+    needsMigration = true;
+    // Generar ID determinístico
+    const newId = generateDeterministicId(
+      row.profesorId,
+      row.diaSemana,
+      row.horaInicio,
+      row.horaFin,
+      row.asignatura,
+      row.cursoGrupo
+    );
+    
+    return {
+      ...row,
+      id: newId,
+    };
+  });
+  
+  if (needsMigration) {
+    console.log(`[Migration] Migrando ${tabla.length} registros a IDs determinísticos`);
+    setTabla(migratedTabla);
+  }
+};
+
 const init = async () => {
-  loadCachedData();
+  loadData();
+  
+  // Migrar IDs antiguos antes de sincronizar con Supabase
+  migrateTablaIds();
+  
   if (useSupabase()) {
     await supabaseSync();
   }
