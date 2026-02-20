@@ -107,33 +107,68 @@ const supabaseSync = async () => {
   };
   console.log("[Supabase] Fetched:", tables);
 
-  // If Supabase has data, use it. Otherwise, upload local data
+  // Obtener datos locales
   const localProfesores = JSON.parse(localStorage.getItem(storageKeys.profesores) || "[]");
   const localMaterias = JSON.parse(localStorage.getItem(storageKeys.materias) || "[]");
   const localTabla = JSON.parse(localStorage.getItem(storageKeys.tabla) || "[]");
   const localSustituciones = JSON.parse(localStorage.getItem(storageKeys.sustituciones) || "[]");
 
-  if (tables.profesores.length > 0) {
-    setProfesores(tables.profesores);
-  } else if (localProfesores.length > 0) {
-    await supabaseSave("profesores", localProfesores);
-    console.log("[Supabase] Uploaded local profesores");
+  // Función para combinar datos: preferir datos locales más recientes, agregar nuevos registros
+  const mergeData = (localData, remoteData) => {
+    const merged = [...remoteData];
+    const remoteIds = new Set(remoteData.map(r => r.id));
+    
+    // Agregar registros locales que no están en remoto
+    localData.forEach(localItem => {
+      if (!remoteIds.has(localItem.id)) {
+        merged.push(localItem);
+      }
+    });
+    
+    return merged;
+  };
+
+  // Combinar datos de profesores
+  if (tables.profesores.length > 0 || localProfesores.length > 0) {
+    const mergedProfesores = mergeData(localProfesores, tables.profesores);
+    setProfesores(mergedProfesores);
+    // Subir registros locales nuevos a Supabase
+    const newLocalProfesores = localProfesores.filter(p => !tables.profesores.some(rp => rp.id === p.id));
+    if (newLocalProfesores.length > 0) {
+      await supabaseSave("profesores", newLocalProfesores);
+    }
   }
-  if (tables.materias.length > 0) {
-    setMaterias(tables.materias);
-  } else if (localMaterias.length > 0) {
-    await supabaseSave("materias", localMaterias);
+
+  // Combinar datos de materias
+  if (tables.materias.length > 0 || localMaterias.length > 0) {
+    const mergedMaterias = mergeData(localMaterias, tables.materias);
+    setMaterias(mergedMaterias);
+    const newLocalMaterias = localMaterias.filter(m => !tables.materias.some(rm => rm.id === m.id));
+    if (newLocalMaterias.length > 0) {
+      await supabaseSave("materias", newLocalMaterias);
+    }
   }
-  if (tables.tabla_horario.length > 0) {
-    setTabla(tables.tabla_horario);
-  } else if (localTabla.length > 0) {
-    await supabaseSave("tabla_horario", localTabla);
+
+  // Combinar datos de tabla_horario
+  if (tables.tabla_horario.length > 0 || localTabla.length > 0) {
+    const mergedTabla = mergeData(localTabla, tables.tabla_horario);
+    setTabla(mergedTabla);
+    const newLocalTabla = localTabla.filter(t => !tables.tabla_horario.some(rt => rt.id === t.id));
+    if (newLocalTabla.length > 0) {
+      await supabaseSave("tabla_horario", newLocalTabla);
+    }
   }
-  if (tables.sustituciones.length > 0) {
-    setSustituciones(tables.sustituciones);
-  } else if (localSustituciones.length > 0) {
-    await supabaseSave("sustituciones", localSustituciones);
+
+  // Combinar datos de sustituciones
+  if (tables.sustituciones.length > 0 || localSustituciones.length > 0) {
+    const mergedSustituciones = mergeData(localSustituciones, tables.sustituciones);
+    setSustituciones(mergedSustituciones);
+    const newLocalSustituciones = localSustituciones.filter(s => !tables.sustituciones.some(rs => rs.id === s.id));
+    if (newLocalSustituciones.length > 0) {
+      await supabaseSave("sustituciones", newLocalSustituciones);
+    }
   }
+
   console.log("[Supabase] Sync complete");
 };
 
@@ -1806,7 +1841,8 @@ const renderDataset = (type) => {
       .map((row, index) => {
         const prof = profesores.find((p) => String(p.id) === String(row.profesorId));
         const profesorName = row.profesorNombre || (prof ? prof.profesor : row.profesorId || "-");
-        const rowId = row.id || `row-${index}`;
+        // Generar ID único basado en el contenido si no tiene id
+        const rowId = row.id || `row-${row.profesorId || 'unknown'}-${normalizeDay(row.diaSemana)}-${row.horaInicio}-${row.horaFin}-${index}`;
         return `
           <tr data-row-id="${rowId}">
             <td><input type="checkbox" class="row-checkbox" data-row-id="${rowId}"></td>
@@ -2380,11 +2416,10 @@ const initImports = () => {
       const profesores = getProfesores();
       const selectedProfesor = state.selectedProfesorFilter;
       
-      // Filtrar registros a eliminar
-      const updatedTabla = tabla.filter(row => {
-        const prof = profesores.find(p => String(p.id) === String(row.profesorId));
-        const profesorName = row.profesorNombre || (prof ? prof.profesor : row.profesorId || "");
-        const rowId = row.id || `row-${tabla.indexOf(row)}`;
+      // Filtrar registros a eliminar - generar IDs de la misma forma que en el renderizado
+      const updatedTabla = tabla.filter((row, index) => {
+        // Generar ID único basado en el contenido (misma lógica que en renderDataset)
+        const rowId = row.id || `row-${row.profesorId || 'unknown'}-${normalizeDay(row.diaSemana)}-${row.horaInicio}-${row.horaFin}-${index}`;
         
         // Si hay filtro de profesor activo, solo borrar las filas visibles seleccionadas
         if (selectedProfesor && String(row.profesorId) !== String(selectedProfesor)) {
