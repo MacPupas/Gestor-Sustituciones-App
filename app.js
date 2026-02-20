@@ -88,6 +88,19 @@ const supabaseFetch = async (table) => {
         delete normalized.profesorextraid;
         delete normalized.cursogrupomateria;
       }
+      
+      if (table === 'bajas') {
+        // Convertir de minúsculas (Supabase) a camelCase (app)
+        normalized.profesorBajaNombre = normalized.profesorbajanombre;
+        normalized.profesorRelevistaNombre = normalized.profesorrelevistanombre;
+        normalized.fechaInicio = normalized.fechainicio;
+        normalized.fechaFin = normalized.fechafin;
+        delete normalized.profesorbajanombre;
+        delete normalized.profesorrelevistanombre;
+        delete normalized.fechainicio;
+        delete normalized.fechafin;
+      }
+      
       return normalized;
     });
   } catch (e) {
@@ -104,6 +117,7 @@ const supabaseSync = async () => {
     materias: await supabaseFetch("materias"),
     tabla_horario: await supabaseFetch("tabla_horario"),
     sustituciones: await supabaseFetch("sustituciones"),
+    bajas: await supabaseFetch("bajas"),
   };
   console.log("[Supabase] Fetched:", tables);
 
@@ -112,6 +126,7 @@ const supabaseSync = async () => {
   const localMaterias = JSON.parse(localStorage.getItem(storageKeys.materias) || "[]");
   const localTabla = JSON.parse(localStorage.getItem(storageKeys.tabla) || "[]");
   const localSustituciones = JSON.parse(localStorage.getItem(storageKeys.sustituciones) || "[]");
+  const localBajas = JSON.parse(localStorage.getItem(storageKeys.bajas) || "[]");
 
   // Función para combinar datos: preferir datos locales más recientes, agregar nuevos registros
   const mergeData = (localData, remoteData) => {
@@ -166,6 +181,16 @@ const supabaseSync = async () => {
     const newLocalSustituciones = localSustituciones.filter(s => !tables.sustituciones.some(rs => rs.id === s.id));
     if (newLocalSustituciones.length > 0) {
       await supabaseSave("sustituciones", newLocalSustituciones);
+    }
+  }
+
+  // Combinar datos de bajas
+  if (tables.bajas.length > 0 || localBajas.length > 0) {
+    const mergedBajas = mergeData(localBajas, tables.bajas);
+    setBajas(mergedBajas);
+    const newLocalBajas = localBajas.filter(b => !tables.bajas.some(rb => rb.id === b.id));
+    if (newLocalBajas.length > 0) {
+      await supabaseSave("bajas", newLocalBajas);
     }
   }
 
@@ -266,6 +291,19 @@ const supabaseSave = async (table, data) => {
         delete payload.movilAvisos;
         delete payload.cuenta;
       }
+      
+      if (table === 'bajas') {
+        // Convertir de camelCase a minúsculas para Supabase
+        payload.profesorbajanombre = payload.profesorBajaNombre;
+        payload.profesorrelevistanombre = payload.profesorRelevistaNombre;
+        payload.fechainicio = payload.fechaInicio;
+        payload.fechafin = payload.fechaFin;
+        
+        delete payload.profesorBajaNombre;
+        delete payload.profesorRelevistaNombre;
+        delete payload.fechaInicio;
+        delete payload.fechaFin;
+      }
 
       const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=id`, {
         method: "POST",
@@ -296,8 +334,14 @@ const getSustituciones = () => cachedData.sustituciones;
 const getBajas = () => cachedData.bajas;
 
 const setBajas = (data) => {
+  const oldData = cachedData.bajas;
   cachedData.bajas = data;
   localStorage.setItem(storageKeys.bajas, JSON.stringify(data));
+  if (useSupabase()) {
+    const idsToDelete = oldData.filter(b => !data.find(d => d.id === b.id)).map(b => b.id);
+    idsToDelete.forEach(id => supabaseDelete("bajas", id));
+    supabaseSave("bajas", data);
+  }
 };
 
 const getBajaActiva = () => {
