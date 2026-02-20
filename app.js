@@ -23,7 +23,7 @@ const supabaseFetch = async (table) => {
     const limit = 1000;
     let offset = 0;
     let hasMore = true;
-    
+
     while (hasMore) {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*&limit=${limit}&offset=${offset}`, {
         headers: {
@@ -31,15 +31,15 @@ const supabaseFetch = async (table) => {
           Authorization: `Bearer ${SUPABASE_KEY}`,
         },
       });
-      
+
       if (!res.ok) {
         console.error(`[Supabase] Error fetching ${table}:`, res.status);
         break;
       }
-      
+
       const data = await res.json();
       allData.push(...data);
-      
+
       // Si recibimos menos de `limit` registros, hemos llegado al final
       if (data.length < limit) {
         hasMore = false;
@@ -47,9 +47,9 @@ const supabaseFetch = async (table) => {
         offset += limit;
       }
     }
-    
+
     console.log(`[DEBUG] Supabase fetch ${table}: ${allData.length} registros totales`);
-    
+
     // Renombrar columnas de Supabase al formato de la app
     return allData.map(item => {
       const normalized = { ...item };
@@ -89,7 +89,7 @@ const supabaseFetch = async (table) => {
         delete normalized.profesorextraid;
         delete normalized.cursogrupomateria;
       }
-      
+
       if (table === 'bajas') {
         // Convertir de minúsculas (Supabase) a camelCase (app)
         normalized.profesorBajaNombre = normalized.profesorbajanombre;
@@ -101,7 +101,7 @@ const supabaseFetch = async (table) => {
         delete normalized.fechainicio;
         delete normalized.fechafin;
       }
-      
+
       return normalized;
     });
   } catch (e) {
@@ -133,14 +133,14 @@ const supabaseSync = async () => {
   const mergeData = (localData, remoteData) => {
     const merged = [...remoteData];
     const remoteIds = new Set(remoteData.map(r => r.id));
-    
+
     // Agregar registros locales que no están en remoto
     localData.forEach(localItem => {
       if (!remoteIds.has(localItem.id)) {
         merged.push(localItem);
       }
     });
-    
+
     return merged;
   };
 
@@ -249,7 +249,7 @@ const supabaseSave = async (table, data) => {
         // Convertir de camelCase (localStorage) a minúsculas (Supabase)
         delete payload.createdAt;
         delete payload.updatedAt;
-        
+
         payload.diasemana = payload.diaSemana;
         payload.horainicio = payload.horaInicio;
         payload.horafin = payload.horaFin;
@@ -257,7 +257,7 @@ const supabaseSave = async (table, data) => {
         payload.profesorsustitutoid = payload.profesorSustitutoId;
         payload.profesorextraid = payload.profesorExtraId;
         payload.cursogrupomateria = payload.cursoGrupoMateria;
-        
+
         delete payload.diaSemana;
         delete payload.horaInicio;
         delete payload.horaFin;
@@ -265,9 +265,9 @@ const supabaseSave = async (table, data) => {
         delete payload.profesorSustitutoId;
         delete payload.profesorExtraId;
         delete payload.cursoGrupoMateria;
-        
+
         console.log("[DEBUG] Saving sustitucion payload:", payload);
-        
+
         const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=id`, {
           method: "POST",
           headers: {
@@ -292,14 +292,14 @@ const supabaseSave = async (table, data) => {
         delete payload.movilAvisos;
         delete payload.cuenta;
       }
-      
+
       if (table === 'bajas') {
         // Convertir de camelCase a minúsculas para Supabase
         payload.profesorbajanombre = payload.profesorBajaNombre;
         payload.profesorrelevistanombre = payload.profesorRelevistaNombre;
         payload.fechainicio = payload.fechaInicio;
         payload.fechafin = payload.fechaFin;
-        
+
         delete payload.profesorBajaNombre;
         delete payload.profesorRelevistaNombre;
         delete payload.fechaInicio;
@@ -405,7 +405,7 @@ const setSustituciones = (data) => {
   const oldData = cachedData.sustituciones;
   cachedData.sustituciones = data;
   localStorage.setItem(storageKeys.sustituciones, JSON.stringify(data));
-  
+
   if (useSupabase()) {
     // Eliminar las sustituciones que ya no están
     const idsToDelete = oldData.filter(s => !data.find(d => d.id === s.id)).map(s => s.id);
@@ -970,7 +970,7 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
 
   // Obtener profesores de la tabla que en este tramo:
   const asignaturasSustituibles = ['refuerzo pedagógico', 'refuerzo educativo', 'coordinación', 'mayores', 'biblioteca', 'dirección', 'director', 'jefatura', 'función directiva'];
-  
+
   let disponiblesTramo = tabla.filter(t => {
     const normalizedDia = normalizeDay(t.diaSemana);
     const matchDia = normalizedDia === dia;
@@ -1044,7 +1044,7 @@ const renderDashboard = () => {
   const allSustituciones = getSustituciones();
   console.log(`[renderDashboard] Total sustituciones cargadas: ${allSustituciones.length}`);
   console.log(`[renderDashboard] Fecha actual (dateKey): ${dateKey}`);
-  
+
   const daySubstitutions = allSustituciones.filter(s => s.fecha === dateKey);
   console.log(`[renderDashboard] Sustituciones para ${dateKey}: ${daySubstitutions.length}`);
 
@@ -1132,11 +1132,13 @@ const renderDashboard = () => {
                       ${tramo.start}<br>${tramo.end}${isRecreo ? ' · Recreo' : ''}
                     </td>
                     <td class="tramo-sustituto">
-                      <span class="tramo-sustituto-content">
-                        ${sustituto ? formatNombreApellidos(sustituto.profesor || sustituto.profesorNombre) : '-'}
-                        ${extra ? `<br><small>+${formatNombreApellidos(extra.profesor || extra.profesorNombre)}</small>` : '<br>'}
-                      </span>
-                      <button class="btn-delete-tramo" data-id="${substitution.id}" title="Eliminar tramo">🗑️</button>
+                      <div class="tramo-sustituto-inner">
+                        <span class="tramo-sustituto-content">
+                          ${sustituto ? formatNombreApellidos(sustituto.profesor || sustituto.profesorNombre) : '-'}
+                          ${extra ? `<br><small>+${formatNombreApellidos(extra.profesor || extra.profesorNombre)}</small>` : ''}
+                        </span>
+                        <button class="btn-delete-tramo" data-id="${substitution.id}" title="Eliminar tramo">🗑️</button>
+                      </div>
                     </td>
                     <td class="tramo-grupo">
                       ${substitution.cursoGrupoMateria || '-'}
@@ -1210,7 +1212,7 @@ const renderDashboard = () => {
       const id = row.dataset.id;
       const ausenteId = row.dataset.ausenteId;
       const tramoData = row.dataset.tramo;
-      
+
       // Verificar si es el recreo
       if (tramoData) {
         const [start, end] = tramoData.split('-');
@@ -1219,7 +1221,7 @@ const renderDashboard = () => {
           return; // No permitir editar el recreo
         }
       }
-      
+
       const substitution = getSustituciones().find(s => s.id === id);
 
       if (substitution) {
@@ -1662,7 +1664,7 @@ const applyImport = () => {
   if (state.importType === "tabla") {
     const existingTabla = getTabla();
     const existingIds = new Set(existingTabla.map(t => t.id));
-    
+
     const newTabla = mapped.map((row) => {
       const profesorId = resolveProfesorId(row.profesor);
       const diaSemana = normalizeDay(row.diaSemana);
@@ -1670,10 +1672,10 @@ const applyImport = () => {
       const horaFin = normalizeTime(row.horaFin);
       const asignatura = row.asignatura || "";
       const cursoGrupo = row.cursoGrupo || "";
-      
+
       // Generar ID determinístico para evitar duplicados
       const deterministicId = generateDeterministicId(profesorId, diaSemana, horaInicio, horaFin, asignatura, cursoGrupo);
-      
+
       return {
         id: deterministicId,
         profesorId: profesorId,
@@ -1692,7 +1694,7 @@ const applyImport = () => {
       existingIds.add(newRow.id);
       return true;
     });
-    
+
     setTabla([...existingTabla, ...newTabla]);
     alert(`Importación completada: ${newTabla.length} registros nuevos añadidos`);
   }
@@ -1870,9 +1872,9 @@ const renderDataset = (type) => {
     const profesores = getProfesores();
     const search = state.datasetViewSearch.toLowerCase();
     const selectedProfesor = state.selectedProfesorFilter || "";
-    
+
     let filtered = data;
-    
+
     // Filtrar por búsqueda
     if (search) {
       filtered = filtered.filter((row) =>
@@ -1883,7 +1885,7 @@ const renderDataset = (type) => {
         )
       );
     }
-    
+
     // Filtrar por profesor seleccionado
     if (selectedProfesor) {
       filtered = filtered.filter((row) => String(row.profesorId) === String(selectedProfesor));
@@ -1894,7 +1896,7 @@ const renderDataset = (type) => {
     if (filterSelect && profesores.length > 0) {
       const currentOptions = Array.from(filterSelect.options).map(o => o.value);
       const profesorIds = profesores.map(p => p.id);
-      
+
       // Solo actualizar si hay cambios
       if (JSON.stringify(currentOptions.slice(1)) !== JSON.stringify(profesorIds)) {
         filterSelect.innerHTML = '<option value="">Todos los profesores</option>' +
@@ -1946,7 +1948,7 @@ const renderDataset = (type) => {
         <tbody>${body}</tbody>
       </table>
     `;
-    
+
     // Configurar eventos de checkboxes
     setupTableCheckboxEvents(filtered);
 
@@ -2095,14 +2097,14 @@ const addNewTablaRecord = () => {
   const normalizedHoraFin = normalizeTime(horaFin.trim());
   const normalizedAsignatura = asignatura.trim();
   const normalizedCursoGrupo = cursoGrupo.trim();
-  
+
   // Generar ID determinístico
   const deterministicId = generateDeterministicId(
-    profesorId, 
-    normalizedDia, 
-    normalizedHoraInicio, 
-    normalizedHoraFin, 
-    normalizedAsignatura, 
+    profesorId,
+    normalizedDia,
+    normalizedHoraInicio,
+    normalizedHoraFin,
+    normalizedAsignatura,
     normalizedCursoGrupo
   );
 
@@ -2458,7 +2460,7 @@ const initImports = () => {
       }
 
       const profesores = getProfesores();
-      
+
       // Preparar datos con nombres de profesores
       const dataToExport = tabla.map(row => {
         const prof = profesores.find((p) => p.id === row.profesorId);
@@ -2509,21 +2511,21 @@ const initImports = () => {
         alert("No hay filas seleccionadas.");
         return;
       }
-      
+
       const confirmDelete = confirm(`¿Seguro que deseas borrar ${state.selectedRows.size} registros?`);
       if (!confirmDelete) return;
 
       const tabla = getTabla();
       const profesores = getProfesores();
       const selectedProfesor = state.selectedProfesorFilter;
-      
+
       // Filtrar registros a eliminar usando el ID del registro
       const updatedTabla = tabla.filter((row) => {
         // Si hay filtro de profesor activo, solo borrar las filas visibles seleccionadas
         if (selectedProfesor && String(row.profesorId) !== String(selectedProfesor)) {
           return true; // Mantener filas de otros profesores
         }
-        
+
         return !state.selectedRows.has(row.id);
       });
 
@@ -2567,10 +2569,10 @@ const setupTableCheckboxEvents = (filteredData) => {
       } else {
         state.selectedRows.delete(rowId);
       }
-      
+
       // Actualizar checkbox de "seleccionar todos"
       if (selectAll) {
-        selectAll.checked = checkboxes.length > 0 && 
+        selectAll.checked = checkboxes.length > 0 &&
           Array.from(checkboxes).every(cb => cb.checked);
       }
       updateDeleteButton();
@@ -2583,7 +2585,7 @@ const updateDeleteButton = () => {
   const btnDelete = document.getElementById("btnDeleteSelected");
   if (btnDelete) {
     btnDelete.disabled = state.selectedRows.size === 0;
-    btnDelete.textContent = state.selectedRows.size > 0 
+    btnDelete.textContent = state.selectedRows.size > 0
       ? `🗑️ Borrar ${state.selectedRows.size} seleccionados`
       : "🗑️ Borrar seleccionados";
   }
@@ -2844,7 +2846,7 @@ const printAsPng = async () => {
       alert("El navegador bloqueó la ventana emergente. Permite las ventanas emergentes para imprimir.");
       return;
     }
-    
+
     printWindow.document.write(`
       <!DOCTYPE html>
       <html lang="es">
@@ -3152,12 +3154,12 @@ const refreshBajaOptions = () => {
   const profesores = getProfesores()
     .filter(p => p.id && p.profesor)
     .sort((a, b) => (a.profesor || '').localeCompare(b.profesor || ''));
-  
+
   const options = ['<option value="">Seleccionar profesor...</option>'];
   profesores.forEach((p) => {
     options.push(`<option value="${p.id}">${p.profesor}</option>`);
   });
-  
+
   if (el.bajaProfesorBaja) {
     el.bajaProfesorBaja.innerHTML = options.join("");
   }
@@ -3167,15 +3169,15 @@ const crearBaja = () => {
   const profesorBajaId = el.bajaProfesorBaja.value;
   const profesorRelevistaNombre = el.bajaProfesorRelevista.value.trim();
   const fechaInicio = el.bajaFechaInicio.value;
-  
+
   if (!profesorBajaId || !profesorRelevistaNombre || !fechaInicio) {
     alert("Por favor, completa todos los campos obligatorios.");
     return;
   }
-  
+
   const tabla = getTabla();
   const profesorBaja = tabla.find(t => t.profesorId === profesorBajaId);
-  
+
   const nuevaBaja = {
     id: generateId(),
     profesorBajaId: profesorBajaId,
@@ -3186,26 +3188,26 @@ const crearBaja = () => {
     fechaFin: null,
     createdAt: new Date().toISOString(),
   };
-  
+
   const bajas = getBajas();
   bajas.push(nuevaBaja);
   setBajas(bajas);
-  
+
   el.bajaProfesorBaja.value = "";
   el.bajaProfesorRelevista.value = "";
   el.bajaFechaInicio.value = "";
-  
+
   renderBajaActiva();
-  
+
   alert("Baja creada correctamente.");
 };
 
 const renderBajaActiva = () => {
   const bajasActivas = getBajasActivas();
-  
+
   if (bajasActivas.length > 0 && el.bajaActive) {
     el.bajaActive.style.display = "block";
-    
+
     // Generar HTML para cada baja activa
     const bajasHTML = bajasActivas.map(baja => `
       <div class="baja-info-row">
@@ -3218,14 +3220,14 @@ const renderBajaActiva = () => {
         <button class="btn btn-sm btn-danger" onclick="revertirBaja('${baja.id}')" style="margin-top:8px;padding:4px 8px;font-size:0.8rem">Revertir</button>
       </div>
     `).join('');
-    
+
     el.bajaActive.innerHTML = `
       <div class="baja-active-badge">${bajasActivas.length} baja${bajasActivas.length > 1 ? 's' : ''} activa${bajasActivas.length > 1 ? 's' : ''}</div>
       <div class="baja-active-info" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px">
         ${bajasHTML}
       </div>
     `;
-    
+
     if (el.btnRevertirBaja) el.btnRevertirBaja.style.display = "none";
   } else if (el.bajaActive) {
     el.bajaActive.style.display = "none";
@@ -3238,24 +3240,24 @@ const renderBajaActiva = () => {
 
 const revertirBaja = (bajaId) => {
   let bajaActiva;
-  
+
   if (bajaId) {
     bajaActiva = cachedData.bajas.find(b => b.id === bajaId);
   } else {
     bajaActiva = getBajaActiva();
   }
-  
+
   if (!bajaActiva) {
     alert("No hay ninguna baja activa para revertir.");
     return;
   }
-  
+
   const ok = window.confirm(`¿Confirmas que el profesor ${bajaActiva.profesorBajaNombre} ha terminado su baja?`);
-  
+
   if (!ok) return;
-  
+
   const fechaFin = toIso(new Date());
-  
+
   const bajas = getBajas();
   const updatedBajas = bajas.map(b => {
     if (b.id === bajaActiva.id) {
@@ -3263,10 +3265,10 @@ const revertirBaja = (bajaId) => {
     }
     return b;
   });
-  
+
   setBajas(updatedBajas);
   renderBajaActiva();
-  
+
   alert("Baja revertida correctamente.");
 };
 
@@ -3321,17 +3323,17 @@ const eliminarBajaHistorico = (bajaId) => {
 
 const mostrarHistoricoBajas = () => {
   const bajas = getBajas();
-  
+
   if (!el.historicoBajasBody) return;
-  
+
   if (bajas.length === 0) {
     el.historicoBajasBody.innerHTML = '<tr><td colspan="6" class="empty-historico">No hay bajas registradas.</td></tr>';
   } else {
     const rows = bajas.map(b => {
-      const diasDuracion = b.fechaFin 
+      const diasDuracion = b.fechaFin
         ? Math.ceil((new Date(b.fechaFin) - new Date(b.fechaInicio)) / (1000 * 60 * 60 * 24))
         : "En curso";
-      
+
       return `
         <tr>
           <td>${b.profesorBajaNombre}</td>
@@ -3346,7 +3348,7 @@ const mostrarHistoricoBajas = () => {
         </tr>
       `;
     }).join("");
-    
+
     el.historicoBajasBody.innerHTML = rows;
 
     el.historicoBajasBody.querySelectorAll('.btn-edit-baja').forEach(btn => {
@@ -3356,7 +3358,7 @@ const mostrarHistoricoBajas = () => {
       btn.addEventListener('click', () => eliminarBajaHistorico(btn.dataset.id));
     });
   }
-  
+
   if (el.historicoBajasModal) {
     el.historicoBajasModal.classList.add("is-open");
     el.historicoBajasModal.setAttribute("aria-hidden", "false");
@@ -3367,13 +3369,13 @@ const mostrarHistoricoBajas = () => {
 const migrateTablaIds = () => {
   const tabla = getTabla();
   let needsMigration = false;
-  
+
   const migratedTabla = tabla.map((row) => {
     // Si ya tiene un ID determinístico o válido, mantenerlo
     if (row.id && row.id.startsWith('id_')) {
       return row;
     }
-    
+
     needsMigration = true;
     // Generar ID determinístico
     const newId = generateDeterministicId(
@@ -3384,13 +3386,13 @@ const migrateTablaIds = () => {
       row.asignatura,
       row.cursoGrupo
     );
-    
+
     return {
       ...row,
       id: newId,
     };
   });
-  
+
   if (needsMigration) {
     console.log(`[Migration] Migrando ${tabla.length} registros a IDs determinísticos`);
     setTabla(migratedTabla);
@@ -3400,17 +3402,17 @@ const migrateTablaIds = () => {
 const init = async () => {
   try {
     loadCachedData();
-    
+
     // Migrar IDs antiguos antes de sincronizar con Supabase
     migrateTablaIds();
-    
+
     if (useSupabase()) {
       await supabaseSync();
     }
   } catch (error) {
     console.error("[Init] Error durante la inicialización:", error);
   }
-  
+
   if (window.pdfjsLib) {
     window.pdfjsLib.GlobalWorkerOptions.workerSrc =
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
@@ -3424,9 +3426,9 @@ const init = async () => {
     });
     // Close sidebar when clicking on overlay
     document.addEventListener('click', (e) => {
-      if (sidebar.classList.contains('is-open') && 
-          !sidebar.contains(e.target) && 
-          !el.hamburgerBtn.contains(e.target)) {
+      if (sidebar.classList.contains('is-open') &&
+        !sidebar.contains(e.target) &&
+        !el.hamburgerBtn.contains(e.target)) {
         sidebar.classList.remove('is-open');
       }
     });

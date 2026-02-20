@@ -757,6 +757,7 @@ p {
   padding: 8px;
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
+  height: 40px;
 }
 
 .tramo-table tr:last-child td {
@@ -783,6 +784,9 @@ p {
   border-radius: 4px;
   transition: all 0.2s ease;
   position: relative;
+}
+
+.tramo-sustituto-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
