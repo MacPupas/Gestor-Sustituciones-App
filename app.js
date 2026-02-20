@@ -145,6 +145,15 @@ const supabaseSync = async () => {
   };
   console.log("[Supabase] Fetched:", tables);
 
+  // Si la tabla de bajas está vacía pero hay datos locales, guardarlos a Supabase
+  if (tables.bajas.length === 0) {
+    const localBajas = JSON.parse(localStorage.getItem(storageKeys.bajas) || "[]");
+    if (localBajas.length > 0) {
+      console.log("[Supabase] Recuperando bajas desde localStorage:", localBajas.length);
+      await supabaseSave("bajas", localBajas);
+    }
+  }
+
   // Obtener datos locales
   const localProfesores = JSON.parse(localStorage.getItem(storageKeys.profesores) || "[]");
   const localMaterias = JSON.parse(localStorage.getItem(storageKeys.materias) || "[]");
