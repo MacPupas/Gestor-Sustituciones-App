@@ -2799,9 +2799,23 @@ const restoreBackup = (file) => {
 };
 
 const printAsPng = async () => {
+  // Verificar que html2canvas esté disponible
+  if (typeof html2canvas === 'undefined') {
+    alert("Error: La librería html2canvas no está cargada. Recarga la página.");
+    console.error("html2canvas no está definido");
+    return;
+  }
+
   const printContent = document.getElementById("printView");
   if (!printContent) {
     alert("No hay contenido para imprimir.");
+    return;
+  }
+
+  // Verificar que haya contenido en la tabla
+  const printTable = document.getElementById("printTable");
+  if (!printTable || printTable.innerHTML.trim() === '') {
+    alert("No hay datos para imprimir. Primero haz clic en 'Actualizar vista'.");
     return;
   }
 
@@ -2813,6 +2827,7 @@ const printAsPng = async () => {
   printContent.style.zIndex = "-1";
 
   try {
+    console.log("Generando imagen con html2canvas...");
     const canvas = await html2canvas(printContent, {
       scale: 2,
       useCORS: true,
@@ -2821,8 +2836,14 @@ const printAsPng = async () => {
     });
 
     const imgData = canvas.toDataURL("image/png");
+    console.log("Imagen generada correctamente");
 
     const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      alert("El navegador bloqueó la ventana emergente. Permite las ventanas emergentes para imprimir.");
+      return;
+    }
+    
     printWindow.document.write(`
       <!DOCTYPE html>
       <html lang="es">
@@ -2851,7 +2872,9 @@ const printAsPng = async () => {
         <img src="${imgData}" class="print-image" />
         <script>
           window.onload = function() {
-            window.print();
+            setTimeout(function() {
+              window.print();
+            }, 500);
           };
         </script>
       </body>
@@ -2860,14 +2883,14 @@ const printAsPng = async () => {
     printWindow.document.close();
   } catch (error) {
     console.error("Error al generar imagen:", error);
-    alert("Error al generar la imagen para imprimir.");
+    alert("Error al generar la imagen para imprimir: " + error.message);
+  } finally {
+    printContent.style.width = originalWidth;
+    printContent.style.position = "";
+    printContent.style.left = "";
+    printContent.style.top = "";
+    printContent.style.zIndex = "";
   }
-
-  printContent.style.width = originalWidth;
-  printContent.style.position = "";
-  printContent.style.left = "";
-  printContent.style.top = "";
-  printContent.style.zIndex = "";
 };
 
 const exportAsPdf = async () => {
