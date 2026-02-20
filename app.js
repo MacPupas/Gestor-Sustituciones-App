@@ -1171,6 +1171,9 @@ const renderDashboard = () => {
         const sustituto = profesores.find(p => p.id === substitution.profesorSustitutoId);
         const extra = profesores.find(p => p.id === substitution.profesorExtraId);
 
+        const sustitutoNombre = sustituto ? getDisplayNameForProfesor(sustituto.id, sustituto.profesor || sustituto.profesorNombre) : '-';
+        const extraNombre = extra ? getDisplayNameForProfesor(extra.id, extra.profesor || extra.profesorNombre) : null;
+
         return `
                   <tr class="${isRecreo ? 'tramo-recreo' : ''}" data-id="${substitution.id}">
                     <td class="tramo-time">
@@ -1179,8 +1182,8 @@ const renderDashboard = () => {
                     <td class="tramo-sustituto">
                       <div class="tramo-sustituto-inner">
                         <span class="tramo-sustituto-content">
-                          ${sustituto ? formatNombreApellidos(sustituto.profesor || sustituto.profesorNombre) : '-'}
-                          ${extra ? `<br><small>+${formatNombreApellidos(extra.profesor || extra.profesorNombre)}</small>` : ''}
+                          ${sustitutoNombre}
+                          ${extraNombre ? `<br><small>+${extraNombre}</small>` : ''}
                         </span>
                         <button class="btn-delete-tramo" data-id="${substitution.id}" title="Eliminar tramo">🗑️</button>
                       </div>
@@ -2242,7 +2245,9 @@ const updateStats = () => {
       .slice(0, 5)
       .map(([id, data]) => {
         const prof = profesores.find((p) => p.id === id);
-        return { name: prof ? prof.profesor : id, dias: data.dias.size, sesiones: data.sesiones };
+        const nombreOriginal = prof ? prof.profesor : id;
+        const nombreMostrado = getDisplayNameForProfesor(id, nombreOriginal);
+        return { name: nombreMostrado, dias: data.dias.size, sesiones: data.sesiones };
       });
   };
 
@@ -2273,7 +2278,9 @@ const updateStats = () => {
     .sort((a, b) => b[1] - a[1])
     .map(([id, count]) => {
       const prof = profesores.find((p) => p.id === id);
-      return { name: prof ? prof.profesor : id, count };
+      const nombreOriginal = prof ? prof.profesor : id;
+      const nombreMostrado = getDisplayNameForProfesor(id, nombreOriginal);
+      return { name: nombreMostrado, count };
     });
 
   const renderRanking = (list) =>
@@ -2365,14 +2372,17 @@ const renderPrintTable = () => {
             const sustituto = profesores.find(p => p.id === substitution.profesorSustitutoId);
             const extra = profesores.find(p => p.id === substitution.profesorExtraId);
 
+            const sustitutoNombre = sustituto ? getDisplayNameForProfesor(sustituto.id, sustituto.profesor || sustituto.profesorNombre) : '-';
+            const extraNombre = extra ? getDisplayNameForProfesor(extra.id, extra.profesor || extra.profesorNombre) : null;
+
             return `
                       <tr class="${isRecreo ? 'print-tramo-recreo' : ''}">
                         <td class="print-tramo-time">
                           ${tramo.start}<br>${tramo.end}${isRecreo ? ' · Recreo' : ''}
                         </td>
                         <td class="print-tramo-sustituto">
-                          ${sustituto ? sustituto.profesor : '-'}
-                          ${extra ? `<br><small>+${extra.profesor}</small>` : ''}
+                          ${sustitutoNombre}
+                          ${extraNombre ? `<br><small>+${extraNombre}</small>` : ''}
                         </td>
                         <td class="print-tramo-grupo">
                           ${substitution.cursoGrupoMateria || '-'}
@@ -2664,6 +2674,24 @@ const initEvents = () => {
     updateMateriaInfo();
     // Obtener el nuevo profesor ausente y actualizar las opciones de sustituto
     const nuevoAusenteId = el.formProfesorAusente.value;
+    
+    // Si el profesor ausente está de baja, autocompletar con el relevista
+    if (nuevoAusenteId) {
+      const bajasActivas = getBajasActivas();
+      const bajaActiva = bajasActivas.find(b => b.profesorBajaId === nuevoAusenteId);
+      if (bajaActiva && bajaActiva.profesorRelevistaId) {
+        // El relevista tiene ID - seleccionarlo directamente
+        el.formProfesorSustituto.value = bajaActiva.profesorRelevistaId;
+      } else if (bajaActiva && bajaActiva.profesorRelevistaNombre) {
+        // El relevista no tiene ID - buscar por nombre en la lista de profesores
+        const profesores = getProfesores();
+        const relevista = profesores.find(p => normalizeText(p.profesor) === normalizeText(bajaActiva.profesorRelevistaNombre));
+        if (relevista) {
+          el.formProfesorSustituto.value = relevista.id;
+        }
+      }
+    }
+    
     const currentSustituto = el.formProfesorSustituto.value;
     refreshSustitutoOptions(nuevoAusenteId, currentSustituto);
   });
