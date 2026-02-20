@@ -401,15 +401,17 @@ const setTabla = (data) => {
     supabaseSave("tabla_horario", data);
   }
 };
-const setSustituciones = (data) => {
+const setSustituciones = async (data) => {
   const oldData = cachedData.sustituciones;
   cachedData.sustituciones = data;
   localStorage.setItem(storageKeys.sustituciones, JSON.stringify(data));
 
   if (useSupabase()) {
-    // Eliminar las sustituciones que ya no están
+    // Eliminar las sustituciones que ya no están (await para garantizar que se completan)
     const idsToDelete = oldData.filter(s => !data.find(d => d.id === s.id)).map(s => s.id);
-    idsToDelete.forEach(id => supabaseDelete("sustituciones", id));
+    if (idsToDelete.length > 0) {
+      await Promise.all(idsToDelete.map(id => supabaseDelete("sustituciones", id)));
+    }
     // Guardar las nuevas/actualizadas
     supabaseSave("sustituciones", data);
   }
@@ -1167,7 +1169,7 @@ const renderDashboard = () => {
 
   // Event listeners para botones de eliminar todos
   el.substitutionGrid.querySelectorAll('.btn-delete-all').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', async (e) => {
       const ausenteId = btn.dataset.ausenteId;
       const displayName = btn.dataset.teacher;
       const plainName = displayName.replace(/<[^>]*>/g, '');
@@ -1181,7 +1183,7 @@ const renderDashboard = () => {
           !teacherSubstitutions.some(teacherSub => teacherSub.id === sub.id)
         );
 
-        setSustituciones(updated);
+        await setSustituciones(updated);
         renderDashboard();
         updateStats();
         renderPrintTable();
@@ -1191,13 +1193,13 @@ const renderDashboard = () => {
 
   // Event listeners para botones de eliminar tramo (papelera junto al nombre)
   el.substitutionGrid.querySelectorAll('.btn-delete-tramo').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', async (e) => {
       e.stopPropagation();
       const id = btn.dataset.id;
       if (confirm('¿Estás seguro de eliminar esta sustitución?')) {
         const allSubstitutions = getSustituciones();
         const updated = allSubstitutions.filter(s => s.id !== id);
-        setSustituciones(updated);
+        await setSustituciones(updated);
         renderDashboard();
         updateStats();
         renderPrintTable();
