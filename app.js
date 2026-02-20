@@ -17,7 +17,7 @@ const useSupabase = () => {
 
 const supabaseFetch = async (table) => {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*&limit=10000`, {
       headers: {
         apikey: SUPABASE_KEY,
         Authorization: `Bearer ${SUPABASE_KEY}`,
