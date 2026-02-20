@@ -365,6 +365,8 @@ const state = {
   importMapping: {},
   datasetViewType: null,
   datasetViewSearch: "",
+  selectedProfesorFilter: "",
+  selectedRows: new Set(),
 };
 
 const el = {
@@ -1707,23 +1709,51 @@ const renderDataset = (type) => {
   if (type === "tabla") {
     const profesores = getProfesores();
     const search = state.datasetViewSearch.toLowerCase();
-    const filtered = search
-      ? data.filter((row) =>
+    const selectedProfesor = state.selectedProfesorFilter || "";
+    
+    let filtered = data;
+    
+    // Filtrar por búsqueda
+    if (search) {
+      filtered = filtered.filter((row) =>
         Object.values(row).some((val) =>
           String(val || "")
             .toLowerCase()
             .includes(search)
         )
-      )
-      : data;
+      );
+    }
+    
+    // Filtrar por profesor seleccionado
+    if (selectedProfesor) {
+      filtered = filtered.filter((row) => row.profesorId === selectedProfesor);
+    }
+
+    // Actualizar selector de profesores
+    const filterSelect = document.getElementById("filterProfesor");
+    if (filterSelect) {
+      const currentOptions = Array.from(filterSelect.options).map(o => o.value);
+      const profesorIds = [...new Set(data.map(r => r.profesorId).filter(Boolean))];
+      
+      // Solo actualizar si hay cambios
+      if (JSON.stringify(currentOptions.slice(1)) !== JSON.stringify(profesorIds)) {
+        filterSelect.innerHTML = '<option value="">Todos los profesores</option>' +
+          profesorIds.map(id => {
+            const prof = profesores.find(p => p.id === id);
+            const name = prof ? prof.profesor : id;
+            return `<option value="${id}" ${id === selectedProfesor ? 'selected' : ''}>${name}</option>`;
+          }).join("");
+      }
+    }
 
     if (!filtered.length) {
       el.datasetTable.innerHTML = `<div class="empty-tabla">No hay registros para mostrar.</div>`;
       return;
     }
 
-    // Build table with profesor names
+    // Build table with profesor names y checkboxes
     const headerRow = `
+      <th><input type="checkbox" id="selectAll" title="Seleccionar todos"></th>
       <th>Profesor</th>
       <th>Día</th>
       <th>Hora Inicio</th>
@@ -1733,11 +1763,13 @@ const renderDataset = (type) => {
     `;
 
     const body = filtered
-      .map((row) => {
+      .map((row, index) => {
         const prof = profesores.find((p) => p.id === row.profesorId);
         const profesorName = row.profesorNombre || (prof ? prof.profesor : row.profesorId || "-");
+        const rowId = row.id || `row-${index}`;
         return `
-          <tr>
+          <tr data-row-id="${rowId}">
+            <td><input type="checkbox" class="row-checkbox" data-row-id="${rowId}"></td>
             <td>${profesorName}</td>
             <td>${row.diaSemana || '-'}</td>
             <td>${row.horaInicio || '-'}</td>
@@ -1755,6 +1787,9 @@ const renderDataset = (type) => {
         <tbody>${body}</tbody>
       </table>
     `;
+    
+    // Configurar eventos de checkboxes
+    setupTableCheckboxEvents(filtered);
 
     return;
   }
@@ -2279,6 +2314,106 @@ const initImports = () => {
       URL.revokeObjectURL(url);
     });
   });
+
+  // Evento para filtro de profesor
+  const filterProfesor = document.getElementById("filterProfesor");
+  if (filterProfesor) {
+    filterProfesor.addEventListener("change", (e) => {
+      state.selectedProfesorFilter = e.target.value;
+      renderDataset("tabla");
+    });
+  }
+
+  // Evento para borrar seleccionados
+  const btnDeleteSelected = document.getElementById("btnDeleteSelected");
+  if (btnDeleteSelected) {
+    btnDeleteSelected.addEventListener("click", () => {
+      if (state.selectedRows.size === 0) {
+        alert("No hay filas seleccionadas.");
+        return;
+      }
+      
+      const confirmDelete = confirm(`¿Seguro que deseas borrar ${state.selectedRows.size} registros?`);
+      if (!confirmDelete) return;
+
+      const tabla = getTabla();
+      const profesores = getProfesores();
+      const selectedProfesor = state.selectedProfesorFilter;
+      
+      // Filtrar registros a eliminar
+      const updatedTabla = tabla.filter(row => {
+        const prof = profesores.find(p => p.id === row.profesorId);
+        const profesorName = row.profesorNombre || (prof ? prof.profesor : row.profesorId || "");
+        const rowId = row.id || `row-${tabla.indexOf(row)}`;
+        
+        // Si hay filtro de profesor activo, solo borrar las filas visibles seleccionadas
+        if (selectedProfesor && row.profesorId !== selectedProfesor) {
+          return true; // Mantener filas de otros profesores
+        }
+        
+        return !state.selectedRows.has(rowId);
+      });
+
+      setTabla(updatedTabla);
+      state.selectedRows.clear();
+      updateDeleteButton();
+      renderDataset("tabla");
+      renderDashboard();
+      alert("Registros borrados correctamente.");
+    });
+  }
+};
+
+// Función para configurar eventos de checkboxes en la tabla
+const setupTableCheckboxEvents = (filteredData) => {
+  const selectAll = document.getElementById("selectAll");
+  const checkboxes = document.querySelectorAll(".row-checkbox");
+  const btnDelete = document.getElementById("btnDeleteSelected");
+
+  if (selectAll) {
+    selectAll.addEventListener("change", (e) => {
+      const isChecked = e.target.checked;
+      checkboxes.forEach(cb => {
+        cb.checked = isChecked;
+        const rowId = cb.dataset.rowId;
+        if (isChecked) {
+          state.selectedRows.add(rowId);
+        } else {
+          state.selectedRows.delete(rowId);
+        }
+      });
+      updateDeleteButton();
+    });
+  }
+
+  checkboxes.forEach(cb => {
+    cb.addEventListener("change", (e) => {
+      const rowId = e.target.dataset.rowId;
+      if (e.target.checked) {
+        state.selectedRows.add(rowId);
+      } else {
+        state.selectedRows.delete(rowId);
+      }
+      
+      // Actualizar checkbox de "seleccionar todos"
+      if (selectAll) {
+        selectAll.checked = checkboxes.length > 0 && 
+          Array.from(checkboxes).every(cb => cb.checked);
+      }
+      updateDeleteButton();
+    });
+  });
+};
+
+// Actualizar estado del botón de borrar
+const updateDeleteButton = () => {
+  const btnDelete = document.getElementById("btnDeleteSelected");
+  if (btnDelete) {
+    btnDelete.disabled = state.selectedRows.size === 0;
+    btnDelete.textContent = state.selectedRows.size > 0 
+      ? `🗑️ Borrar ${state.selectedRows.size} seleccionados`
+      : "🗑️ Borrar seleccionados";
+  }
 };
 
 const initEvents = () => {

@@ -117,6 +117,13 @@
           </div>
           <div class="dataset-search-container">
             <input type="text" id="datasetSearch" value="" placeholder="Filtrar..." />
+            <select id="filterProfesor" class="form-select" style="min-width: 200px;">
+              <option value="">Todos los profesores</option>
+            </select>
+            <button class="btn btn-danger" id="btnDeleteSelected" disabled>
+              <span class="btn-icon">🗑️</span>
+              Borrar seleccionados
+            </button>
             <button class="btn btn-primary btn-add-profesor" id="btnAddActividad">
               <span class="btn-icon">+</span>
               Añadir actividad
