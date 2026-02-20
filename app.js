@@ -911,11 +911,21 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
     (entry) => entry.profesorId && entry.profesorId !== ausenteId && !occupied.includes(entry.profesorId)
   );
 
+  // Eliminar duplicados: un profesor solo debe aparecer una vez
+  const seenProfesorIds = new Set();
+  const uniqueEntries = filteredEntries.filter((entry) => {
+    if (seenProfesorIds.has(entry.profesorId)) {
+      return false;
+    }
+    seenProfesorIds.add(entry.profesorId);
+    return true;
+  });
+
   const options = ["<option value=\"\">Sin asignar</option>"];
 
   // Mostrar candidatos disponibles de la tabla importada con su materia en azul
-  if (filteredEntries.length > 0) {
-    filteredEntries.forEach((entry) => {
+  if (uniqueEntries.length > 0) {
+    uniqueEntries.forEach((entry) => {
       const count = sustitucionCount[entry.profesorId] || 0;
       const countLabel = count > 0 ? ` <b style="color:#dc2626; font-weight:bold;">(${count})</b>` : '';
       const materiaLabel = entry.asignatura ? ` <span style="color:#2563eb;">[${entry.asignatura}]</span>` : '';
