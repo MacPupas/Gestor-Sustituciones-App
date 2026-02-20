@@ -12,7 +12,8 @@ const storageKeys = {
 
 const useSupabase = () => {
   const val = localStorage.getItem(STORAGE_KEY);
-  return val === "true";
+  // Por defecto, Supabase está activado. Solo se desactiva si el usuario lo desactiva explícitamente
+  return val !== "false";
 };
 
 const supabaseFetch = async (table) => {
