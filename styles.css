@@ -158,16 +158,16 @@ p {
 }
 
 .backup-actions {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+}
 
-  .backup-actions .btn {
-    font-size: 0.75rem;
-    padding: 6px 10px;
-  }
+.backup-actions .btn {
+  font-size: 0.75rem;
+  padding: 6px 10px;
+}
 
 .backup-actions .btn-soft {
   background: #dbeafe;
@@ -833,20 +833,7 @@ p {
   box-shadow: 0 2px 4px rgba(91, 99, 255, 0.1);
 }
 
-.tramo-table td:not(.tramo-actions):not(.tramo-time)::after {
-  content: '✏️';
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 10px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
 
-.tramo-table td:not(.tramo-actions):not(.tramo-time):hover::after {
-  opacity: 0.5;
-}
 
 .tramo-actions {
   width: 60px;
@@ -863,7 +850,9 @@ p {
   font-style: italic;
 }
 
-.btn-edit, .btn-delete, .btn-add {
+.btn-edit,
+.btn-delete,
+.btn-add {
   width: 28px;
   height: 28px;
   border: none;
@@ -909,7 +898,9 @@ p {
   transform: scale(1.05);
 }
 
-.btn-edit svg, .btn-delete svg, .btn-add svg {
+.btn-edit svg,
+.btn-delete svg,
+.btn-add svg {
   width: 14px;
   height: 14px;
 }
@@ -982,7 +973,8 @@ p {
   justify-self: end;
 }
 
-.btn-edit, .btn-delete {
+.btn-edit,
+.btn-delete {
   width: 28px;
   height: 28px;
   border: none;
@@ -1016,7 +1008,9 @@ p {
   transform: scale(1.05);
 }
 
-.btn-edit svg, .btn-delete svg, .btn-add svg {
+.btn-edit svg,
+.btn-delete svg,
+.btn-add svg {
   width: 14px;
   height: 14px;
 }
@@ -1451,6 +1445,7 @@ select {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1472,7 +1467,7 @@ select {
     border: 1px solid #e5e7eb;
     border-radius: 4px;
     padding: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .hamburger svg {
@@ -1491,7 +1486,7 @@ select {
     flex-direction: column;
     background: white;
     z-index: 999;
-    box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
     margin-top: 0;
   }
 
@@ -1507,7 +1502,7 @@ select {
     left: 280px;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
     z-index: -1;
   }
 
@@ -1549,7 +1544,8 @@ select {
     visibility: hidden;
   }
 
-  .print-view, .print-view * {
+  .print-view,
+  .print-view * {
     visibility: visible;
   }
 
@@ -1809,17 +1805,17 @@ select {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .profesores-filters .search-section {
     flex-direction: column;
     width: 100%;
   }
-  
+
   .profesores-filters .search-section label {
     max-width: 100%;
     width: 100%;
   }
-  
+
   .profesores-filters .btn-add-profesor {
     width: 100%;
     justify-content: center;
@@ -1967,11 +1963,11 @@ select {
     gap: 12px;
     align-items: stretch;
   }
-  
+
   .materias-table {
     font-size: 0.9rem;
   }
-  
+
   .materias-table th,
   .materias-table td {
     padding: 8px 12px;
@@ -2039,11 +2035,11 @@ select {
     gap: 12px;
     align-items: stretch;
   }
-  
+
   .tabla-sustituciones-table {
     font-size: 0.9rem;
   }
-  
+
   .tabla-sustituciones-table th,
   .tabla-sustituciones-table td {
     padding: 8px 12px;
@@ -2085,12 +2081,12 @@ select {
     flex-direction: column;
     width: 100%;
   }
-  
+
   .tabla-filters .search-section label {
     max-width: 100%;
     width: 100%;
   }
-  
+
   .tabla-filters .btn-add-tabla {
     width: 100%;
     justify-content: center;
@@ -2176,15 +2172,15 @@ select {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .consejo-filters label {
     width: 100%;
   }
-  
+
   .consejo-filters input {
     width: 100%;
   }
-  
+
   .consejo-filters .btn {
     width: 100%;
     justify-content: center;
@@ -2334,7 +2330,7 @@ select {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
-  
+
   .print-sub-card {
     box-shadow: none;
     border: 1px solid #d1d5db;
@@ -2496,12 +2492,12 @@ select {
   .baja-form {
     grid-template-columns: 1fr;
   }
-  
+
   .baja-form-actions {
     flex-direction: column;
     width: 100%;
   }
-  
+
   .baja-form-actions .btn {
     width: 100%;
     justify-content: center;
