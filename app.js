@@ -175,13 +175,28 @@ const supabaseSync = async () => {
     }
   }
 
-  // Combinar datos de sustituciones
-  if (tables.sustituciones.length > 0 || localSustituciones.length > 0) {
-    const mergedSustituciones = mergeData(localSustituciones, tables.sustituciones);
-    setSustituciones(mergedSustituciones);
-    const newLocalSustituciones = localSustituciones.filter(s => !tables.sustituciones.some(rs => rs.id === s.id));
-    if (newLocalSustituciones.length > 0) {
-      await supabaseSave("sustituciones", newLocalSustituciones);
+  // Sincronizar sustituciones: localStorage es la fuente de verdad.
+  // Registros en Supabase que no están en local → fueron borrados localmente → borrar de Supabase.
+  // Registros en local que no están en Supabase → nuevos locales → subir a Supabase.
+  {
+    // Actualizar la caché local con los datos de localStorage (sin merge con remoto)
+    cachedData.sustituciones = localSustituciones;
+
+    // Registros remotos que ya NO están en local (fueron borrados) → eliminar de Supabase
+    const remoteOnlySustituciones = tables.sustituciones.filter(
+      rs => !localSustituciones.some(ls => ls.id === rs.id)
+    );
+    if (remoteOnlySustituciones.length > 0) {
+      console.log(`[Supabase] Eliminando ${remoteOnlySustituciones.length} sustituciones borradas localmente`);
+      await Promise.all(remoteOnlySustituciones.map(rs => supabaseDelete("sustituciones", rs.id)));
+    }
+
+    // Registros locales que NO están en remoto → subir a Supabase
+    const localOnlySustituciones = localSustituciones.filter(
+      ls => !tables.sustituciones.some(rs => rs.id === ls.id)
+    );
+    if (localOnlySustituciones.length > 0) {
+      await supabaseSave("sustituciones", localOnlySustituciones);
     }
   }
 
