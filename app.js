@@ -25,6 +25,7 @@ const supabaseFetch = async (table) => {
     });
     if (!res.ok) return [];
     const data = await res.json();
+    console.log(`[DEBUG] Supabase fetch ${table}: ${data.length} registros`);
     
     // Renombrar columnas de Supabase al formato de la app
     return data.map(item => {
@@ -1629,6 +1630,15 @@ const renderDataset = (type) => {
       : type === "materias"
         ? getMaterias()
         : getTabla();
+
+  // Debug: mostrar cantidad de registros cargados
+  if (type === "tabla") {
+    console.log(`[DEBUG] Total registros en tabla: ${data.length}`);
+    const profesoresUnicos = [...new Set(data.map(r => r.profesorNombre || r.profesorId))];
+    console.log(`[DEBUG] Profesores únicos: ${profesoresUnicos.length}`);
+    console.log(`[DEBUG] Primeros 5 profesores:`, profesoresUnicos.slice(0, 5));
+    console.log(`[DEBUG] Últimos 5 profesores:`, profesoresUnicos.slice(-5));
+  }
 
   if (type === "profesores") {
     el.datasetTable.innerHTML = renderProfesoresCards(data);
