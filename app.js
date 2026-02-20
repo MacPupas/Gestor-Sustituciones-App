@@ -1729,19 +1729,17 @@ const renderDataset = (type) => {
       filtered = filtered.filter((row) => row.profesorId === selectedProfesor);
     }
 
-    // Actualizar selector de profesores
+    // Actualizar selector de profesores (todos los profesores registrados)
     const filterSelect = document.getElementById("filterProfesor");
-    if (filterSelect) {
+    if (filterSelect && profesores.length > 0) {
       const currentOptions = Array.from(filterSelect.options).map(o => o.value);
-      const profesorIds = [...new Set(data.map(r => r.profesorId).filter(Boolean))];
+      const profesorIds = profesores.map(p => p.id);
       
       // Solo actualizar si hay cambios
       if (JSON.stringify(currentOptions.slice(1)) !== JSON.stringify(profesorIds)) {
         filterSelect.innerHTML = '<option value="">Todos los profesores</option>' +
-          profesorIds.map(id => {
-            const prof = profesores.find(p => p.id === id);
-            const name = prof ? prof.profesor : id;
-            return `<option value="${id}" ${id === selectedProfesor ? 'selected' : ''}>${name}</option>`;
+          profesores.map(prof => {
+            return `<option value="${prof.id}" ${prof.id === selectedProfesor ? 'selected' : ''}>${prof.profesor}</option>`;
           }).join("");
       }
     }
