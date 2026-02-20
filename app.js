@@ -1726,7 +1726,7 @@ const renderDataset = (type) => {
     
     // Filtrar por profesor seleccionado
     if (selectedProfesor) {
-      filtered = filtered.filter((row) => row.profesorId === selectedProfesor);
+      filtered = filtered.filter((row) => String(row.profesorId) === String(selectedProfesor));
     }
 
     // Actualizar selector de profesores (todos los profesores registrados)
@@ -1739,7 +1739,7 @@ const renderDataset = (type) => {
       if (JSON.stringify(currentOptions.slice(1)) !== JSON.stringify(profesorIds)) {
         filterSelect.innerHTML = '<option value="">Todos los profesores</option>' +
           profesores.map(prof => {
-            return `<option value="${prof.id}" ${prof.id === selectedProfesor ? 'selected' : ''}>${prof.profesor}</option>`;
+            return `<option value="${prof.id}" ${String(prof.id) === String(selectedProfesor) ? 'selected' : ''}>${prof.profesor}</option>`;
           }).join("");
       }
     }
@@ -1762,7 +1762,7 @@ const renderDataset = (type) => {
 
     const body = filtered
       .map((row, index) => {
-        const prof = profesores.find((p) => p.id === row.profesorId);
+        const prof = profesores.find((p) => String(p.id) === String(row.profesorId));
         const profesorName = row.profesorNombre || (prof ? prof.profesor : row.profesorId || "-");
         const rowId = row.id || `row-${index}`;
         return `
@@ -2340,12 +2340,12 @@ const initImports = () => {
       
       // Filtrar registros a eliminar
       const updatedTabla = tabla.filter(row => {
-        const prof = profesores.find(p => p.id === row.profesorId);
+        const prof = profesores.find(p => String(p.id) === String(row.profesorId));
         const profesorName = row.profesorNombre || (prof ? prof.profesor : row.profesorId || "");
         const rowId = row.id || `row-${tabla.indexOf(row)}`;
         
         // Si hay filtro de profesor activo, solo borrar las filas visibles seleccionadas
-        if (selectedProfesor && row.profesorId !== selectedProfesor) {
+        if (selectedProfesor && String(row.profesorId) !== String(selectedProfesor)) {
           return true; // Mantener filas de otros profesores
         }
         
