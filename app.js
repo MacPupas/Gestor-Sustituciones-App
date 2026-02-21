@@ -144,6 +144,7 @@ const supabaseSync = async () => {
     bajas: await supabaseFetch("bajas"),
   };
   console.log("[Supabase] Fetched:", tables);
+  console.log("[Supabase] Bajas count:", tables.bajas?.length || 0);
 
   // Si la tabla de bajas está vacía pero hay datos locales, guardarlos a Supabase
   if (tables.bajas.length === 0) {
@@ -378,6 +379,8 @@ const supabaseSave = async (table, data) => {
       if (!res.ok) {
         const err = await res.text();
         console.error(`[Supabase] Error saving to ${table}:`, res.status, err);
+      } else {
+        console.log(`[Supabase] Saved ${table}:`, payload);
       }
     }
   } catch (e) {
