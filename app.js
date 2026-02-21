@@ -3122,11 +3122,17 @@ const calculateConsejoEscolar = () => {
   const profesores = getProfesores();
 
   const filteredSubs = sustituciones.filter(s => {
+    if (isRelevistaDeBajaActiva(s.profesorSustitutoId, s.profesorAusenteId, s.fecha)) {
+      return false;
+    }
     const date = fromIso(s.fecha);
     return date >= from && date <= to;
   });
 
-  const totalHorasClase = 5;
+  const HORAS_POR_PROFESOR = 4.5;
+  const NUM_PROFESORES = 33;
+  const HORAS_TOTALES_DIA = HORAS_POR_PROFESOR * NUM_PROFESORES;
+
   const diasLaborables = [];
   for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
     const dayOfWeek = d.getDay();
@@ -3135,7 +3141,7 @@ const calculateConsejoEscolar = () => {
     }
   }
 
-  const totalHorasPeriodo = diasLaborables.length * totalHorasClase;
+  const totalHorasPeriodo = diasLaborables.length * HORAS_TOTALES_DIA;
 
   const horasConSustitucion = new Set();
   filteredSubs.forEach(s => {
@@ -3148,7 +3154,7 @@ const calculateConsejoEscolar = () => {
     : 0;
 
   document.getElementById("consejoHorasSustitucion").textContent = `${porcentajeHoras}%`;
-  document.getElementById("consejoHorasDetail").textContent = `${horasConSustitucion.size} / ${totalHorasPeriodo} horas`;
+  document.getElementById("consejoHorasDetail").textContent = `${horasConSustitucion.size} / ${totalHorasPeriodo.toFixed(1)} horas`;
 
   const profesoresAusentes = new Set();
   filteredSubs.forEach(s => {
