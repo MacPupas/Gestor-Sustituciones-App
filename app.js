@@ -3499,6 +3499,14 @@ const init = async () => {
     if (useSupabase()) {
       await supabaseSync();
     }
+
+    // Sincronización periódica cada 30 segundos
+    setInterval(async () => {
+      if (useSupabase()) {
+        console.log("[Sync] Sincronización periódica...");
+        await supabaseSync();
+      }
+    }, 30000);
   } catch (error) {
     console.error("[Init] Error durante la inicialización:", error);
   }
