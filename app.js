@@ -2745,6 +2745,18 @@ const initEvents = () => {
     });
   }
 
+  const btnSync = document.getElementById("btnSync");
+  if (btnSync) {
+    btnSync.addEventListener("click", async () => {
+      btnSync.textContent = "🔄 Sincronizando...";
+      btnSync.disabled = true;
+      await supabaseSync();
+      btnSync.textContent = "🔄 Sincronizar";
+      btnSync.disabled = false;
+      alert("Sincronización completada.");
+    });
+  }
+
   if (backupFile) {
     backupFile.addEventListener("change", (e) => {
       if (e.target.files.length > 0) {
@@ -3282,6 +3294,11 @@ const crearBaja = () => {
   const bajas = getBajas();
   bajas.push(nuevaBaja);
   setBajas(bajas);
+
+  // Guardar inmediatamente en Supabase
+  if (useSupabase()) {
+    supabaseSave("bajas", [nuevaBaja]);
+  }
 
   el.bajaProfesorBaja.value = "";
   el.bajaProfesorRelevista.value = "";
