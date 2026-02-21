@@ -2232,6 +2232,22 @@ const addNewTablaRecord = () => {
   refreshProfesorOptions();
 };
 
+const isRelevistaDeBajaActiva = (profesorSustitutoId, profesorAusenteId, fecha) => {
+  const bajasActivas = getBajasActivas();
+  const fechaSust = fromIso(fecha);
+  
+  const bajaRelevista = bajasActivas.find(b => {
+    if (b.profesorRelevistaId !== profesorSustitutoId) return false;
+    const inicio = fromIso(b.fechaInicio);
+    const fin = b.fechaFin ? fromIso(b.fechaFin) : null;
+    if (fechaSust < inicio) return false;
+    if (fin && fechaSust > fin) return false;
+    return true;
+  });
+  
+  return bajaRelevista && bajaRelevista.profesorBajaId === profesorAusenteId;
+};
+
 const updateStats = () => {
   const from = el.statsFrom.value ? fromIso(el.statsFrom.value) : null;
   const to = el.statsTo.value ? fromIso(el.statsTo.value) : null;
@@ -2239,6 +2255,9 @@ const updateStats = () => {
   const profesores = getProfesores();
 
   const filtered = getSustituciones().filter((s) => {
+    if (isRelevistaDeBajaActiva(s.profesorSustitutoId, s.profesorAusenteId, s.fecha)) {
+      return false;
+    }
     const date = fromIso(s.fecha);
     if (from && date < from) return false;
     if (to && date > to) return false;
