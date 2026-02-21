@@ -364,6 +364,7 @@ const supabaseSave = async (table, data) => {
         delete payload.profesorRelevistaNombre;
         delete payload.fechaInicio;
         delete payload.fechaFin;
+        delete payload.createdAt;
       }
 
       const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=id`, {
