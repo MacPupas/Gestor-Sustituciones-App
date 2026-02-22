@@ -2460,13 +2460,26 @@ const initNavigation = () => {
   const sidebar = document.querySelector(".sidebar");
   document.querySelectorAll(".nav-item").forEach((btn) => {
     btn.addEventListener("click", () => {
+      const page = btn.dataset.page;
+
+      if (page === "profesores") {
+        const savedKey = localStorage.getItem("gs_admin_key");
+        const enteredKey = prompt("Introduce la clave de acceso:");
+        if (enteredKey !== ".14004129") {
+          if (enteredKey !== null) {
+            alert("Contacta con administrador");
+          }
+          return;
+        }
+        localStorage.setItem("gs_admin_key", enteredKey);
+      }
+
       // Cerrar sidebar al hacer clic en cualquier elemento del menú
       if (sidebar) {
         sidebar.classList.remove("is-open");
       }
       document.querySelectorAll(".nav-item").forEach((b) => b.classList.remove("is-active"));
       btn.classList.add("is-active");
-      const page = btn.dataset.page;
       document.querySelectorAll(".page").forEach((section) => {
         section.classList.toggle("is-hidden", section.id !== `page-${page}`);
       });
