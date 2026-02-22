@@ -134,10 +134,12 @@ const supabaseFetch = async (table) => {
 };
 
 let isSyncing = false;
+let isSavingToSupabase = false;
 
 const supabaseSync = async () => {
   if (!useSupabase() || isSyncing) return;
   isSyncing = true;
+  isSavingToSupabase = true;
   console.log("[Supabase] Starting sync...");
   const tables = {
     profesores: await supabaseFetch("profesores"),
@@ -256,6 +258,7 @@ const supabaseSync = async () => {
 
   console.log("[Supabase] Sync complete");
   isSyncing = false;
+  isSavingToSupabase = false;
 };
 
 const supabaseDelete = async (table, id) => {
@@ -405,7 +408,7 @@ const setBajas = (data) => {
   const oldData = cachedData.bajas;
   cachedData.bajas = data;
   localStorage.setItem(storageKeys.bajas, JSON.stringify(data));
-  if (useSupabase()) {
+  if (useSupabase() && !isSavingToSupabase) {
     const idsToDelete = oldData.filter(b => !data.find(d => d.id === b.id)).map(b => b.id);
     idsToDelete.forEach(id => supabaseDelete("bajas", id));
     supabaseSave("bajas", data);
@@ -471,7 +474,7 @@ const setProfesores = (data) => {
   const oldData = cachedData.profesores;
   cachedData.profesores = data;
   localStorage.setItem(storageKeys.profesores, JSON.stringify(data));
-  if (useSupabase()) {
+  if (useSupabase() && !isSavingToSupabase) {
     const idsToDelete = oldData.filter(s => !data.find(d => d.id === s.id)).map(s => s.id);
     idsToDelete.forEach(id => supabaseDelete("profesores", id));
     supabaseSave("profesores", data);
@@ -481,7 +484,7 @@ const setMaterias = (data) => {
   const oldData = cachedData.materias;
   cachedData.materias = data;
   localStorage.setItem(storageKeys.materias, JSON.stringify(data));
-  if (useSupabase()) {
+  if (useSupabase() && !isSavingToSupabase) {
     const idsToDelete = oldData.filter(s => !data.find(d => d.id === s.id)).map(s => s.id);
     idsToDelete.forEach(id => supabaseDelete("materias", id));
     supabaseSave("materias", data);
@@ -491,7 +494,7 @@ const setTabla = (data) => {
   const oldData = cachedData.tabla;
   cachedData.tabla = data;
   localStorage.setItem(storageKeys.tabla, JSON.stringify(data));
-  if (useSupabase()) {
+  if (useSupabase() && !isSavingToSupabase) {
     const idsToDelete = oldData.filter(s => !data.find(d => d.id === s.id)).map(s => s.id);
     idsToDelete.forEach(id => supabaseDelete("tabla_horario", id));
     supabaseSave("tabla_horario", data);
@@ -502,7 +505,7 @@ const setSustituciones = async (data) => {
   cachedData.sustituciones = data;
   localStorage.setItem(storageKeys.sustituciones, JSON.stringify(data));
 
-  if (useSupabase()) {
+  if (useSupabase() && !isSavingToSupabase) {
     const idsToDelete = oldData.filter(s => !data.find(d => d.id === s.id)).map(s => s.id);
     if (idsToDelete.length > 0) {
       // Registrar como borrados para que otros navegadores no los restauren en el sync
