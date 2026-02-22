@@ -418,15 +418,15 @@ const getBajasActivas = () => {
 
 const getBajaEnFecha = (profesorId, fecha) => {
   const fechaStr = typeof fecha === 'string' ? fecha : toIso(fecha);
-  const fechaSust = fromIso(fechaStr);
+  const fechaSust = new Date(fechaStr).setHours(12, 0, 0, 0);
   
   const todasBajas = cachedData.bajas;
   
   const baja = todasBajas.find(b => {
     if (b.profesorBajaId !== profesorId) return false;
     
-    const inicio = fromIso(b.fechaInicio);
-    const fin = b.fechaFin ? fromIso(b.fechaFin) : null;
+    const inicio = new Date(b.fechaInicio).setHours(12, 0, 0, 0);
+    const fin = b.fechaFin ? new Date(b.fechaFin).setHours(12, 0, 0, 0) : null;
     
     if (fechaSust < inicio) return false;
     if (fin && fechaSust > fin) return false;
