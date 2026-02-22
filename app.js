@@ -416,11 +416,40 @@ const getBajasActivas = () => {
   return cachedData.bajas.filter(b => !b.fechaFin);
 };
 
-const getDisplayNameForProfesor = (profesorId, profesorNombre) => {
-  const bajasActivas = getBajasActivas();
-  const bajaActiva = bajasActivas.find(b => b.profesorBajaId === profesorId);
-  if (bajaActiva) {
-    return `${bajaActiva.profesorRelevistaNombre} <span class="baja-original">(${bajaActiva.profesorBajaNombre})</span>`;
+const getBajaEnFecha = (profesorId, fecha) => {
+  const fechaStr = typeof fecha === 'string' ? fecha : toIso(fecha);
+  const fechaSust = fromIso(fechaStr);
+  
+  const todasBajas = cachedData.bajas;
+  
+  const baja = todasBajas.find(b => {
+    if (b.profesorBajaId !== profesorId) return false;
+    
+    const inicio = fromIso(b.fechaInicio);
+    const fin = b.fechaFin ? fromIso(b.fechaFin) : null;
+    
+    if (fechaSust < inicio) return false;
+    if (fin && fechaSust > fin) return false;
+    
+    return true;
+  });
+  
+  return baja || null;
+};
+
+const getDisplayNameForProfesor = (profesorId, profesorNombre, fechaSustitucion = null) => {
+  if (!fechaSustitucion) {
+    const bajasActivas = getBajasActivas();
+    const bajaActiva = bajasActivas.find(b => b.profesorBajaId === profesorId);
+    if (bajaActiva) {
+      return `${bajaActiva.profesorRelevistaNombre} <span class="baja-original">(${bajaActiva.profesorBajaNombre})</span>`;
+    }
+    return profesorNombre;
+  }
+  
+  const baja = getBajaEnFecha(profesorId, fechaSustitucion);
+  if (baja) {
+    return `${baja.profesorRelevistaNombre} <span class="baja-original">(${baja.profesorBajaNombre})</span>`;
   }
   return profesorNombre;
 };
@@ -1071,8 +1100,8 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
     });
   }
 
-  // Si el profesor ausente está de baja activa, verificar si la fecha es durante la baja
-  const baja = ausenteId ? isProfesorDeBajaActivaEnFecha(ausenteId, currentFecha) : null;
+  // Si el profesor ausente está de baja en la fecha de la sustitución, verificar el periodo
+  const baja = ausenteId ? getBajaEnFecha(ausenteId, currentFecha) : null;
   const esDuranteBaja = baja !== null;
 
   // Durante la baja: solo el relevista puede sustituir
@@ -1080,9 +1109,9 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
   if (esDuranteBaja) {
     disponiblesTramo = disponiblesTramo.filter(entry => entry.profesorId === baja.profesorRelevistaId);
   } else if (ausenteId) {
-    // Obtener el relevista para excluirlo cuando no sea durante la baja
-    const bajasActivas = getBajasActivas();
-    const bajaDelAusente = bajasActivas.find(b => b.profesorBajaId === ausenteId);
+    // Obtener cualquier baja (activa o histórica) para excluir al relevista cuando no sea durante la baja
+    const todasBajas = cachedData.bajas;
+    const bajaDelAusente = todasBajas.find(b => b.profesorBajaId === ausenteId);
     if (bajaDelAusente && bajaDelAusente.profesorRelevistaId) {
       disponiblesTramo = disponiblesTramo.filter(entry => entry.profesorId !== bajaDelAusente.profesorRelevistaId);
     }
@@ -1227,8 +1256,8 @@ const renderDashboard = () => {
         const sustituto = profesores.find(p => p.id === substitution.profesorSustitutoId);
         const extra = profesores.find(p => p.id === substitution.profesorExtraId);
 
-        const sustitutoNombre = sustituto ? getDisplayNameForProfesor(sustituto.id, sustituto.profesor || sustituto.profesorNombre) : '-';
-        const extraNombre = extra ? getDisplayNameForProfesor(extra.id, extra.profesor || extra.profesorNombre) : null;
+        const sustitutoNombre = sustituto ? getDisplayNameForProfesor(sustituto.id, sustituto.profesor || sustituto.profesorNombre, substitution.fecha) : '-';
+        const extraNombre = extra ? getDisplayNameForProfesor(extra.id, extra.profesor || extra.profesorNombre, substitution.fecha) : null;
 
         return `
                   <tr class="${isRecreo ? 'tramo-recreo' : ''}" data-id="${substitution.id}">
@@ -2403,7 +2432,7 @@ const renderPrintTable = () => {
       daySubstitutions.forEach(sub => {
         const ausente = profesores.find(p => p.id === sub.profesorAusenteId);
         const teacherName = ausente ? ausente.profesor : 'Desconocido';
-        const displayName = getDisplayNameForProfesor(sub.profesorAusenteId, teacherName);
+    const displayName = getDisplayNameForProfesor(sub.profesorAusenteId, teacherName, sub.fecha);
 
         if (!substitutionsByTeacher[displayName]) {
           substitutionsByTeacher[displayName] = [];
@@ -2447,8 +2476,8 @@ const renderPrintTable = () => {
             const sustituto = profesores.find(p => p.id === substitution.profesorSustitutoId);
             const extra = profesores.find(p => p.id === substitution.profesorExtraId);
 
-            const sustitutoNombre = sustituto ? getDisplayNameForProfesor(sustituto.id, sustituto.profesor || sustituto.profesorNombre) : '-';
-            const extraNombre = extra ? getDisplayNameForProfesor(extra.id, extra.profesor || extra.profesorNombre) : null;
+            const sustitutoNombre = sustituto ? getDisplayNameForProfesor(sustituto.id, sustituto.profesor || sustituto.profesorNombre, substitution.fecha) : '-';
+            const extraNombre = extra ? getDisplayNameForProfesor(extra.id, extra.profesor || extra.profesorNombre, substitution.fecha) : null;
 
             return `
                       <tr class="${isRecreo ? 'print-tramo-recreo' : ''}">
