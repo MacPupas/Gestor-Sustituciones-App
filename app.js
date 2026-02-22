@@ -912,6 +912,22 @@ const updateMateriaInfo = () => {
   }
 };
 
+const isProfesorDeBajaActivaEnFecha = (profesorId, fecha) => {
+  const bajasActivas = getBajasActivas();
+  const fechaSust = fromIso(fecha);
+  
+  const baja = bajasActivas.find(b => b.profesorBajaId === profesorId);
+  if (!baja) return false;
+  
+  const inicio = fromIso(baja.fechaInicio);
+  const fin = baja.fechaFin ? fromIso(baja.fechaFin) : null;
+  
+  if (fechaSust < inicio) return false;
+  if (fin && fechaSust > fin) return false;
+  
+  return true;
+};
+
 const refreshProfesorOptions = () => {
   const tabla = getTabla();
   const dia = getFormDayNormalized();
@@ -920,6 +936,18 @@ const refreshProfesorOptions = () => {
   const currentFecha = el.formFecha.value || toIso(new Date());
   const sustituciones = getSustituciones();
   const ausenteId = el.formProfesorAusente.value;
+
+  if (ausenteId && !isProfesorDeBajaActivaEnFecha(ausenteId, currentFecha)) {
+    const bajasActivas = getBajasActivas();
+    const baja = bajasActivas.find(b => b.profesorBajaId === ausenteId);
+    if (baja) {
+      el.formError.textContent = `Este profesor está de baja desde el ${baja.fechaInicio}. Solo puede ser sustituido a partir de esa fecha.`;
+      el.formProfesorAusente.value = "";
+      refreshSustitutoOptions("", "");
+      return;
+    }
+  }
+  el.formError.textContent = "";
 
   const sustitucionCount = {};
   sustituciones.forEach(s => {
@@ -1443,6 +1471,15 @@ const handleSubmit = (event) => {
   const sustitutoId = el.formProfesorSustituto.value || null;
   const extraId = el.formProfesorExtra.value || null;
   const cursoGrupoMateria = el.formCursoGrupo.value || "";
+
+  if (!isProfesorDeBajaActivaEnFecha(ausenteId, fecha)) {
+    const bajasActivas = getBajasActivas();
+    const baja = bajasActivas.find(b => b.profesorBajaId === ausenteId);
+    if (baja) {
+      el.formError.textContent = `Este profesor está de baja desde el ${baja.fechaInicio}. Solo puede ser sustituido a partir de esa fecha.`;
+      return;
+    }
+  }
 
   const sustituciones = getSustituciones();
   if (state.editingId) {
