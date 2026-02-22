@@ -1204,7 +1204,7 @@ const renderDashboard = () => {
                       <div class="tramo-sustituto-inner">
                         <span class="tramo-sustituto-content">
                           ${sustitutoNombre}
-                          ${extraNombre ? `<br><small>+${extraNombre}</small>` : ''}
+                          ${extraNombre ? `<br>+${extraNombre}` : ''}
                         </span>
                         <button class="btn-delete-tramo" data-id="${substitution.id}" title="Eliminar tramo">🗑️</button>
                       </div>
