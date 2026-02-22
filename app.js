@@ -133,8 +133,11 @@ const supabaseFetch = async (table) => {
   }
 };
 
+let isSyncing = false;
+
 const supabaseSync = async () => {
-  if (!useSupabase()) return;
+  if (!useSupabase() || isSyncing) return;
+  isSyncing = true;
   console.log("[Supabase] Starting sync...");
   const tables = {
     profesores: await supabaseFetch("profesores"),
@@ -252,6 +255,7 @@ const supabaseSync = async () => {
   }
 
   console.log("[Supabase] Sync complete");
+  isSyncing = false;
 };
 
 const supabaseDelete = async (table, id) => {
@@ -438,11 +442,9 @@ const getBajaEnFecha = (profesorId, fecha) => {
 };
 
 const getDisplayNameForProfesor = (profesorId, profesorNombre, fechaSustitucion = null) => {
-  console.log('[getDisplayNameForProfesor] profesorId:', profesorId, 'fechaSustitucion:', fechaSustitucion, 'cachedData.bajas:', cachedData.bajas);
   if (!fechaSustitucion) {
     const bajasActivas = getBajasActivas();
     const bajaActiva = bajasActivas.find(b => b.profesorBajaId === profesorId);
-    console.log('[getDisplayNameForProfesor] Sin fecha, bajaActiva:', bajaActiva);
     if (bajaActiva) {
       return `${bajaActiva.profesorRelevistaNombre} <span class="baja-original">(${bajaActiva.profesorBajaNombre})</span>`;
     }
@@ -450,7 +452,6 @@ const getDisplayNameForProfesor = (profesorId, profesorNombre, fechaSustitucion 
   }
   
   const baja = getBajaEnFecha(profesorId, fechaSustitucion);
-  console.log('[getDisplayNameForProfesor] Con fecha, baja encontrada:', baja);
   if (baja) {
     return `${baja.profesorRelevistaNombre} <span class="baja-original">(${baja.profesorBajaNombre})</span>`;
   }
