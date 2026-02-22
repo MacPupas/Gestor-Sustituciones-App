@@ -1198,7 +1198,7 @@ const renderDashboard = () => {
   daySubstitutions.forEach(sub => {
     const ausente = profesores.find(p => p.id === sub.profesorAusenteId);
     const teacherName = ausente ? ausente.profesor : 'Desconocido';
-    const displayName = getDisplayNameForProfesor(sub.profesorAusenteId, teacherName);
+    const displayName = teacherName;
 
     if (!substitutionsByTeacher[displayName]) {
       substitutionsByTeacher[displayName] = {
@@ -2436,7 +2436,7 @@ const renderPrintTable = () => {
       daySubstitutions.forEach(sub => {
         const ausente = profesores.find(p => p.id === sub.profesorAusenteId);
         const teacherName = ausente ? ausente.profesor : 'Desconocido';
-    const displayName = getDisplayNameForProfesor(sub.profesorAusenteId, teacherName, sub.fecha);
+        const displayName = teacherName;
 
         if (!substitutionsByTeacher[displayName]) {
           substitutionsByTeacher[displayName] = [];
