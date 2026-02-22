@@ -917,15 +917,15 @@ const isProfesorDeBajaActivaEnFecha = (profesorId, fecha) => {
   const fechaSust = fromIso(fecha);
   
   const baja = bajasActivas.find(b => b.profesorBajaId === profesorId);
-  if (!baja) return false;
+  if (!baja) return null;
   
   const inicio = fromIso(baja.fechaInicio);
   const fin = baja.fechaFin ? fromIso(baja.fechaFin) : null;
   
-  if (fechaSust < inicio) return false;
-  if (fin && fechaSust > fin) return false;
+  if (fechaSust < inicio) return null;
+  if (fin && fechaSust > fin) return null;
   
-  return true;
+  return baja;
 };
 
 const refreshProfesorOptions = () => {
@@ -937,16 +937,6 @@ const refreshProfesorOptions = () => {
   const sustituciones = getSustituciones();
   const ausenteId = el.formProfesorAusente.value;
 
-  if (ausenteId && !isProfesorDeBajaActivaEnFecha(ausenteId, currentFecha)) {
-    const bajasActivas = getBajasActivas();
-    const baja = bajasActivas.find(b => b.profesorBajaId === ausenteId);
-    if (baja) {
-      el.formError.textContent = `Este profesor está de baja desde el ${baja.fechaInicio}. Solo puede ser sustituido a partir de esa fecha.`;
-      el.formProfesorAusente.value = "";
-      refreshSustitutoOptions("", "");
-      return;
-    }
-  }
   el.formError.textContent = "";
 
   const sustitucionCount = {};
@@ -1079,6 +1069,23 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
       const asignaturaNormalizada = (t.asignatura || '').toLowerCase().trim();
       return asignaturasSustituibles.some(a => asignaturaNormalizada.includes(a));
     });
+  }
+
+  // Si el profesor ausente está de baja activa, verificar si la fecha es durante la baja
+  const baja = ausenteId ? isProfesorDeBajaActivaEnFecha(ausenteId, currentFecha) : null;
+  const esDuranteBaja = baja !== null;
+
+  // Durante la baja: solo el relevista puede sustituir
+  // Antes o después de la baja: cualquier profesor disponible (no el relevista)
+  if (esDuranteBaja) {
+    disponiblesTramo = disponiblesTramo.filter(entry => entry.profesorId === baja.profesorRelevistaId);
+  } else if (ausenteId) {
+    // Obtener el relevista para excluirlo cuando no sea durante la baja
+    const bajasActivas = getBajasActivas();
+    const bajaDelAusente = bajasActivas.find(b => b.profesorBajaId === ausenteId);
+    if (bajaDelAusente && bajaDelAusente.profesorRelevistaId) {
+      disponiblesTramo = disponiblesTramo.filter(entry => entry.profesorId !== bajaDelAusente.profesorRelevistaId);
+    }
   }
 
   // Profesores que ya están ocupados en este día y tramo (como sustitutos o extras)
@@ -1471,15 +1478,6 @@ const handleSubmit = (event) => {
   const sustitutoId = el.formProfesorSustituto.value || null;
   const extraId = el.formProfesorExtra.value || null;
   const cursoGrupoMateria = el.formCursoGrupo.value || "";
-
-  if (!isProfesorDeBajaActivaEnFecha(ausenteId, fecha)) {
-    const bajasActivas = getBajasActivas();
-    const baja = bajasActivas.find(b => b.profesorBajaId === ausenteId);
-    if (baja) {
-      el.formError.textContent = `Este profesor está de baja desde el ${baja.fechaInicio}. Solo puede ser sustituido a partir de esa fecha.`;
-      return;
-    }
-  }
 
   const sustituciones = getSustituciones();
   if (state.editingId) {
