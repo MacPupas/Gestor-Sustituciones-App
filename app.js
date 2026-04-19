@@ -1072,6 +1072,7 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
   const currentFecha = el.formFecha.value;
   const sustituciones = getSustituciones();
   const tabla = getTabla();
+  const profesores = getProfesores();
 
   if (!start || !end) {
     el.formProfesorSustituto.innerHTML = '<option value="">Selecciona una hora primero</option>';
@@ -1109,18 +1110,28 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
 
   // Si el profesor ausente está de baja en la fecha de la sustitución, verificar el periodo
   const baja = ausenteId ? getBajaEnFecha(ausenteId, currentFecha) : null;
+  const profesorRelevista = baja
+    ? findProfesorMatch(profesores, baja.profesorRelevistaId, baja.profesorRelevistaNombre)
+    : null;
+  const relevistaId = profesorRelevista?.id || baja?.profesorRelevistaId || null;
   const esDuranteBaja = baja !== null;
 
   // Durante la baja: solo el relevista puede sustituir
   // Antes o después de la baja: cualquier profesor disponible (no el relevista)
   if (esDuranteBaja) {
-    disponiblesTramo = disponiblesTramo.filter(entry => entry.profesorId === baja.profesorRelevistaId);
+    if (relevistaId) {
+      disponiblesTramo = disponiblesTramo.filter(entry => entry.profesorId === relevistaId);
+    }
   } else if (ausenteId) {
     // Obtener cualquier baja (activa o histórica) para excluir al relevista cuando no sea durante la baja
     const todasBajas = cachedData.bajas;
     const bajaDelAusente = todasBajas.find(b => b.profesorBajaId === ausenteId);
-    if (bajaDelAusente && bajaDelAusente.profesorRelevistaId) {
-      disponiblesTramo = disponiblesTramo.filter(entry => entry.profesorId !== bajaDelAusente.profesorRelevistaId);
+    const relevistaFueraDeBaja = bajaDelAusente
+      ? findProfesorMatch(profesores, bajaDelAusente.profesorRelevistaId, bajaDelAusente.profesorRelevistaNombre)
+      : null;
+    const relevistaFueraDeBajaId = relevistaFueraDeBaja?.id || bajaDelAusente?.profesorRelevistaId || null;
+    if (relevistaFueraDeBajaId) {
+      disponiblesTramo = disponiblesTramo.filter(entry => entry.profesorId !== relevistaFueraDeBajaId);
     }
   }
 
@@ -1153,15 +1164,31 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
 
   const options = ["<option value=\"\">Sin asignar</option>"];
 
+  if (
+    esDuranteBaja &&
+    profesorRelevista &&
+    profesorRelevista.id !== ausenteId &&
+    !occupied.includes(profesorRelevista.id)
+  ) {
+    const count = sustitucionCount[profesorRelevista.id] || 0;
+    const countLabel = count > 0 ? ` <b style="color:#dc2626; font-weight:bold;">(${count})</b>` : '';
+    options.push(`<option value="${profesorRelevista.id}">${profesorRelevista.profesor}${countLabel} [Relevista]</option>`);
+  }
+
   // Mostrar candidatos disponibles de la tabla importada con su materia en azul
   if (uniqueEntries.length > 0) {
     uniqueEntries.forEach((entry) => {
+      if (profesorRelevista && entry.profesorId === profesorRelevista.id) {
+        return;
+      }
       const count = sustitucionCount[entry.profesorId] || 0;
       const countLabel = count > 0 ? ` <b style="color:#dc2626; font-weight:bold;">(${count})</b>` : '';
       const materiaLabel = entry.asignatura ? ` <span style="color:#2563eb;">[${entry.asignatura}]</span>` : '';
       options.push(`<option value="${entry.profesorId}">${entry.profesorNombre || 'Sin nombre'}${countLabel}${materiaLabel}</option>`);
     });
-  } else {
+  }
+
+  if (options.length === 1) {
     // Si no hay nadie disponible, mostrar mensaje
     options.push(`<option value="" disabled>No hay profesores disponibles en este tramo</option>`);
   }
@@ -3392,12 +3419,13 @@ const crearBaja = () => {
 
   const tabla = getTabla();
   const profesorBaja = tabla.find(t => t.profesorId === profesorBajaId);
+  const profesorRelevista = findProfesorMatch(getProfesores(), null, profesorRelevistaNombre);
 
   const nuevaBaja = {
     id: generateId(),
     profesorBajaId: profesorBajaId,
     profesorBajaNombre: profesorBaja?.profesorNombre || "Desconocido",
-    profesorRelevistaId: null,
+    profesorRelevistaId: profesorRelevista?.id || null,
     profesorRelevistaNombre: profesorRelevistaNombre,
     fechaInicio: fechaInicio,
     fechaFin: null,
