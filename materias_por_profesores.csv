@@ -1,8 +1,1281 @@
-profesor;dia_semana;hora_inicio;hora_fin;asignatura;curso_grupo
-Cantos Luque, María Rosa;lunes;9:00;9:30;REL;2ºA
-Martínez García, Juan;lunes;9:00;9:30;MAT;3ºB
-Fernández López, Ana;martes;10:00;10:30;LEN;1ºC
-García Salido, Oscar;martes;11:00;11:30;INF;4ºA
-García Ruiz, Laura;miércoles;9:30;10:00;CIE;2ºB
-López Martín, Pedro;jueves;12:00;12:30;ING;5ºA
-Sánchez Gómez, Carmen;viernes;13:00;13:30;EF;3ºC
+Profesor;Día;Hora Inicio;Hora Fin;Asignatura;Curso/Grupo
+Alcalá Benítez de Lugo, Maria Angeles;lunes;09:00;09:30;CA;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;martes;09:00;09:30;CA;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;miercoles;09:00;09:30;CA;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;jueves;09:00;09:30;CA;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;viernes;09:00;09:30;CA;INF3B
+Blanco Cano, Ignacio;lunes;09:00;09:30;Coord Familias;-
+Blanco Cano, Ignacio;martes;09:00;09:30;Coord Familias;-
+Blanco Cano, Ignacio;miercoles;09:00;09:30;Coord Familias;-
+Blanco Cano, Ignacio;jueves;09:00;09:30;Coord Familias;-
+Blanco Cano, Ignacio;viernes;09:00;09:30;Coord Familias;-
+Cantos Luque, María Rosa;lunes;09:00;09:30;REL;6ºA
+Cantos Luque, María Rosa;martes;09:00;09:30;REL;4ºA
+Cantos Luque, María Rosa;miercoles;09:00;09:30;REL;6ºB
+Cantos Luque, María Rosa;jueves;09:00;09:30;REL;4ºB
+Cantos Luque, María Rosa;viernes;09:00;09:30;REL;2ºB
+Carranza Berral, Inmaculada;lunes;09:00;09:30;EAR;2ºB
+Carranza Berral, Inmaculada;martes;09:00;09:30;EAR;5ºB
+Carranza Berral, Inmaculada;miercoles;09:00;09:30;EAR;3ºB
+Carranza Berral, Inmaculada;jueves;09:00;09:30;EAR;2ºA
+Carranza Berral, Inmaculada;viernes;09:00;09:30;Coordinación;-
+Carretero Márquez, Rosario;lunes;09:00;09:30;-;-
+Carretero Márquez, Rosario;martes;09:00;09:30;-;-
+Carretero Márquez, Rosario;miercoles;09:00;09:30;Pedagogía Terapéutica;1ºA
+Carretero Márquez, Rosario;jueves;09:00;09:30;Pedagogía Terapéutica;1ºA
+Carretero Márquez, Rosario;viernes;09:00;09:30;-;-
+Castro Jiménez, Rocío;lunes;09:00;09:30;CA;INF5A
+Castro Jiménez, Rocío;martes;09:00;09:30;CA;INF5A
+Castro Jiménez, Rocío;miercoles;09:00;09:30;CA;INF5A
+Castro Jiménez, Rocío;jueves;09:00;09:30;CA;INF5A
+Castro Jiménez, Rocío;viernes;09:00;09:30;CA;INF5A
+Cuesta Monterroso, Emilia Maria;lunes;09:00;09:30;CA;INF5B
+Cuesta Monterroso, Emilia Maria;martes;09:00;09:30;CA;INF5B
+Cuesta Monterroso, Emilia Maria;miercoles;09:00;09:30;CA;INF5B
+Cuesta Monterroso, Emilia Maria;jueves;09:00;09:30;CA;INF5B
+Cuesta Monterroso, Emilia Maria;viernes;09:00;09:30;CA;INF5B
+Doncel Laguna, Yolanda;lunes;09:00;09:30;ACL AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;martes;09:00;09:30;ACL AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;miercoles;09:00;09:30;ACL AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;jueves;09:00;09:30;ACL AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;viernes;09:00;09:30;ACL AULA ESP;AULA ESP
+Gant Tejada, Rafael;lunes;09:00;09:30;ING Refuerzo pedagógico;4ºA
+Gant Tejada, Rafael;martes;09:00;09:30;ING Refuerzo pedagógico;2ºA
+Gant Tejada, Rafael;miercoles;09:00;09:30;LCL Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;jueves;09:00;09:30;ING Refuerzo pedagógico;4ºA
+Gant Tejada, Rafael;viernes;09:00;09:30;LCL Refuerzo pedagógico;4ºB
+Gómez Vergara, Sonia;lunes;09:00;09:30;Refuerzo pedagógico;2ºA
+Gómez Vergara, Sonia;martes;09:00;09:30;Refuerzo pedagógico;1ºA
+Gómez Vergara, Sonia;miercoles;09:00;09:30;Refuerzo pedagógico;1ºA
+Gómez Vergara, Sonia;jueves;09:00;09:30;Refuerzo pedagógico;6ºB
+Gómez Vergara, Sonia;viernes;09:00;09:30;Refuerzo pedagógico;2ºA
+Leal García, Carmen Trinidad;lunes;09:00;09:30;REL;6ºA
+Leal García, Carmen Trinidad;martes;09:00;09:30;Refuerzo pedagógico;6ºB
+Leal García, Carmen Trinidad;miercoles;09:00;09:30;MAT;6ºA
+Leal García, Carmen Trinidad;jueves;09:00;09:30;LCL;6ºA
+Leal García, Carmen Trinidad;viernes;09:00;09:30;MAT;4ºA
+Ledesma Cid, Maria Angeles;lunes;09:00;09:30;CA;INF3A
+Ledesma Cid, Maria Angeles;martes;09:00;09:30;CA;INF3A
+Ledesma Cid, Maria Angeles;miercoles;09:00;09:30;CA;INF3A
+Ledesma Cid, Maria Angeles;jueves;09:00;09:30;CA;INF3A
+Ledesma Cid, Maria Angeles;viernes;09:00;09:30;CA;INF3A
+Llorente Ostiategui, Miguel;lunes;09:00;09:30;LCL;1ºA
+Llorente Ostiategui, Miguel;martes;09:00;09:30;EFI;2ºB
+Llorente Ostiategui, Miguel;miercoles;09:00;09:30;LCL;1ºA
+Llorente Ostiategui, Miguel;jueves;09:00;09:30;EFI;2ºB
+Llorente Ostiategui, Miguel;viernes;09:00;09:30;LCL;1ºA
+López Jiménez, Daniel;lunes;09:00;09:30;EFI;5ºA
+López Jiménez, Daniel;martes;09:00;09:30;EFI;6ºA
+López Jiménez, Daniel;miercoles;09:00;09:30;Coordinación;-
+López Jiménez, Daniel;jueves;09:00;09:30;Función directiva;-
+López Jiménez, Daniel;viernes;09:00;09:30;EFI;6ºA
+Maldonado Honorato, Davinia;lunes;09:00;09:30;CA Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;martes;09:00;09:30;ATEDU Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;miercoles;09:00;09:30;CA Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;jueves;09:00;09:30;CA Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;viernes;09:00;09:30;CA Audición y Lenguaje;INF4B
+Mohedano Morales, Elisa Isabel;lunes;09:00;09:30;Audición y Lenguaje;INF5B
+Mohedano Morales, Elisa Isabel;martes;09:00;09:30;-;-
+Mohedano Morales, Elisa Isabel;miercoles;09:00;09:30;Audición y Lenguaje;Aula TEA
+Mohedano Morales, Elisa Isabel;jueves;09:00;09:30;-;-
+Mohedano Morales, Elisa Isabel;viernes;09:00;09:30;Audición y Lenguaje;INF4A
+Moya Medina, Estefania;lunes;09:00;09:30;ING;3ºB
+Moya Medina, Estefania;martes;09:00;09:30;LCL INF4B;5ºA
+Moya Medina, Estefania;miercoles;09:00;09:30;ING;5ºB
+Moya Medina, Estefania;jueves;09:00;09:30;LCL;5ºA
+Moya Medina, Estefania;viernes;09:00;09:30;ING;5ºB
+Murillo Cerro, Rocío;lunes;09:00;09:30;ING;6ºB
+Murillo Cerro, Rocío;martes;09:00;09:30;LCL;6ºB
+Murillo Cerro, Rocío;miercoles;09:00;09:30;ATEDU;6ºB
+Murillo Cerro, Rocío;jueves;09:00;09:30;CMN;6ºB
+Murillo Cerro, Rocío;viernes;09:00;09:30;ING;6ºB
+Ogalla Navarro, Maria del Carmen;lunes;09:00;09:30;LCL;3ºA
+Ogalla Navarro, Maria del Carmen;martes;09:00;09:30;MAT;3ºB
+Ogalla Navarro, Maria del Carmen;miercoles;09:00;09:30;LCL;3ºA
+Ogalla Navarro, Maria del Carmen;jueves;09:00;09:30;LCL;3ºA
+Ogalla Navarro, Maria del Carmen;viernes;09:00;09:30;MAT;3ºB
+Peña García, Maria Carmen;lunes;09:00;09:30;Biblioteca Lect;-
+Peña García, Maria Carmen;martes;09:00;09:30;ATEDU;4ºA
+Peña García, Maria Carmen;miercoles;09:00;09:30;LCL;2ºB
+Peña García, Maria Carmen;jueves;09:00;09:30;Biblioteca Lect;-
+Peña García, Maria Carmen;viernes;09:00;09:30;ATEDU;2ºB
+Prats Conti, Juan Jose;lunes;09:00;09:30;EFI;4ºB
+Prats Conti, Juan Jose;martes;09:00;09:30;EFI;4ºB
+Prats Conti, Juan Jose;miercoles;09:00;09:30;EFI;4ºA
+Prats Conti, Juan Jose;jueves;09:00;09:30;EFI;3ºB
+Prats Conti, Juan Jose;viernes;09:00;09:30;MAT;3ºA
+Puntas Rey, Raquel;lunes;09:00;09:30;ACL Aula TEA;Aula TEA
+Puntas Rey, Raquel;martes;09:00;09:30;ACL Aula TEA;Aula TEA
+Puntas Rey, Raquel;miercoles;09:00;09:30;ACL Aula TEA;Aula TEA
+Puntas Rey, Raquel;jueves;09:00;09:30;ACL Aula TEA;Aula TEA
+Puntas Rey, Raquel;viernes;09:00;09:30;ACL Aula TEA;Aula TEA
+Salinas Lozano, Almudena;lunes;09:00;09:30;MAT;2ºA
+Salinas Lozano, Almudena;martes;09:00;09:30;MAT;1ºA
+Salinas Lozano, Almudena;miercoles;09:00;09:30;MAT;2ºA
+Salinas Lozano, Almudena;jueves;09:00;09:30;MAT;1ºA
+Salinas Lozano, Almudena;viernes;09:00;09:30;MAT;2ºA
+Tena Gálvez, Silvia;lunes;09:00;09:30;Función directiva;-
+Tena Gálvez, Silvia;martes;09:00;09:30;Función directiva;-
+Tena Gálvez, Silvia;miercoles;09:00;09:30;Función directiva;-
+Tena Gálvez, Silvia;jueves;09:00;09:30;ATEDU;4ºB
+Tena Gálvez, Silvia;viernes;09:00;09:30;Función directiva;-
+Urquizas Jiménez, Gema;lunes;09:00;09:30;LCL;1ºB
+Urquizas Jiménez, Gema;martes;09:00;09:30;LCL;1ºB
+Urquizas Jiménez, Gema;miercoles;09:00;09:30;LCL;1ºB
+Urquizas Jiménez, Gema;jueves;09:00;09:30;LCL;1ºB
+Urquizas Jiménez, Gema;viernes;09:00;09:30;LCL;1ºB
+Valverde Bascón, Inmaculada;lunes;09:00;09:30;Pedagogía Terapéutica;2ºA
+Valverde Bascón, Inmaculada;martes;09:00;09:30;Pedagogía Terapéutica;6ºB
+Valverde Bascón, Inmaculada;miercoles;09:00;09:30;Pedagogía Terapéutica;2ºB
+Valverde Bascón, Inmaculada;jueves;09:00;09:30;Pedagogía Terapéutica;6ºB
+Valverde Bascón, Inmaculada;viernes;09:00;09:30;Pedagogía Terapéutica;4ºA
+Alcalá Benítez de Lugo, Maria Angeles;lunes;09:30;10:00;CRR;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;martes;09:30;10:00;CRR;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;miercoles;09:30;10:00;CRR;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;jueves;09:30;10:00;CRR;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;viernes;09:30;10:00;CRR;INF3B
+Blanco Cano, Ignacio;lunes;09:30;10:00;Coord Familias;-
+Blanco Cano, Ignacio;martes;09:30;10:00;Coord Familias;-
+Blanco Cano, Ignacio;miercoles;09:30;10:00;Coord Familias;-
+Blanco Cano, Ignacio;jueves;09:30;10:00;Coord Familias;-
+Blanco Cano, Ignacio;viernes;09:30;10:00;Coord Familias;-
+Cantos Luque, María Rosa;lunes;09:30;10:00;REL;INF4A
+Cantos Luque, María Rosa;martes;09:30;10:00;REL;INF4A
+Cantos Luque, María Rosa;miercoles;09:30;10:00;REL;6ºB
+Cantos Luque, María Rosa;jueves;09:30;10:00;REL;4ºB
+Cantos Luque, María Rosa;viernes;09:30;10:00;REL;2ºB
+Carranza Berral, Inmaculada;lunes;09:30;10:00;EAR;2ºB
+Carranza Berral, Inmaculada;martes;09:30;10:00;EAR;5ºB
+Carranza Berral, Inmaculada;miercoles;09:30;10:00;EAR;3ºB
+Carranza Berral, Inmaculada;jueves;09:30;10:00;EAR;2ºA
+Carranza Berral, Inmaculada;viernes;09:30;10:00;Coordinación;-
+Carretero Márquez, Rosario;lunes;09:30;10:00;-;-
+Carretero Márquez, Rosario;martes;09:30;10:00;-;-
+Carretero Márquez, Rosario;miercoles;09:30;10:00;Pedagogía Terapéutica;1ºB
+Carretero Márquez, Rosario;jueves;09:30;10:00;Pedagogía Terapéutica;1ºA
+Carretero Márquez, Rosario;viernes;09:30;10:00;-;-
+Castro Jiménez, Rocío;lunes;09:30;10:00;CA;INF5A
+Castro Jiménez, Rocío;martes;09:30;10:00;CRR;INF5A
+Castro Jiménez, Rocío;miercoles;09:30;10:00;CA;INF5A
+Castro Jiménez, Rocío;jueves;09:30;10:00;CA;INF5A
+Castro Jiménez, Rocío;viernes;09:30;10:00;CA;INF5A
+Cuesta Monterroso, Emilia Maria;lunes;09:30;10:00;CA;INF5B
+Cuesta Monterroso, Emilia Maria;martes;09:30;10:00;CRR;INF5B
+Cuesta Monterroso, Emilia Maria;miercoles;09:30;10:00;CA;INF5B
+Cuesta Monterroso, Emilia Maria;jueves;09:30;10:00;CA;INF5B
+Cuesta Monterroso, Emilia Maria;viernes;09:30;10:00;CA;INF5B
+Doncel Laguna, Yolanda;lunes;09:30;10:00;ACL AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;martes;09:30;10:00;ACL AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;miercoles;09:30;10:00;ACL AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;jueves;09:30;10:00;ACL AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;viernes;09:30;10:00;ACL AULA ESP;AULA ESP
+Gant Tejada, Rafael;lunes;09:30;10:00;ING Refuerzo pedagógico;4ºA
+Gant Tejada, Rafael;martes;09:30;10:00;ING Refuerzo pedagógico;2ºA
+Gant Tejada, Rafael;miercoles;09:30;10:00;LCL Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;jueves;09:30;10:00;ING Refuerzo pedagógico;4ºA
+Gant Tejada, Rafael;viernes;09:30;10:00;LCL Refuerzo pedagógico;4ºB
+Gómez Vergara, Sonia;lunes;09:30;10:00;Refuerzo pedagógico;2ºA
+Gómez Vergara, Sonia;martes;09:30;10:00;Refuerzo pedagógico;1ºA
+Gómez Vergara, Sonia;miercoles;09:30;10:00;Refuerzo pedagógico;1ºA
+Gómez Vergara, Sonia;jueves;09:30;10:00;Refuerzo pedagógico;6ºB
+Gómez Vergara, Sonia;viernes;09:30;10:00;Refuerzo pedagógico;2ºA
+Leal García, Carmen Trinidad;lunes;09:30;10:00;Refuerzo pedagógico;6ºA
+Leal García, Carmen Trinidad;martes;09:30;10:00;MAT;4ºA
+Leal García, Carmen Trinidad;miercoles;09:30;10:00;MAT;6ºA
+Leal García, Carmen Trinidad;jueves;09:30;10:00;LCL;6ºA
+Leal García, Carmen Trinidad;viernes;09:30;10:00;MAT;4ºA
+Ledesma Cid, Maria Angeles;lunes;09:30;10:00;CRR;INF3A
+Ledesma Cid, Maria Angeles;martes;09:30;10:00;CRR;INF3A
+Ledesma Cid, Maria Angeles;miercoles;09:30;10:00;CRR;INF3A
+Ledesma Cid, Maria Angeles;jueves;09:30;10:00;CRR;INF3A
+Ledesma Cid, Maria Angeles;viernes;09:30;10:00;CRR;INF3A
+Llorente Ostiategui, Miguel;lunes;09:30;10:00;LCL;1ºA
+Llorente Ostiategui, Miguel;martes;09:30;10:00;EFI;2ºB
+Llorente Ostiategui, Miguel;miercoles;09:30;10:00;LCL;1ºA
+Llorente Ostiategui, Miguel;jueves;09:30;10:00;EFI;2ºB
+Llorente Ostiategui, Miguel;viernes;09:30;10:00;LCL;1ºA
+López Jiménez, Daniel;lunes;09:30;10:00;EFI;5ºA
+López Jiménez, Daniel;martes;09:30;10:00;EFI;6ºA
+López Jiménez, Daniel;miercoles;09:30;10:00;Coordinación;-
+López Jiménez, Daniel;jueves;09:30;10:00;Función directiva;-
+López Jiménez, Daniel;viernes;09:30;10:00;EFI;6ºA
+Maldonado Honorato, Davinia;lunes;09:30;10:00;CA Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;martes;09:30;10:00;ATEDU Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;miercoles;09:30;10:00;CA Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;jueves;09:30;10:00;CA Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;viernes;09:30;10:00;CA Audición y Lenguaje;INF4B
+Mohedano Morales, Elisa Isabel;lunes;09:30;10:00;Audición y Lenguaje;INF5B
+Mohedano Morales, Elisa Isabel;martes;09:30;10:00;-;-
+Mohedano Morales, Elisa Isabel;miercoles;09:30;10:00;Audición y Lenguaje;Aula TEA
+Mohedano Morales, Elisa Isabel;jueves;09:30;10:00;-;-
+Mohedano Morales, Elisa Isabel;viernes;09:30;10:00;Audición y Lenguaje;INF4A
+Moya Medina, Estefania;lunes;09:30;10:00;ING;3ºB
+Moya Medina, Estefania;martes;09:30;10:00;LCL INF4B;5ºA
+Moya Medina, Estefania;miercoles;09:30;10:00;ING;5ºB
+Moya Medina, Estefania;jueves;09:30;10:00;LCL;5ºA
+Moya Medina, Estefania;viernes;09:30;10:00;ING;5ºB
+Murillo Cerro, Rocío;lunes;09:30;10:00;ING;6ºA
+Murillo Cerro, Rocío;martes;09:30;10:00;LCL;6ºB
+Murillo Cerro, Rocío;miercoles;09:30;10:00;ATEDU;6ºB
+Murillo Cerro, Rocío;jueves;09:30;10:00;CMN;6ºB
+Murillo Cerro, Rocío;viernes;09:30;10:00;ING;6ºB
+Ogalla Navarro, Maria del Carmen;lunes;09:30;10:00;LCL;3ºA
+Ogalla Navarro, Maria del Carmen;martes;09:30;10:00;MAT;3ºB
+Ogalla Navarro, Maria del Carmen;miercoles;09:30;10:00;LCL;3ºA
+Ogalla Navarro, Maria del Carmen;jueves;09:30;10:00;LCL;3ºA
+Ogalla Navarro, Maria del Carmen;viernes;09:30;10:00;MAT;3ºB
+Peña García, Maria Carmen;lunes;09:30;10:00;Coordinación;-
+Peña García, Maria Carmen;martes;09:30;10:00;Coordinación;-
+Peña García, Maria Carmen;miercoles;09:30;10:00;LCL;2ºB
+Peña García, Maria Carmen;jueves;09:30;10:00;Coordinación;-
+Peña García, Maria Carmen;viernes;09:30;10:00;ATEDU;2ºB
+Prats Conti, Juan Jose;lunes;09:30;10:00;EFI;4ºB
+Prats Conti, Juan Jose;martes;09:30;10:00;EFI;4ºB
+Prats Conti, Juan Jose;miercoles;09:30;10:00;EFI;4ºA
+Prats Conti, Juan Jose;jueves;09:30;10:00;EFI;3ºB
+Prats Conti, Juan Jose;viernes;09:30;10:00;MAT;3ºA
+Puntas Rey, Raquel;lunes;09:30;10:00;ACL Aula TEA;Aula TEA
+Puntas Rey, Raquel;martes;09:30;10:00;ACL Aula TEA;Aula TEA
+Puntas Rey, Raquel;miercoles;09:30;10:00;ACL Aula TEA;Aula TEA
+Puntas Rey, Raquel;jueves;09:30;10:00;ACL Aula TEA;Aula TEA
+Puntas Rey, Raquel;viernes;09:30;10:00;ACL Aula TEA;Aula TEA
+Salinas Lozano, Almudena;lunes;09:30;10:00;MAT;2ºA
+Salinas Lozano, Almudena;martes;09:30;10:00;MAT;1ºA
+Salinas Lozano, Almudena;miercoles;09:30;10:00;MAT;2ºA
+Salinas Lozano, Almudena;jueves;09:30;10:00;MAT;1ºA
+Salinas Lozano, Almudena;viernes;09:30;10:00;MAT;2ºA
+Tena Gálvez, Silvia;lunes;09:30;10:00;MAT;6ºB
+Tena Gálvez, Silvia;martes;09:30;10:00;Función directiva;-
+Tena Gálvez, Silvia;miercoles;09:30;10:00;Función directiva;-
+Tena Gálvez, Silvia;jueves;09:30;10:00;ATEDU;4ºB
+Tena Gálvez, Silvia;viernes;09:30;10:00;Función directiva;-
+Urquizas Jiménez, Gema;lunes;09:30;10:00;LCL;1ºB
+Urquizas Jiménez, Gema;martes;09:30;10:00;LCL;1ºB
+Urquizas Jiménez, Gema;miercoles;09:30;10:00;LCL;1ºB
+Urquizas Jiménez, Gema;jueves;09:30;10:00;LCL;1ºB
+Urquizas Jiménez, Gema;viernes;09:30;10:00;LCL;1ºB
+Valverde Bascón, Inmaculada;lunes;09:30;10:00;Pedagogía Terapéutica;2ºA
+Valverde Bascón, Inmaculada;martes;09:30;10:00;Pedagogía Terapéutica;6ºB
+Valverde Bascón, Inmaculada;miercoles;09:30;10:00;Pedagogía Terapéutica;2ºB
+Valverde Bascón, Inmaculada;jueves;09:30;10:00;Pedagogía Terapéutica;6ºB
+Valverde Bascón, Inmaculada;viernes;09:30;10:00;Pedagogía Terapéutica;4ºA
+Alcalá Benítez de Lugo, Maria Angeles;lunes;10:00;10:30;CRR;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;martes;10:00;10:30;CRR;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;miercoles;10:00;10:30;CRR;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;jueves;10:00;10:30;CRR;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;viernes;10:00;10:30;CRR;INF3B
+Blanco Cano, Ignacio;lunes;10:00;10:30;Función directiva;-
+Blanco Cano, Ignacio;martes;10:00;10:30;Función directiva;-
+Blanco Cano, Ignacio;miercoles;10:00;10:30;Función directiva;-
+Blanco Cano, Ignacio;jueves;10:00;10:30;Función directiva;-
+Blanco Cano, Ignacio;viernes;10:00;10:30;Función directiva;-
+Cantos Luque, María Rosa;lunes;10:00;10:30;REL;INF4A
+Cantos Luque, María Rosa;martes;10:00;10:30;REL;2ºB
+Cantos Luque, María Rosa;miercoles;10:00;10:30;REL;3ºB
+Cantos Luque, María Rosa;jueves;10:00;10:30;REL;6ºA
+Cantos Luque, María Rosa;viernes;10:00;10:30;REL;3ºA
+Carranza Berral, Inmaculada;lunes;10:00;10:30;Coordinación;-
+Carranza Berral, Inmaculada;martes;10:00;10:30;EAR;1ºA
+Carranza Berral, Inmaculada;miercoles;10:00;10:30;LCL;4ºA
+Carranza Berral, Inmaculada;jueves;10:00;10:30;LCL;4ºA
+Carranza Berral, Inmaculada;viernes;10:00;10:30;EAR;5ºA
+Carretero Márquez, Rosario;lunes;10:00;10:30;-;-
+Carretero Márquez, Rosario;martes;10:00;10:30;-;-
+Carretero Márquez, Rosario;miercoles;10:00;10:30;Pedagogía Terapéutica;INF5A
+Carretero Márquez, Rosario;jueves;10:00;10:30;Pedagogía Terapéutica;5ºA
+Carretero Márquez, Rosario;viernes;10:00;10:30;-;-
+Castro Jiménez, Rocío;lunes;10:00;10:30;CA;INF5A
+Castro Jiménez, Rocío;martes;10:00;10:30;CRR;INF5A
+Castro Jiménez, Rocío;miercoles;10:00;10:30;CRR;INF5A
+Castro Jiménez, Rocío;jueves;10:00;10:30;CRR;INF5A
+Castro Jiménez, Rocío;viernes;10:00;10:30;DEE;INF5A
+Cuesta Monterroso, Emilia Maria;lunes;10:00;10:30;CA;INF5B
+Cuesta Monterroso, Emilia Maria;martes;10:00;10:30;CRR;INF5B
+Cuesta Monterroso, Emilia Maria;miercoles;10:00;10:30;CRR;INF5B
+Cuesta Monterroso, Emilia Maria;jueves;10:00;10:30;CRR;INF5B
+Cuesta Monterroso, Emilia Maria;viernes;10:00;10:30;DEE;INF5B
+Doncel Laguna, Yolanda;lunes;10:00;10:30;ACL AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;martes;10:00;10:30;ACL AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;miercoles;10:00;10:30;ACL AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;jueves;10:00;10:30;ACL AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;viernes;10:00;10:30;ACL AULA ESP;AULA ESP
+Gant Tejada, Rafael;lunes;10:00;10:30;LCL Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;martes;10:00;10:30;LCL Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;miercoles;10:00;10:30;MAT Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;jueves;10:00;10:30;LCL Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;viernes;10:00;10:30;MAT Refuerzo pedagógico;4ºB
+Gómez Vergara, Sonia;lunes;10:00;10:30;Refuerzo pedagógico;4ºA
+Gómez Vergara, Sonia;martes;10:00;10:30;Refuerzo pedagógico;6ºA
+Gómez Vergara, Sonia;miercoles;10:00;10:30;Refuerzo pedagógico;4ºA
+Gómez Vergara, Sonia;jueves;10:00;10:30;Refuerzo pedagógico;1ºA
+Gómez Vergara, Sonia;viernes;10:00;10:30;Refuerzo pedagógico;1ºB
+Leal García, Carmen Trinidad;lunes;10:00;10:30;MAT;4ºA
+Leal García, Carmen Trinidad;martes;10:00;10:30;MAT;4ºA
+Leal García, Carmen Trinidad;miercoles;10:00;10:30;LCL;6ºA
+Leal García, Carmen Trinidad;jueves;10:00;10:30;REL;6ºA
+Leal García, Carmen Trinidad;viernes;10:00;10:30;LCL;6ºA
+Ledesma Cid, Maria Angeles;lunes;10:00;10:30;CRR;INF3A
+Ledesma Cid, Maria Angeles;martes;10:00;10:30;CRR;INF3A
+Ledesma Cid, Maria Angeles;miercoles;10:00;10:30;CRR;INF3A
+Ledesma Cid, Maria Angeles;jueves;10:00;10:30;CRR;INF3A
+Ledesma Cid, Maria Angeles;viernes;10:00;10:30;CRR;INF3A
+Llorente Ostiategui, Miguel;lunes;10:00;10:30;EFI;2ºA
+Llorente Ostiategui, Miguel;martes;10:00;10:30;EFI;1ºB
+Llorente Ostiategui, Miguel;miercoles;10:00;10:30;EFI;1ºA
+Llorente Ostiategui, Miguel;jueves;10:00;10:30;LCL;1ºA
+Llorente Ostiategui, Miguel;viernes;10:00;10:30;EFI;2ºB
+López Jiménez, Daniel;lunes;10:00;10:30;Coordinación STEAM 4.0;-
+López Jiménez, Daniel;martes;10:00;10:30;Coordinación STEAM 4.0;-
+López Jiménez, Daniel;miercoles;10:00;10:30;Función directiva;-
+López Jiménez, Daniel;jueves;10:00;10:30;EFI;5ºB
+López Jiménez, Daniel;viernes;10:00;10:30;Función directiva;-
+Maldonado Honorato, Davinia;lunes;10:00;10:30;DEE Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;martes;10:00;10:30;ATEDU Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;miercoles;10:00;10:30;DEE Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;jueves;10:00;10:30;DEE Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;viernes;10:00;10:30;DEE Audición y Lenguaje;INF4B
+Mohedano Morales, Elisa Isabel;lunes;10:00;10:30;Audición y Lenguaje;INF4B
+Mohedano Morales, Elisa Isabel;martes;10:00;10:30;-;-
+Mohedano Morales, Elisa Isabel;miercoles;10:00;10:30;Audición y Lenguaje;3ºA
+Mohedano Morales, Elisa Isabel;jueves;10:00;10:30;-;-
+Mohedano Morales, Elisa Isabel;viernes;10:00;10:30;Audición y Lenguaje;INF4B
+Moya Medina, Estefania;lunes;10:00;10:30;EAR;5ºA
+Moya Medina, Estefania;martes;10:00;10:30;ING INF4B;5ºA
+Moya Medina, Estefania;miercoles;10:00;10:30;CMN;5ºA
+Moya Medina, Estefania;jueves;10:00;10:30;ING;3ºA
+Moya Medina, Estefania;viernes;10:00;10:30;ING;3ºB
+Murillo Cerro, Rocío;lunes;10:00;10:30;ING;6ºA
+Murillo Cerro, Rocío;martes;10:00;10:30;ING;6ºA
+Murillo Cerro, Rocío;miercoles;10:00;10:30;CMN;6ºB
+Murillo Cerro, Rocío;jueves;10:00;10:30;LCL;6ºB
+Murillo Cerro, Rocío;viernes;10:00;10:30;ING;1ºA
+Ogalla Navarro, Maria del Carmen;lunes;10:00;10:30;LCL;3ºB
+Ogalla Navarro, Maria del Carmen;martes;10:00;10:30;LCL;3ºA
+Ogalla Navarro, Maria del Carmen;miercoles;10:00;10:30;Mayores de 55 años;-
+Ogalla Navarro, Maria del Carmen;jueves;10:00;10:30;MAT;3ºB
+Ogalla Navarro, Maria del Carmen;viernes;10:00;10:30;Mayores de 55 años;-
+Peña García, Maria Carmen;lunes;10:00;10:30;LCL;2ºB
+Peña García, Maria Carmen;martes;10:00;10:30;ATEDU;2ºB
+Peña García, Maria Carmen;miercoles;10:00;10:30;MAT;2ºB
+Peña García, Maria Carmen;jueves;10:00;10:30;LCL;2ºB
+Peña García, Maria Carmen;viernes;10:00;10:30;Biblioteca Lect;-
+Prats Conti, Juan Jose;lunes;10:00;10:30;MAT;3ºA
+Prats Conti, Juan Jose;martes;10:00;10:30;EFI;3ºB
+Prats Conti, Juan Jose;miercoles;10:00;10:30;MAT;3ºA
+Prats Conti, Juan Jose;jueves;10:00;10:30;Mayores de 55 años;-
+Prats Conti, Juan Jose;viernes;10:00;10:30;EFI;4ºA
+Puntas Rey, Raquel;lunes;10:00;10:30;ACL Aula TEA;Aula TEA
+Puntas Rey, Raquel;martes;10:00;10:30;ACL Aula TEA;Aula TEA
+Puntas Rey, Raquel;miercoles;10:00;10:30;ACL Aula TEA;Aula TEA
+Puntas Rey, Raquel;jueves;10:00;10:30;ACL Aula TEA;Aula TEA
+Puntas Rey, Raquel;viernes;10:00;10:30;ACL Aula TEA;Aula TEA
+Salinas Lozano, Almudena;lunes;10:00;10:30;MAT;1ºA
+Salinas Lozano, Almudena;martes;10:00;10:30;MAT;2ºA
+Salinas Lozano, Almudena;miercoles;10:00;10:30;LCL;2ºA
+Salinas Lozano, Almudena;jueves;10:00;10:30;MAT;2ºA
+Salinas Lozano, Almudena;viernes;10:00;10:30;LCL;2ºA
+Tena Gálvez, Silvia;lunes;10:00;10:30;MAT;6ºB
+Tena Gálvez, Silvia;martes;10:00;10:30;ALCT;6ºB
+Tena Gálvez, Silvia;miercoles;10:00;10:30;ATEDU;3ºB
+Tena Gálvez, Silvia;jueves;10:00;10:30;Función directiva;-
+Tena Gálvez, Silvia;viernes;10:00;10:30;ATEDU;3ºA
+Urquizas Jiménez, Gema;lunes;10:00;10:30;LCL;1ºB
+Urquizas Jiménez, Gema;martes;10:00;10:30;FR2;6ºB
+Urquizas Jiménez, Gema;miercoles;10:00;10:30;MAT;1ºB
+Urquizas Jiménez, Gema;jueves;10:00;10:30;MAT;1ºB
+Urquizas Jiménez, Gema;viernes;10:00;10:30;LCL;1ºB
+Valverde Bascón, Inmaculada;lunes;10:00;10:30;Pedagogía Terapéutica;2ºB
+Valverde Bascón, Inmaculada;martes;10:00;10:30;Pedagogía Terapéutica;4ºB
+Valverde Bascón, Inmaculada;miercoles;10:00;10:30;Pedagogía Terapéutica;INF4A
+Valverde Bascón, Inmaculada;jueves;10:00;10:30;Pedagogía Terapéutica;INF4B
+Valverde Bascón, Inmaculada;viernes;10:00;10:30;Pedagogía Terapéutica;6ºA
+Alcalá Benítez de Lugo, Maria Angeles;lunes;10:30;11:00;DEE;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;martes;10:30;11:00;DEE;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;miercoles;10:30;11:00;DEE;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;jueves;10:30;11:00;Refuerzo pedagógico;INF3A
+Alcalá Benítez de Lugo, Maria Angeles;viernes;10:30;11:00;DEE;INF3B
+Blanco Cano, Ignacio;lunes;10:30;11:00;Función directiva;-
+Blanco Cano, Ignacio;martes;10:30;11:00;Función directiva;-
+Blanco Cano, Ignacio;miercoles;10:30;11:00;Función directiva;-
+Blanco Cano, Ignacio;jueves;10:30;11:00;ING;INF3B
+Blanco Cano, Ignacio;viernes;10:30;11:00;ING;INF3A
+Cantos Luque, María Rosa;lunes;10:30;11:00;REL;5ºB
+Cantos Luque, María Rosa;martes;10:30;11:00;REL;5ºA
+Cantos Luque, María Rosa;miercoles;10:30;11:00;REL;3ºB
+Cantos Luque, María Rosa;jueves;10:30;11:00;REL;6ºA
+Cantos Luque, María Rosa;viernes;10:30;11:00;REL;3ºA
+Carranza Berral, Inmaculada;lunes;10:30;11:00;EAR;6ºA
+Carranza Berral, Inmaculada;martes;10:30;11:00;EAR;1ºA
+Carranza Berral, Inmaculada;miercoles;10:30;11:00;LCL;4ºA
+Carranza Berral, Inmaculada;jueves;10:30;11:00;LCL;4ºA
+Carranza Berral, Inmaculada;viernes;10:30;11:00;EAR;5ºA
+Carretero Márquez, Rosario;lunes;10:30;11:00;-;-
+Carretero Márquez, Rosario;martes;10:30;11:00;-;-
+Carretero Márquez, Rosario;miercoles;10:30;11:00;Pedagogía Terapéutica;INF5A
+Carretero Márquez, Rosario;jueves;10:30;11:00;Pedagogía Terapéutica;5ºA
+Carretero Márquez, Rosario;viernes;10:30;11:00;-;-
+Castro Jiménez, Rocío;lunes;10:30;11:00;CRR;INF5A
+Castro Jiménez, Rocío;martes;10:30;11:00;DEE;INF5A
+Castro Jiménez, Rocío;miercoles;10:30;11:00;CRR;INF5A
+Castro Jiménez, Rocío;jueves;10:30;11:00;CA;INF5A
+Castro Jiménez, Rocío;viernes;10:30;11:00;DEE;INF5A
+Cuesta Monterroso, Emilia Maria;lunes;10:30;11:00;CRR;INF5B
+Cuesta Monterroso, Emilia Maria;martes;10:30;11:00;DEE;INF5B
+Cuesta Monterroso, Emilia Maria;miercoles;10:30;11:00;CRR;INF5B
+Cuesta Monterroso, Emilia Maria;jueves;10:30;11:00;CA;INF5B
+Cuesta Monterroso, Emilia Maria;viernes;10:30;11:00;DEE;INF5B
+Doncel Laguna, Yolanda;lunes;10:30;11:00;ACCCI AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;martes;10:30;11:00;ACCCI AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;miercoles;10:30;11:00;ACCCI AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;jueves;10:30;11:00;ACCCI AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;viernes;10:30;11:00;ACCCI AULA ESP;AULA ESP
+Gant Tejada, Rafael;lunes;10:30;11:00;LCL Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;martes;10:30;11:00;LCL Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;miercoles;10:30;11:00;MAT Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;jueves;10:30;11:00;LCL Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;viernes;10:30;11:00;MAT Refuerzo pedagógico;4ºB
+Gómez Vergara, Sonia;lunes;10:30;11:00;Refuerzo pedagógico;4ºA
+Gómez Vergara, Sonia;martes;10:30;11:00;Refuerzo pedagógico;6ºA
+Gómez Vergara, Sonia;miercoles;10:30;11:00;Refuerzo pedagógico;4ºA
+Gómez Vergara, Sonia;jueves;10:30;11:00;Refuerzo pedagógico;1ºA
+Gómez Vergara, Sonia;viernes;10:30;11:00;Refuerzo pedagógico;1ºB
+Leal García, Carmen Trinidad;lunes;10:30;11:00;MAT;4ºA
+Leal García, Carmen Trinidad;martes;10:30;11:00;MAT;4ºA
+Leal García, Carmen Trinidad;miercoles;10:30;11:00;LCL;6ºA
+Leal García, Carmen Trinidad;jueves;10:30;11:00;REL;6ºA
+Leal García, Carmen Trinidad;viernes;10:30;11:00;LCL;6ºA
+Ledesma Cid, Maria Angeles;lunes;10:30;11:00;DEE;INF3A
+Ledesma Cid, Maria Angeles;martes;10:30;11:00;ATEDU;INF3A
+Ledesma Cid, Maria Angeles;miercoles;10:30;11:00;DEE;INF3A
+Ledesma Cid, Maria Angeles;jueves;10:30;11:00;DEE;INF3A
+Ledesma Cid, Maria Angeles;viernes;10:30;11:00;Mayores de 55 años;-
+Llorente Ostiategui, Miguel;lunes;10:30;11:00;EFI;2ºA
+Llorente Ostiategui, Miguel;martes;10:30;11:00;EFI;1ºB
+Llorente Ostiategui, Miguel;miercoles;10:30;11:00;EFI;1ºA
+Llorente Ostiategui, Miguel;jueves;10:30;11:00;LCL;1ºA
+Llorente Ostiategui, Miguel;viernes;10:30;11:00;EFI;2ºB
+López Jiménez, Daniel;lunes;10:30;11:00;EFI;6ºB
+López Jiménez, Daniel;martes;10:30;11:00;Coordinación;-
+López Jiménez, Daniel;miercoles;10:30;11:00;EFI;6ºB
+López Jiménez, Daniel;jueves;10:30;11:00;EFI;5ºB
+López Jiménez, Daniel;viernes;10:30;11:00;EFI;6ºB
+Maldonado Honorato, Davinia;lunes;10:30;11:00;DEE Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;martes;10:30;11:00;CA Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;miercoles;10:30;11:00;DEE Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;jueves;10:30;11:00;DEE Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;viernes;10:30;11:00;DEE Audición y Lenguaje;INF4B
+Mohedano Morales, Elisa Isabel;lunes;10:30;11:00;Audición y Lenguaje;INF4B
+Mohedano Morales, Elisa Isabel;martes;10:30;11:00;-;-
+Mohedano Morales, Elisa Isabel;miercoles;10:30;11:00;Audición y Lenguaje;3ºA
+Mohedano Morales, Elisa Isabel;jueves;10:30;11:00;-;-
+Mohedano Morales, Elisa Isabel;viernes;10:30;11:00;Audición y Lenguaje;INF4B
+Moya Medina, Estefania;lunes;10:30;11:00;Coordinación;-
+Moya Medina, Estefania;martes;10:30;11:00;ING INF3A;5ºA
+Moya Medina, Estefania;miercoles;10:30;11:00;CMN;5ºA
+Moya Medina, Estefania;jueves;10:30;11:00;ING;3ºA
+Moya Medina, Estefania;viernes;10:30;11:00;ING;3ºB
+Murillo Cerro, Rocío;lunes;10:30;11:00;ING;1ºB
+Murillo Cerro, Rocío;martes;10:30;11:00;ING;6ºA
+Murillo Cerro, Rocío;miercoles;10:30;11:00;Refuerzo pedagógico;6ºA
+Murillo Cerro, Rocío;jueves;10:30;11:00;ING;6ºB
+Murillo Cerro, Rocío;viernes;10:30;11:00;ING;1ºA
+Ogalla Navarro, Maria del Carmen;lunes;10:30;11:00;LCL;3ºB
+Ogalla Navarro, Maria del Carmen;martes;10:30;11:00;LCL;3ºA
+Ogalla Navarro, Maria del Carmen;miercoles;10:30;11:00;Mayores de 55 años;-
+Ogalla Navarro, Maria del Carmen;jueves;10:30;11:00;MAT;3ºB
+Ogalla Navarro, Maria del Carmen;viernes;10:30;11:00;Mayores de 55 años;-
+Peña García, Maria Carmen;lunes;10:30;11:00;LCL;2ºB
+Peña García, Maria Carmen;martes;10:30;11:00;LCL;2ºB
+Peña García, Maria Carmen;miercoles;10:30;11:00;MAT;2ºB
+Peña García, Maria Carmen;jueves;10:30;11:00;LCL;2ºB
+Peña García, Maria Carmen;viernes;10:30;11:00;Biblioteca Lect;-
+Prats Conti, Juan Jose;lunes;10:30;11:00;MAT;3ºA
+Prats Conti, Juan Jose;martes;10:30;11:00;EFI;3ºB
+Prats Conti, Juan Jose;miercoles;10:30;11:00;MAT;3ºA
+Prats Conti, Juan Jose;jueves;10:30;11:00;Mayores de 55 años;-
+Prats Conti, Juan Jose;viernes;10:30;11:00;EFI;4ºA
+Puntas Rey, Raquel;lunes;10:30;11:00;ACPMF Aula TEA;Aula TEA
+Puntas Rey, Raquel;martes;10:30;11:00;ACPMF Aula TEA;Aula TEA
+Puntas Rey, Raquel;miercoles;10:30;11:00;ACPMF Aula TEA;Aula TEA
+Puntas Rey, Raquel;jueves;10:30;11:00;ACPMF Aula TEA;Aula TEA
+Puntas Rey, Raquel;viernes;10:30;11:00;ACPMF Aula TEA;Aula TEA
+Salinas Lozano, Almudena;lunes;10:30;11:00;MAT;1ºA
+Salinas Lozano, Almudena;martes;10:30;11:00;MAT;2ºA
+Salinas Lozano, Almudena;miercoles;10:30;11:00;LCL;2ºA
+Salinas Lozano, Almudena;jueves;10:30;11:00;MAT;2ºA
+Salinas Lozano, Almudena;viernes;10:30;11:00;LCL;2ºA
+Tena Gálvez, Silvia;lunes;10:30;11:00;ALCT;5ºA
+Tena Gálvez, Silvia;martes;10:30;11:00;ALCT;6ºB
+Tena Gálvez, Silvia;miercoles;10:30;11:00;ATEDU;3ºB
+Tena Gálvez, Silvia;jueves;10:30;11:00;Función directiva;-
+Tena Gálvez, Silvia;viernes;10:30;11:00;ATEDU;3ºA
+Urquizas Jiménez, Gema;lunes;10:30;11:00;FR2;5ºA
+Urquizas Jiménez, Gema;martes;10:30;11:00;FR2;6ºB
+Urquizas Jiménez, Gema;miercoles;10:30;11:00;MAT;1ºB
+Urquizas Jiménez, Gema;jueves;10:30;11:00;MAT;1ºB
+Urquizas Jiménez, Gema;viernes;10:30;11:00;MAT;1ºB
+Valverde Bascón, Inmaculada;lunes;10:30;11:00;Pedagogía Terapéutica;2ºB
+Valverde Bascón, Inmaculada;martes;10:30;11:00;Pedagogía Terapéutica;4ºB
+Valverde Bascón, Inmaculada;miercoles;10:30;11:00;Pedagogía Terapéutica;INF4A
+Valverde Bascón, Inmaculada;jueves;10:30;11:00;Pedagogía Terapéutica;INF4B
+Valverde Bascón, Inmaculada;viernes;10:30;11:00;Pedagogía Terapéutica;6ºA
+Alcalá Benítez de Lugo, Maria Angeles;lunes;11:00;11:30;DEE;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;martes;11:00;11:30;DEE;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;miercoles;11:00;11:30;DEE;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;jueves;11:00;11:30;Refuerzo pedagógico;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;viernes;11:00;11:30;DEE;INF3B
+Blanco Cano, Ignacio;lunes;11:00;11:30;Función directiva;-
+Blanco Cano, Ignacio;martes;11:00;11:30;Función directiva;-
+Blanco Cano, Ignacio;miercoles;11:00;11:30;Función directiva;-
+Blanco Cano, Ignacio;jueves;11:00;11:30;ING;INF3B
+Blanco Cano, Ignacio;viernes;11:00;11:30;ING;INF3A
+Cantos Luque, María Rosa;lunes;11:00;11:30;REL;5ºB
+Cantos Luque, María Rosa;martes;11:00;11:30;REL;1ºB
+Cantos Luque, María Rosa;miercoles;11:00;11:30;REL;5ºA
+Cantos Luque, María Rosa;jueves;11:00;11:30;REL;4ºA
+Cantos Luque, María Rosa;viernes;11:00;11:30;REL;6ºB
+Carranza Berral, Inmaculada;lunes;11:00;11:30;EAR;6ºA
+Carranza Berral, Inmaculada;martes;11:00;11:30;LCL;4ºA
+Carranza Berral, Inmaculada;miercoles;11:00;11:30;EAR;4ºA
+Carranza Berral, Inmaculada;jueves;11:00;11:30;EAR;3ºA
+Carranza Berral, Inmaculada;viernes;11:00;11:30;LCL;4ºA
+Carretero Márquez, Rosario;lunes;11:00;11:30;-;-
+Carretero Márquez, Rosario;martes;11:00;11:30;-;-
+Carretero Márquez, Rosario;miercoles;11:00;11:30;Pedagogía Terapéutica;3ºB
+Carretero Márquez, Rosario;jueves;11:00;11:30;Pedagogía Terapéutica;1ºB
+Carretero Márquez, Rosario;viernes;11:00;11:30;-;-
+Castro Jiménez, Rocío;lunes;11:00;11:30;DEE;INF5A
+Castro Jiménez, Rocío;martes;11:00;11:30;DEE;INF5A
+Castro Jiménez, Rocío;miercoles;11:00;11:30;DEE;INF5A
+Castro Jiménez, Rocío;jueves;11:00;11:30;DEE;INF5A
+Castro Jiménez, Rocío;viernes;11:00;11:30;CRR;INF5A
+Cuesta Monterroso, Emilia Maria;lunes;11:00;11:30;DEE;INF5B
+Cuesta Monterroso, Emilia Maria;martes;11:00;11:30;DEE;INF5B
+Cuesta Monterroso, Emilia Maria;miercoles;11:00;11:30;DEE;INF5B
+Cuesta Monterroso, Emilia Maria;jueves;11:00;11:30;Mayores de 55 años;-
+Cuesta Monterroso, Emilia Maria;viernes;11:00;11:30;CRR;INF5B
+Doncel Laguna, Yolanda;lunes;11:00;11:30;ACCCI AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;martes;11:00;11:30;ACCCI AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;miercoles;11:00;11:30;ACCCI AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;jueves;11:00;11:30;ACCCI AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;viernes;11:00;11:30;ACCCI AULA ESP;AULA ESP
+Gant Tejada, Rafael;lunes;11:00;11:30;MAT Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;martes;11:00;11:30;MAT Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;miercoles;11:00;11:30;ING Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;jueves;11:00;11:30;ING Refuerzo pedagógico;2ºB
+Gant Tejada, Rafael;viernes;11:00;11:30;MAT Refuerzo pedagógico;4ºB
+Gómez Vergara, Sonia;lunes;11:00;11:30;Refuerzo pedagógico;2ºB
+Gómez Vergara, Sonia;martes;11:00;11:30;Refuerzo pedagógico;1ºA
+Gómez Vergara, Sonia;miercoles;11:00;11:30;Refuerzo pedagógico;6ºA
+Gómez Vergara, Sonia;jueves;11:00;11:30;Refuerzo pedagógico;2ºA
+Gómez Vergara, Sonia;viernes;11:00;11:30;Refuerzo pedagógico;4ºA
+Leal García, Carmen Trinidad;lunes;11:00;11:30;MAT;4ºA
+Leal García, Carmen Trinidad;martes;11:00;11:30;LCL;6ºA
+Leal García, Carmen Trinidad;miercoles;11:00;11:30;CMN;6ºA
+Leal García, Carmen Trinidad;jueves;11:00;11:30;MAT;6ºA
+Leal García, Carmen Trinidad;viernes;11:00;11:30;MAT;6ºA
+Ledesma Cid, Maria Angeles;lunes;11:00;11:30;DEE;INF3A
+Ledesma Cid, Maria Angeles;martes;11:00;11:30;ATEDU;INF3A
+Ledesma Cid, Maria Angeles;miercoles;11:00;11:30;DEE;INF3A
+Ledesma Cid, Maria Angeles;jueves;11:00;11:30;DEE;INF3A
+Ledesma Cid, Maria Angeles;viernes;11:00;11:30;Mayores de 55 años;-
+Llorente Ostiategui, Miguel;lunes;11:00;11:30;CMN;1ºA
+Llorente Ostiategui, Miguel;martes;11:00;11:30;Refuerzo pedagógico;1ºB
+Llorente Ostiategui, Miguel;miercoles;11:00;11:30;EFI;1ºB
+Llorente Ostiategui, Miguel;jueves;11:00;11:30;CMN;1ºA
+Llorente Ostiategui, Miguel;viernes;11:00;11:30;EFI;1ºA
+López Jiménez, Daniel;lunes;11:00;11:30;EFI;6ºB
+López Jiménez, Daniel;martes;11:00;11:30;Coordinación;-
+López Jiménez, Daniel;miercoles;11:00;11:30;EFI;6ºB
+López Jiménez, Daniel;jueves;11:00;11:30;Función directiva;-
+López Jiménez, Daniel;viernes;11:00;11:30;EFI;6ºB
+Maldonado Honorato, Davinia;lunes;11:00;11:30;CRR Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;martes;11:00;11:30;CA Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;miercoles;11:00;11:30;CRR Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;jueves;11:00;11:30;CRR Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;viernes;11:00;11:30;CRR Audición y Lenguaje;INF4B
+Mohedano Morales, Elisa Isabel;lunes;11:00;11:30;Audición y Lenguaje;3ºA
+Mohedano Morales, Elisa Isabel;martes;11:00;11:30;-;-
+Mohedano Morales, Elisa Isabel;miercoles;11:00;11:30;Audición y Lenguaje;INF3B
+Mohedano Morales, Elisa Isabel;jueves;11:00;11:30;-;-
+Mohedano Morales, Elisa Isabel;viernes;11:00;11:30;Audición y Lenguaje;INF5B
+Moya Medina, Estefania;lunes;11:00;11:30;Coordinación;-
+Moya Medina, Estefania;martes;11:00;11:30;ING INF3A;5ºA
+Moya Medina, Estefania;miercoles;11:00;11:30;ATEDU;5ºA
+Moya Medina, Estefania;jueves;11:00;11:30;ING;5ºA
+Moya Medina, Estefania;viernes;11:00;11:30;CMN;5ºA
+Murillo Cerro, Rocío;lunes;11:00;11:30;ING;1ºB
+Murillo Cerro, Rocío;martes;11:00;11:30;ING;1ºA
+Murillo Cerro, Rocío;miercoles;11:00;11:30;ING;1ºA
+Murillo Cerro, Rocío;jueves;11:00;11:30;ING;6ºB
+Murillo Cerro, Rocío;viernes;11:00;11:30;VCE;6ºB
+Ogalla Navarro, Maria del Carmen;lunes;11:00;11:30;MAT;3ºB
+Ogalla Navarro, Maria del Carmen;martes;11:00;11:30;LCL;3ºB
+Ogalla Navarro, Maria del Carmen;miercoles;11:00;11:30;LCL;3ºB
+Ogalla Navarro, Maria del Carmen;jueves;11:00;11:30;LCL;3ºB
+Ogalla Navarro, Maria del Carmen;viernes;11:00;11:30;LCL;3ºB
+Peña García, Maria Carmen;lunes;11:00;11:30;MAT;2ºB
+Peña García, Maria Carmen;martes;11:00;11:30;MAT;2ºB
+Peña García, Maria Carmen;miercoles;11:00;11:30;CMN;2ºB
+Peña García, Maria Carmen;jueves;11:00;11:30;ATEDU;4ºA
+Peña García, Maria Carmen;viernes;11:00;11:30;LCL;2ºB
+Prats Conti, Juan Jose;lunes;11:00;11:30;CMN;3ºA
+Prats Conti, Juan Jose;martes;11:00;11:30;MAT;3ºA
+Prats Conti, Juan Jose;miercoles;11:00;11:30;CMN;3ºA
+Prats Conti, Juan Jose;jueves;11:00;11:30;EFI;4ºB
+Prats Conti, Juan Jose;viernes;11:00;11:30;MAT;3ºA
+Puntas Rey, Raquel;lunes;11:00;11:30;ACCCI Aula TEA;Aula TEA
+Puntas Rey, Raquel;martes;11:00;11:30;ACCCI Aula TEA;Aula TEA
+Puntas Rey, Raquel;miercoles;11:00;11:30;ACCCI Aula TEA;Aula TEA
+Puntas Rey, Raquel;jueves;11:00;11:30;ACCCI Aula TEA;Aula TEA
+Puntas Rey, Raquel;viernes;11:00;11:30;ACCCI Aula TEA;Aula TEA
+Salinas Lozano, Almudena;lunes;11:00;11:30;LCL;2ºA
+Salinas Lozano, Almudena;martes;11:00;11:30;LCL;2ºA
+Salinas Lozano, Almudena;miercoles;11:00;11:30;CMN;2ºA
+Salinas Lozano, Almudena;jueves;11:00;11:30;LCL;2ºA
+Salinas Lozano, Almudena;viernes;11:00;11:30;CMN;2ºA
+Tena Gálvez, Silvia;lunes;11:00;11:30;ALCT;5ºA
+Tena Gálvez, Silvia;martes;11:00;11:30;MAT;6ºB
+Tena Gálvez, Silvia;miercoles;11:00;11:30;Función directiva;-
+Tena Gálvez, Silvia;jueves;11:00;11:30;Función directiva;-
+Tena Gálvez, Silvia;viernes;11:00;11:30;Función directiva;-
+Urquizas Jiménez, Gema;lunes;11:00;11:30;FR2;5ºA
+Urquizas Jiménez, Gema;martes;11:00;11:30;ATEDU;1ºB
+Urquizas Jiménez, Gema;miercoles;11:00;11:30;FR2;5ºB
+Urquizas Jiménez, Gema;jueves;11:00;11:30;MAT;1ºB
+Urquizas Jiménez, Gema;viernes;11:00;11:30;MAT;1ºB
+Valverde Bascón, Inmaculada;lunes;11:00;11:30;Pedagogía Terapéutica;4ºA
+Valverde Bascón, Inmaculada;martes;11:00;11:30;Pedagogía Terapéutica;2ºA
+Valverde Bascón, Inmaculada;miercoles;11:00;11:30;Pedagogía Terapéutica;2ºA
+Valverde Bascón, Inmaculada;jueves;11:00;11:30;Pedagogía Terapéutica;6ºA
+Valverde Bascón, Inmaculada;viernes;11:00;11:30;Pedagogía Terapéutica;2ºB
+Alcalá Benítez de Lugo, Maria Angeles;lunes;11:30;12:00;CA;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;martes;11:30;12:00;CA;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;miercoles;11:30;12:00;CA;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;jueves;11:30;12:00;CA;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;viernes;11:30;12:00;CA;INF3B
+Blanco Cano, Ignacio;lunes;11:30;12:00;Función directiva;-
+Blanco Cano, Ignacio;martes;11:30;12:00;Función directiva;-
+Blanco Cano, Ignacio;miercoles;11:30;12:00;Función directiva;-
+Blanco Cano, Ignacio;jueves;11:30;12:00;Función directiva;-
+Blanco Cano, Ignacio;viernes;11:30;12:00;Función directiva;-
+Cantos Luque, María Rosa;lunes;11:30;12:00;REL;2ºA
+Cantos Luque, María Rosa;martes;11:30;12:00;REL;1ºB
+Cantos Luque, María Rosa;miercoles;11:30;12:00;REL;5ºA
+Cantos Luque, María Rosa;jueves;11:30;12:00;REL;4ºA
+Cantos Luque, María Rosa;viernes;11:30;12:00;REL;5ºB
+Carranza Berral, Inmaculada;lunes;11:30;12:00;CMN;4ºA
+Carranza Berral, Inmaculada;martes;11:30;12:00;LCL;4ºA
+Carranza Berral, Inmaculada;miercoles;11:30;12:00;EAR;4ºA
+Carranza Berral, Inmaculada;jueves;11:30;12:00;EAR;3ºA
+Carranza Berral, Inmaculada;viernes;11:30;12:00;LCL;4ºA
+Carretero Márquez, Rosario;lunes;11:30;12:00;-;-
+Carretero Márquez, Rosario;martes;11:30;12:00;-;-
+Carretero Márquez, Rosario;miercoles;11:30;12:00;Pedagogía Terapéutica;3ºB
+Carretero Márquez, Rosario;jueves;11:30;12:00;Pedagogía Terapéutica;1ºB
+Carretero Márquez, Rosario;viernes;11:30;12:00;-;-
+Castro Jiménez, Rocío;lunes;11:30;12:00;DEE;INF5A
+Castro Jiménez, Rocío;martes;11:30;12:00;CRR;INF5A
+Castro Jiménez, Rocío;miercoles;11:30;12:00;DEE;INF5A
+Castro Jiménez, Rocío;jueves;11:30;12:00;CA;INF5A
+Castro Jiménez, Rocío;viernes;11:30;12:00;CRR;INF5A
+Cuesta Monterroso, Emilia Maria;lunes;11:30;12:00;DEE;INF5B
+Cuesta Monterroso, Emilia Maria;martes;11:30;12:00;CRR;INF5B
+Cuesta Monterroso, Emilia Maria;miercoles;11:30;12:00;DEE;INF5B
+Cuesta Monterroso, Emilia Maria;jueves;11:30;12:00;Mayores de 55 años;-
+Cuesta Monterroso, Emilia Maria;viernes;11:30;12:00;CRR;INF5B
+Doncel Laguna, Yolanda;lunes;11:30;12:00;ACCCI AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;martes;11:30;12:00;ACCCI AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;miercoles;11:30;12:00;ACCCI AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;jueves;11:30;12:00;ACCCI AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;viernes;11:30;12:00;ACCCI AULA ESP;AULA ESP
+Gant Tejada, Rafael;lunes;11:30;12:00;MAT Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;martes;11:30;12:00;MAT Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;miercoles;11:30;12:00;ING Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;jueves;11:30;12:00;ING Refuerzo pedagógico;2ºB
+Gant Tejada, Rafael;viernes;11:30;12:00;EAR Refuerzo pedagógico;4ºB
+Gómez Vergara, Sonia;lunes;11:30;12:00;Refuerzo pedagógico;2ºB
+Gómez Vergara, Sonia;martes;11:30;12:00;Refuerzo pedagógico;1ºA
+Gómez Vergara, Sonia;miercoles;11:30;12:00;Refuerzo pedagógico;6ºA
+Gómez Vergara, Sonia;jueves;11:30;12:00;Refuerzo pedagógico;2ºA
+Gómez Vergara, Sonia;viernes;11:30;12:00;Refuerzo pedagógico;4ºA
+Leal García, Carmen Trinidad;lunes;11:30;12:00;MAT;6ºA
+Leal García, Carmen Trinidad;martes;11:30;12:00;LCL;6ºA
+Leal García, Carmen Trinidad;miercoles;11:30;12:00;CMN;6ºA
+Leal García, Carmen Trinidad;jueves;11:30;12:00;MAT;6ºA
+Leal García, Carmen Trinidad;viernes;11:30;12:00;MAT;6ºA
+Ledesma Cid, Maria Angeles;lunes;11:30;12:00;CA;INF3A
+Ledesma Cid, Maria Angeles;martes;11:30;12:00;ATEDU;INF3A
+Ledesma Cid, Maria Angeles;miercoles;11:30;12:00;CA;INF3A
+Ledesma Cid, Maria Angeles;jueves;11:30;12:00;CA;INF3A
+Ledesma Cid, Maria Angeles;viernes;11:30;12:00;CA;INF3A
+Llorente Ostiategui, Miguel;lunes;11:30;12:00;CMN;1ºA
+Llorente Ostiategui, Miguel;martes;11:30;12:00;LCL;1ºA
+Llorente Ostiategui, Miguel;miercoles;11:30;12:00;EFI;1ºB
+Llorente Ostiategui, Miguel;jueves;11:30;12:00;CMN;1ºA
+Llorente Ostiategui, Miguel;viernes;11:30;12:00;EFI;1ºA
+López Jiménez, Daniel;lunes;11:30;12:00;Coordinación STEAM 4.0;-
+López Jiménez, Daniel;martes;11:30;12:00;Coordinación;-
+López Jiménez, Daniel;miercoles;11:30;12:00;Función directiva;-
+López Jiménez, Daniel;jueves;11:30;12:00;Función directiva;-
+López Jiménez, Daniel;viernes;11:30;12:00;Función directiva;-
+Maldonado Honorato, Davinia;lunes;11:30;12:00;CRR Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;martes;11:30;12:00;DEE Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;miercoles;11:30;12:00;CRR Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;jueves;11:30;12:00;CRR Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;viernes;11:30;12:00;CRR Audición y Lenguaje;INF4B
+Mohedano Morales, Elisa Isabel;lunes;11:30;12:00;Audición y Lenguaje;3ºA
+Mohedano Morales, Elisa Isabel;martes;11:30;12:00;-;-
+Mohedano Morales, Elisa Isabel;miercoles;11:30;12:00;Audición y Lenguaje;INF3B
+Mohedano Morales, Elisa Isabel;jueves;11:30;12:00;-;-
+Mohedano Morales, Elisa Isabel;viernes;11:30;12:00;Audición y Lenguaje;INF5B
+Moya Medina, Estefania;lunes;11:30;12:00;LCL;5ºA
+Moya Medina, Estefania;martes;11:30;12:00;ATEDU INF3A;5ºA
+Moya Medina, Estefania;miercoles;11:30;12:00;ATEDU;5ºA
+Moya Medina, Estefania;jueves;11:30;12:00;ING;5ºA
+Moya Medina, Estefania;viernes;11:30;12:00;CMN;5ºA
+Murillo Cerro, Rocío;lunes;11:30;12:00;LCL;6ºB
+Murillo Cerro, Rocío;martes;11:30;12:00;Refuerzo pedagógico;6ºA
+Murillo Cerro, Rocío;miercoles;11:30;12:00;ING;1ºA
+Murillo Cerro, Rocío;jueves;11:30;12:00;Refuerzo pedagógico;6ºA
+Murillo Cerro, Rocío;viernes;11:30;12:00;LCL;6ºB
+Ogalla Navarro, Maria del Carmen;lunes;11:30;12:00;MAT;3ºB
+Ogalla Navarro, Maria del Carmen;martes;11:30;12:00;LCL;3ºB
+Ogalla Navarro, Maria del Carmen;miercoles;11:30;12:00;LCL;3ºB
+Ogalla Navarro, Maria del Carmen;jueves;11:30;12:00;LCL;3ºB
+Ogalla Navarro, Maria del Carmen;viernes;11:30;12:00;LCL;3ºB
+Peña García, Maria Carmen;lunes;11:30;12:00;MAT;2ºB
+Peña García, Maria Carmen;martes;11:30;12:00;MAT;2ºB
+Peña García, Maria Carmen;miercoles;11:30;12:00;CMN;2ºB
+Peña García, Maria Carmen;jueves;11:30;12:00;ATEDU;4ºA
+Peña García, Maria Carmen;viernes;11:30;12:00;LCL;2ºB
+Prats Conti, Juan Jose;lunes;11:30;12:00;CMN;3ºA
+Prats Conti, Juan Jose;martes;11:30;12:00;MAT;3ºA
+Prats Conti, Juan Jose;miercoles;11:30;12:00;CMN;3ºA
+Prats Conti, Juan Jose;jueves;11:30;12:00;EFI;4ºB
+Prats Conti, Juan Jose;viernes;11:30;12:00;EFI;3ºA
+Puntas Rey, Raquel;lunes;11:30;12:00;ACCCI Aula TEA;Aula TEA
+Puntas Rey, Raquel;martes;11:30;12:00;ACCCI Aula TEA;Aula TEA
+Puntas Rey, Raquel;miercoles;11:30;12:00;ACCCI Aula TEA;Aula TEA
+Puntas Rey, Raquel;jueves;11:30;12:00;ACCCI Aula TEA;Aula TEA
+Puntas Rey, Raquel;viernes;11:30;12:00;ACCCI Aula TEA;Aula TEA
+Salinas Lozano, Almudena;lunes;11:30;12:00;ATEDU;2ºA
+Salinas Lozano, Almudena;martes;11:30;12:00;LCL;2ºA
+Salinas Lozano, Almudena;miercoles;11:30;12:00;LCL;2ºA
+Salinas Lozano, Almudena;jueves;11:30;12:00;LCL;2ºA
+Salinas Lozano, Almudena;viernes;11:30;12:00;CMN;2ºA
+Tena Gálvez, Silvia;lunes;11:30;12:00;Función directiva;-
+Tena Gálvez, Silvia;martes;11:30;12:00;MAT;6ºB
+Tena Gálvez, Silvia;miercoles;11:30;12:00;MAT;6ºB
+Tena Gálvez, Silvia;jueves;11:30;12:00;MAT;6ºB
+Tena Gálvez, Silvia;viernes;11:30;12:00;Mayores de 55 años;-
+Urquizas Jiménez, Gema;lunes;11:30;12:00;CMN;1ºB
+Urquizas Jiménez, Gema;martes;11:30;12:00;ATEDU;1ºB
+Urquizas Jiménez, Gema;miercoles;11:30;12:00;FR2;5ºB
+Urquizas Jiménez, Gema;jueves;11:30;12:00;CMN;1ºB
+Urquizas Jiménez, Gema;viernes;11:30;12:00;MAT;1ºB
+Valverde Bascón, Inmaculada;lunes;11:30;12:00;Pedagogía Terapéutica;4ºA
+Valverde Bascón, Inmaculada;martes;11:30;12:00;Pedagogía Terapéutica;2ºA
+Valverde Bascón, Inmaculada;miercoles;11:30;12:00;Pedagogía Terapéutica;2ºA
+Valverde Bascón, Inmaculada;jueves;11:30;12:00;Pedagogía Terapéutica;6ºA
+Valverde Bascón, Inmaculada;viernes;11:30;12:00;Pedagogía Terapéutica;2ºB
+Alcalá Benítez de Lugo, Maria Angeles;lunes;12:00;12:30;Recreo;-
+Alcalá Benítez de Lugo, Maria Angeles;martes;12:00;12:30;Recreo;-
+Alcalá Benítez de Lugo, Maria Angeles;miercoles;12:00;12:30;Recreo;-
+Alcalá Benítez de Lugo, Maria Angeles;jueves;12:00;12:30;Recreo;-
+Alcalá Benítez de Lugo, Maria Angeles;viernes;12:00;12:30;Recreo;-
+Blanco Cano, Ignacio;lunes;12:00;12:30;Recreo;-
+Blanco Cano, Ignacio;martes;12:00;12:30;Recreo;-
+Blanco Cano, Ignacio;miercoles;12:00;12:30;Recreo;-
+Blanco Cano, Ignacio;jueves;12:00;12:30;Recreo;-
+Blanco Cano, Ignacio;viernes;12:00;12:30;Recreo;-
+Cantos Luque, María Rosa;lunes;12:00;12:30;Recreo;-
+Cantos Luque, María Rosa;martes;12:00;12:30;Recreo;-
+Cantos Luque, María Rosa;miercoles;12:00;12:30;Recreo;-
+Cantos Luque, María Rosa;jueves;12:00;12:30;Recreo;-
+Cantos Luque, María Rosa;viernes;12:00;12:30;Recreo;-
+Carranza Berral, Inmaculada;lunes;12:00;12:30;Recreo;-
+Carranza Berral, Inmaculada;martes;12:00;12:30;Recreo;-
+Carranza Berral, Inmaculada;miercoles;12:00;12:30;Recreo;-
+Carranza Berral, Inmaculada;jueves;12:00;12:30;Recreo;-
+Carranza Berral, Inmaculada;viernes;12:00;12:30;Recreo;-
+Carretero Márquez, Rosario;lunes;12:00;12:30;Recreo;-
+Carretero Márquez, Rosario;martes;12:00;12:30;Recreo;-
+Carretero Márquez, Rosario;miercoles;12:00;12:30;Recreo;-
+Carretero Márquez, Rosario;jueves;12:00;12:30;Recreo;-
+Carretero Márquez, Rosario;viernes;12:00;12:30;Recreo;-
+Castro Jiménez, Rocío;lunes;12:00;12:30;Recreo;-
+Castro Jiménez, Rocío;martes;12:00;12:30;Recreo;-
+Castro Jiménez, Rocío;miercoles;12:00;12:30;Recreo;-
+Castro Jiménez, Rocío;jueves;12:00;12:30;Recreo;-
+Castro Jiménez, Rocío;viernes;12:00;12:30;Recreo;-
+Cuesta Monterroso, Emilia Maria;lunes;12:00;12:30;Recreo;-
+Cuesta Monterroso, Emilia Maria;martes;12:00;12:30;Recreo;-
+Cuesta Monterroso, Emilia Maria;miercoles;12:00;12:30;Recreo;-
+Cuesta Monterroso, Emilia Maria;jueves;12:00;12:30;Recreo;-
+Cuesta Monterroso, Emilia Maria;viernes;12:00;12:30;Recreo;-
+Doncel Laguna, Yolanda;lunes;12:00;12:30;Recreo;-
+Doncel Laguna, Yolanda;martes;12:00;12:30;Recreo;-
+Doncel Laguna, Yolanda;miercoles;12:00;12:30;Recreo;-
+Doncel Laguna, Yolanda;jueves;12:00;12:30;Recreo;-
+Doncel Laguna, Yolanda;viernes;12:00;12:30;Recreo;-
+Gant Tejada, Rafael;lunes;12:00;12:30;Recreo;-
+Gant Tejada, Rafael;martes;12:00;12:30;Recreo;-
+Gant Tejada, Rafael;miercoles;12:00;12:30;Recreo;-
+Gant Tejada, Rafael;jueves;12:00;12:30;Recreo;-
+Gant Tejada, Rafael;viernes;12:00;12:30;Recreo;-
+Gómez Vergara, Sonia;lunes;12:00;12:30;Recreo;-
+Gómez Vergara, Sonia;martes;12:00;12:30;Recreo;-
+Gómez Vergara, Sonia;miercoles;12:00;12:30;Recreo;-
+Gómez Vergara, Sonia;jueves;12:00;12:30;Recreo;-
+Gómez Vergara, Sonia;viernes;12:00;12:30;Recreo;-
+Leal García, Carmen Trinidad;lunes;12:00;12:30;Recreo;-
+Leal García, Carmen Trinidad;martes;12:00;12:30;Recreo;-
+Leal García, Carmen Trinidad;miercoles;12:00;12:30;Recreo;-
+Leal García, Carmen Trinidad;jueves;12:00;12:30;Recreo;-
+Leal García, Carmen Trinidad;viernes;12:00;12:30;Recreo;-
+Ledesma Cid, Maria Angeles;lunes;12:00;12:30;Recreo;-
+Ledesma Cid, Maria Angeles;martes;12:00;12:30;Recreo;-
+Ledesma Cid, Maria Angeles;miercoles;12:00;12:30;Recreo;-
+Ledesma Cid, Maria Angeles;jueves;12:00;12:30;Recreo;-
+Ledesma Cid, Maria Angeles;viernes;12:00;12:30;Recreo;-
+Llorente Ostiategui, Miguel;lunes;12:00;12:30;Recreo;-
+Llorente Ostiategui, Miguel;martes;12:00;12:30;Recreo;-
+Llorente Ostiategui, Miguel;miercoles;12:00;12:30;Recreo;-
+Llorente Ostiategui, Miguel;jueves;12:00;12:30;Recreo;-
+Llorente Ostiategui, Miguel;viernes;12:00;12:30;Recreo;-
+López Jiménez, Daniel;lunes;12:00;12:30;Recreo;-
+López Jiménez, Daniel;martes;12:00;12:30;Recreo;-
+López Jiménez, Daniel;miercoles;12:00;12:30;Recreo;-
+López Jiménez, Daniel;jueves;12:00;12:30;Recreo;-
+López Jiménez, Daniel;viernes;12:00;12:30;Recreo;-
+Maldonado Honorato, Davinia;lunes;12:00;12:30;Recreo;-
+Maldonado Honorato, Davinia;martes;12:00;12:30;Recreo;-
+Maldonado Honorato, Davinia;miercoles;12:00;12:30;Recreo;-
+Maldonado Honorato, Davinia;jueves;12:00;12:30;Recreo;-
+Maldonado Honorato, Davinia;viernes;12:00;12:30;Recreo;-
+Mohedano Morales, Elisa Isabel;lunes;12:00;12:30;Recreo;-
+Mohedano Morales, Elisa Isabel;martes;12:00;12:30;Recreo;-
+Mohedano Morales, Elisa Isabel;miercoles;12:00;12:30;Recreo;-
+Mohedano Morales, Elisa Isabel;jueves;12:00;12:30;Recreo;-
+Mohedano Morales, Elisa Isabel;viernes;12:00;12:30;Recreo;-
+Moya Medina, Estefania;lunes;12:00;12:30;Recreo;-
+Moya Medina, Estefania;martes;12:00;12:30;Recreo;-
+Moya Medina, Estefania;miercoles;12:00;12:30;Recreo;-
+Moya Medina, Estefania;jueves;12:00;12:30;Recreo;-
+Moya Medina, Estefania;viernes;12:00;12:30;Recreo;-
+Murillo Cerro, Rocío;lunes;12:00;12:30;Recreo;-
+Murillo Cerro, Rocío;martes;12:00;12:30;Recreo;-
+Murillo Cerro, Rocío;miercoles;12:00;12:30;Recreo;-
+Murillo Cerro, Rocío;jueves;12:00;12:30;Recreo;-
+Murillo Cerro, Rocío;viernes;12:00;12:30;Recreo;-
+Prats Conti, Juan Jose;lunes;12:00;12:30;Recreo;-
+Prats Conti, Juan Jose;martes;12:00;12:30;Recreo;-
+Prats Conti, Juan Jose;miercoles;12:00;12:30;Recreo;-
+Prats Conti, Juan Jose;jueves;12:00;12:30;Recreo;-
+Prats Conti, Juan Jose;viernes;12:00;12:30;Recreo;-
+Puntas Rey, Raquel;lunes;12:00;12:30;Recreo;-
+Puntas Rey, Raquel;martes;12:00;12:30;Recreo;-
+Puntas Rey, Raquel;miercoles;12:00;12:30;Recreo;-
+Puntas Rey, Raquel;jueves;12:00;12:30;Recreo;-
+Puntas Rey, Raquel;viernes;12:00;12:30;Recreo;-
+Salinas Lozano, Almudena;lunes;12:00;12:30;Recreo;-
+Salinas Lozano, Almudena;martes;12:00;12:30;Recreo;-
+Salinas Lozano, Almudena;miercoles;12:00;12:30;Recreo;-
+Salinas Lozano, Almudena;jueves;12:00;12:30;Recreo;-
+Salinas Lozano, Almudena;viernes;12:00;12:30;Recreo;-
+Tena Gálvez, Silvia;lunes;12:00;12:30;Recreo;-
+Tena Gálvez, Silvia;martes;12:00;12:30;Recreo;-
+Tena Gálvez, Silvia;miercoles;12:00;12:30;Recreo;-
+Tena Gálvez, Silvia;jueves;12:00;12:30;Recreo;-
+Tena Gálvez, Silvia;viernes;12:00;12:30;Recreo;-
+Urquizas Jiménez, Gema;lunes;12:00;12:30;Recreo;-
+Urquizas Jiménez, Gema;martes;12:00;12:30;Recreo;-
+Urquizas Jiménez, Gema;miercoles;12:00;12:30;Recreo;-
+Urquizas Jiménez, Gema;jueves;12:00;12:30;Recreo;-
+Urquizas Jiménez, Gema;viernes;12:00;12:30;Recreo;-
+Valverde Bascón, Inmaculada;lunes;12:00;12:30;Recreo;-
+Valverde Bascón, Inmaculada;martes;12:00;12:30;Recreo;-
+Valverde Bascón, Inmaculada;miercoles;12:00;12:30;Recreo;-
+Valverde Bascón, Inmaculada;jueves;12:00;12:30;Recreo;-
+Valverde Bascón, Inmaculada;viernes;12:00;12:30;Recreo;-
+Alcalá Benítez de Lugo, Maria Angeles;lunes;12:30;13:00;DEE;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;martes;12:30;13:00;ATEDU;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;miercoles;12:30;13:00;CRR;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;jueves;12:30;13:00;DEE;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;viernes;12:30;13:00;CRR;INF3B
+Blanco Cano, Ignacio;lunes;12:30;13:00;Función directiva;-
+Blanco Cano, Ignacio;martes;12:30;13:00;ING;INF5A
+Blanco Cano, Ignacio;miercoles;12:30;13:00;ING;INF5B
+Blanco Cano, Ignacio;jueves;12:30;13:00;Función directiva;-
+Blanco Cano, Ignacio;viernes;12:30;13:00;Función directiva;-
+Cantos Luque, María Rosa;lunes;12:30;13:00;REL;2ºA
+Cantos Luque, María Rosa;martes;12:30;13:00;REL;3ºA
+Cantos Luque, María Rosa;miercoles;12:30;13:00;REL;1ºA
+Cantos Luque, María Rosa;jueves;12:30;13:00;REL;1ºB
+Cantos Luque, María Rosa;viernes;12:30;13:00;REL;2ºA
+Carranza Berral, Inmaculada;lunes;12:30;13:00;CMN;4ºA
+Carranza Berral, Inmaculada;martes;12:30;13:00;EAR;4ºB
+Carranza Berral, Inmaculada;miercoles;12:30;13:00;EAR;4ºA
+Carranza Berral, Inmaculada;jueves;12:30;13:00;Coordinación;-
+Carranza Berral, Inmaculada;viernes;12:30;13:00;CMN;4ºA
+Carretero Márquez, Rosario;lunes;12:30;13:00;-;-
+Carretero Márquez, Rosario;martes;12:30;13:00;-;-
+Carretero Márquez, Rosario;miercoles;12:30;13:00;Pedagogía Terapéutica;5ºB
+Carretero Márquez, Rosario;jueves;12:30;13:00;Pedagogía Terapéutica;INF3B
+Carretero Márquez, Rosario;viernes;12:30;13:00;-;-
+Castro Jiménez, Rocío;lunes;12:30;13:00;CRR;INF5A
+Castro Jiménez, Rocío;martes;12:30;13:00;Refuerzo pedagógico;INF5B
+Castro Jiménez, Rocío;miercoles;12:30;13:00;DEE;INF5A
+Castro Jiménez, Rocío;jueves;12:30;13:00;ING;INF5A
+Castro Jiménez, Rocío;viernes;12:30;13:00;CA;INF5A
+Cuesta Monterroso, Emilia Maria;lunes;12:30;13:00;CRR;INF5B
+Cuesta Monterroso, Emilia Maria;martes;12:30;13:00;CA;INF5B
+Cuesta Monterroso, Emilia Maria;miercoles;12:30;13:00;Mayores de 55 años;-
+Cuesta Monterroso, Emilia Maria;jueves;12:30;13:00;CRR;INF5B
+Cuesta Monterroso, Emilia Maria;viernes;12:30;13:00;CA;INF5B
+Doncel Laguna, Yolanda;lunes;12:30;13:00;ACPMF AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;martes;12:30;13:00;ACOEN AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;miercoles;12:30;13:00;ACPMF AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;jueves;12:30;13:00;ACPMF AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;viernes;12:30;13:00;ACPMF AULA ESP;AULA ESP
+Gant Tejada, Rafael;lunes;12:30;13:00;MAT Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;martes;12:30;13:00;ING Refuerzo pedagógico;2ºB
+Gant Tejada, Rafael;miercoles;12:30;13:00;ING Refuerzo pedagógico;2ºA
+Gant Tejada, Rafael;jueves;12:30;13:00;MAT Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;viernes;12:30;13:00;ING Refuerzo pedagógico;4ºB
+Gómez Vergara, Sonia;lunes;12:30;13:00;Refuerzo pedagógico;6ºA
+Gómez Vergara, Sonia;martes;12:30;13:00;Refuerzo pedagógico;6ºB
+Gómez Vergara, Sonia;miercoles;12:30;13:00;Refuerzo pedagógico;2ºA
+Gómez Vergara, Sonia;jueves;12:30;13:00;Refuerzo pedagógico;6ºA
+Gómez Vergara, Sonia;viernes;12:30;13:00;Refuerzo pedagógico;6ºB
+Leal García, Carmen Trinidad;lunes;12:30;13:00;MAT;6ºA
+Leal García, Carmen Trinidad;martes;12:30;13:00;CMN;6ºA
+Leal García, Carmen Trinidad;miercoles;12:30;13:00;VCE;6ºA
+Leal García, Carmen Trinidad;jueves;12:30;13:00;MAT;4ºA
+Leal García, Carmen Trinidad;viernes;12:30;13:00;CMN;6ºA
+Ledesma Cid, Maria Angeles;lunes;12:30;13:00;DEE;INF3A
+Ledesma Cid, Maria Angeles;martes;12:30;13:00;DEE;INF3A
+Ledesma Cid, Maria Angeles;miercoles;12:30;13:00;Mayores de 55 años;-
+Ledesma Cid, Maria Angeles;jueves;12:30;13:00;DEE;INF3A
+Ledesma Cid, Maria Angeles;viernes;12:30;13:00;CRR;INF3A
+Llorente Ostiategui, Miguel;lunes;12:30;13:00;LCL;1ºA
+Llorente Ostiategui, Miguel;martes;12:30;13:00;LCL;1ºA
+Llorente Ostiategui, Miguel;miercoles;12:30;13:00;Refuerzo pedagógico;1ºB
+Llorente Ostiategui, Miguel;jueves;12:30;13:00;CMN;1ºA
+Llorente Ostiategui, Miguel;viernes;12:30;13:00;LCL;1ºA
+López Jiménez, Daniel;lunes;12:30;13:00;Coordinación STEAM 4.0;-
+López Jiménez, Daniel;martes;12:30;13:00;Coordinación;-
+López Jiménez, Daniel;miercoles;12:30;13:00;Función directiva;-
+López Jiménez, Daniel;jueves;12:30;13:00;EFI;5ºA
+López Jiménez, Daniel;viernes;12:30;13:00;Función directiva;-
+Maldonado Honorato, Davinia;lunes;12:30;13:00;CRR Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;martes;12:30;13:00;CA Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;miercoles;12:30;13:00;DEE Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;jueves;12:30;13:00;CA Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;viernes;12:30;13:00;CRR Audición y Lenguaje;INF4B
+Mohedano Morales, Elisa Isabel;lunes;12:30;13:00;Audición y Lenguaje;Aula TEA
+Mohedano Morales, Elisa Isabel;martes;12:30;13:00;-;-
+Mohedano Morales, Elisa Isabel;miercoles;12:30;13:00;Audición y Lenguaje;2ºB
+Mohedano Morales, Elisa Isabel;jueves;12:30;13:00;-;-
+Mohedano Morales, Elisa Isabel;viernes;12:30;13:00;Audición y Lenguaje;2ºB
+Moya Medina, Estefania;lunes;12:30;13:00;LCL;5ºA
+Moya Medina, Estefania;martes;12:30;13:00;ING INF3B;5ºB
+Moya Medina, Estefania;miercoles;12:30;13:00;LCL;5ºA
+Moya Medina, Estefania;jueves;12:30;13:00;ING;3ºB
+Moya Medina, Estefania;viernes;12:30;13:00;CMN;5ºA
+Murillo Cerro, Rocío;lunes;12:30;13:00;LCL;6ºB
+Murillo Cerro, Rocío;martes;12:30;13:00;VCE;6ºB
+Murillo Cerro, Rocío;miercoles;12:30;13:00;ING;1ºB
+Murillo Cerro, Rocío;jueves;12:30;13:00;ING;6ºA
+Murillo Cerro, Rocío;viernes;12:30;13:00;VCE;6ºB
+Ogalla Navarro, Maria del Carmen;lunes;12:30;13:00;CMN;3ºB
+Ogalla Navarro, Maria del Carmen;martes;12:30;13:00;CMN;3ºB
+Ogalla Navarro, Maria del Carmen;miercoles;12:30;13:00;MAT;3ºB
+Ogalla Navarro, Maria del Carmen;jueves;12:30;13:00;Refuerzo pedagógico;3ºA
+Ogalla Navarro, Maria del Carmen;viernes;12:30;13:00;LCL;3ºA
+Peña García, Maria Carmen;lunes;12:30;13:00;CMN;2ºB
+Peña García, Maria Carmen;martes;12:30;13:00;Biblioteca Lect;-
+Peña García, Maria Carmen;miercoles;12:30;13:00;LCL;2ºB
+Peña García, Maria Carmen;jueves;12:30;13:00;MAT;2ºB
+Peña García, Maria Carmen;viernes;12:30;13:00;MAT;2ºB
+Prats Conti, Juan Jose;lunes;12:30;13:00;EFI;3ºA
+Prats Conti, Juan Jose;martes;12:30;13:00;EFI;4ºA
+Prats Conti, Juan Jose;miercoles;12:30;13:00;EFI;3ºA
+Prats Conti, Juan Jose;jueves;12:30;13:00;MAT;3ºA
+Prats Conti, Juan Jose;viernes;12:30;13:00;EFI;3ºB
+Puntas Rey, Raquel;lunes;12:30;13:00;ACCCI Aula TEA;Aula TEA
+Puntas Rey, Raquel;martes;12:30;13:00;ACCCI Aula TEA;Aula TEA
+Puntas Rey, Raquel;miercoles;12:30;13:00;ACCCI Aula TEA;Aula TEA
+Puntas Rey, Raquel;jueves;12:30;13:00;ACCCI Aula TEA;Aula TEA
+Puntas Rey, Raquel;viernes;12:30;13:00;ACCCI Aula TEA;Aula TEA
+Salinas Lozano, Almudena;lunes;12:30;13:00;ATEDU;2ºA
+Salinas Lozano, Almudena;martes;12:30;13:00;CMN;2ºA
+Salinas Lozano, Almudena;miercoles;12:30;13:00;ATEDU;1ºA
+Salinas Lozano, Almudena;jueves;12:30;13:00;LCL;2ºA
+Salinas Lozano, Almudena;viernes;12:30;13:00;ATEDU;2ºA
+Tena Gálvez, Silvia;lunes;12:30;13:00;Función directiva;-
+Tena Gálvez, Silvia;martes;12:30;13:00;ATEDU;3ºA
+Tena Gálvez, Silvia;miercoles;12:30;13:00;MAT;6ºB
+Tena Gálvez, Silvia;jueves;12:30;13:00;MAT;6ºB
+Tena Gálvez, Silvia;viernes;12:30;13:00;Mayores de 55 años;-
+Urquizas Jiménez, Gema;lunes;12:30;13:00;CMN;1ºB
+Urquizas Jiménez, Gema;martes;12:30;13:00;CMN;1ºB
+Urquizas Jiménez, Gema;miercoles;12:30;13:00;CMN;4ºB
+Urquizas Jiménez, Gema;jueves;12:30;13:00;ATEDU;1ºB
+Urquizas Jiménez, Gema;viernes;12:30;13:00;CMN;1ºB
+Valverde Bascón, Inmaculada;lunes;12:30;13:00;Pedagogía Terapéutica;6ºA
+Valverde Bascón, Inmaculada;martes;12:30;13:00;Pedagogía Terapéutica;INF4B
+Valverde Bascón, Inmaculada;miercoles;12:30;13:00;Pedagogía Terapéutica;4ºB
+Valverde Bascón, Inmaculada;jueves;12:30;13:00;Pedagogía Terapéutica;2ºA
+Valverde Bascón, Inmaculada;viernes;12:30;13:00;Pedagogía Terapéutica;6ºB
+Alcalá Benítez de Lugo, Maria Angeles;lunes;13:00;13:30;DEE;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;martes;13:00;13:30;ATEDU;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;miercoles;13:00;13:30;CRR;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;jueves;13:00;13:30;DEE;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;viernes;13:00;13:30;CRR;INF3B
+Blanco Cano, Ignacio;lunes;13:00;13:30;ING;INF4B
+Blanco Cano, Ignacio;martes;13:00;13:30;ING;INF5A
+Blanco Cano, Ignacio;miercoles;13:00;13:30;ING;INF5B
+Blanco Cano, Ignacio;jueves;13:00;13:30;ING;INF4A
+Blanco Cano, Ignacio;viernes;13:00;13:30;Función directiva;-
+Cantos Luque, María Rosa;lunes;13:00;13:30;REL;INF5A
+Cantos Luque, María Rosa;martes;13:00;13:30;REL;INF5B
+Cantos Luque, María Rosa;miercoles;13:00;13:30;REL;INF5A
+Cantos Luque, María Rosa;jueves;13:00;13:30;REL;1ºA
+Cantos Luque, María Rosa;viernes;13:00;13:30;REL;INF5B
+Carranza Berral, Inmaculada;lunes;13:00;13:30;LCL;4ºA
+Carranza Berral, Inmaculada;martes;13:00;13:30;EAR;4ºB
+Carranza Berral, Inmaculada;miercoles;13:00;13:30;EAR;1ºB
+Carranza Berral, Inmaculada;jueves;13:00;13:30;EAR;6ºB
+Carranza Berral, Inmaculada;viernes;13:00;13:30;CMN;4ºA
+Carretero Márquez, Rosario;lunes;13:00;13:30;-;-
+Carretero Márquez, Rosario;martes;13:00;13:30;-;-
+Carretero Márquez, Rosario;miercoles;13:00;13:30;Pedagogía Terapéutica;5ºB
+Carretero Márquez, Rosario;jueves;13:00;13:30;Pedagogía Terapéutica;INF3B
+Carretero Márquez, Rosario;viernes;13:00;13:30;-;-
+Castro Jiménez, Rocío;lunes;13:00;13:30;ATEDU;INF5A
+Castro Jiménez, Rocío;martes;13:00;13:30;Refuerzo pedagógico;INF5B
+Castro Jiménez, Rocío;miercoles;13:00;13:30;ATEDU;INF5A
+Castro Jiménez, Rocío;jueves;13:00;13:30;ING;INF5A
+Castro Jiménez, Rocío;viernes;13:00;13:30;CRR;INF5A
+Cuesta Monterroso, Emilia Maria;lunes;13:00;13:30;CRR;INF5B
+Cuesta Monterroso, Emilia Maria;martes;13:00;13:30;ATEDU;INF5B
+Cuesta Monterroso, Emilia Maria;miercoles;13:00;13:30;Mayores de 55 años;-
+Cuesta Monterroso, Emilia Maria;jueves;13:00;13:30;DEE;INF5B
+Cuesta Monterroso, Emilia Maria;viernes;13:00;13:30;ATEDU;INF5B
+Doncel Laguna, Yolanda;lunes;13:00;13:30;ACPMF AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;martes;13:00;13:30;ACPMF AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;miercoles;13:00;13:30;ACPMF AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;jueves;13:00;13:30;ACPMF AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;viernes;13:00;13:30;ACPMF AULA ESP;AULA ESP
+Gant Tejada, Rafael;lunes;13:00;13:30;ING Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;martes;13:00;13:30;Refuerzo pedagógico;4ºA
+Gant Tejada, Rafael;miercoles;13:00;13:30;ING Refuerzo pedagógico;2ºB
+Gant Tejada, Rafael;jueves;13:00;13:30;MAT Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;viernes;13:00;13:30;ING Refuerzo pedagógico;2ºA
+Gómez Vergara, Sonia;lunes;13:00;13:30;Refuerzo pedagógico;6ºB
+Gómez Vergara, Sonia;martes;13:00;13:30;Refuerzo pedagógico;2ºB
+Gómez Vergara, Sonia;miercoles;13:00;13:30;Refuerzo pedagógico;2ºB
+Gómez Vergara, Sonia;jueves;13:00;13:30;Refuerzo pedagógico;1ºB
+Gómez Vergara, Sonia;viernes;13:00;13:30;Refuerzo pedagógico;2ºA
+Leal García, Carmen Trinidad;lunes;13:00;13:30;CMN;6ºA
+Leal García, Carmen Trinidad;martes;13:00;13:30;CMN;6ºA
+Leal García, Carmen Trinidad;miercoles;13:00;13:30;MAT;4ºA
+Leal García, Carmen Trinidad;jueves;13:00;13:30;MAT;4ºA
+Leal García, Carmen Trinidad;viernes;13:00;13:30;VCE;6ºA
+Ledesma Cid, Maria Angeles;lunes;13:00;13:30;DEE;INF3A
+Ledesma Cid, Maria Angeles;martes;13:00;13:30;DEE;INF3A
+Ledesma Cid, Maria Angeles;miercoles;13:00;13:30;Mayores de 55 años;-
+Ledesma Cid, Maria Angeles;jueves;13:00;13:30;DEE;INF3A
+Ledesma Cid, Maria Angeles;viernes;13:00;13:30;CRR;INF3A
+Llorente Ostiategui, Miguel;lunes;13:00;13:30;EAR;1ºA
+Llorente Ostiategui, Miguel;martes;13:00;13:30;EFI;1ºA
+Llorente Ostiategui, Miguel;miercoles;13:00;13:30;EFI;2ºA
+Llorente Ostiategui, Miguel;jueves;13:00;13:30;EFI;2ºA
+Llorente Ostiategui, Miguel;viernes;13:00;13:30;EFI;1ºB
+López Jiménez, Daniel;lunes;13:00;13:30;EFI;5ºB
+López Jiménez, Daniel;martes;13:00;13:30;EFI;5ºB
+López Jiménez, Daniel;miercoles;13:00;13:30;EFI;6ºA
+López Jiménez, Daniel;jueves;13:00;13:30;EFI;5ºA
+López Jiménez, Daniel;viernes;13:00;13:30;EFI;5ºA
+Maldonado Honorato, Davinia;lunes;13:00;13:30;Refuerzo pedagógico;INF4A
+Maldonado Honorato, Davinia;martes;13:00;13:30;CA Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;miercoles;13:00;13:30;CA Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;jueves;13:00;13:30;CA Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;viernes;13:00;13:30;CRR Audición y Lenguaje;INF4B
+Mohedano Morales, Elisa Isabel;lunes;13:00;13:30;Audición y Lenguaje;INF3B
+Mohedano Morales, Elisa Isabel;martes;13:00;13:30;-;-
+Mohedano Morales, Elisa Isabel;miercoles;13:00;13:30;Audición y Lenguaje;Aula TEA
+Mohedano Morales, Elisa Isabel;jueves;13:00;13:30;-;-
+Mohedano Morales, Elisa Isabel;viernes;13:00;13:30;Audición y Lenguaje;2ºB
+Moya Medina, Estefania;lunes;13:00;13:30;CMN;5ºA
+Moya Medina, Estefania;martes;13:00;13:30;ING INF3B;3ºA
+Moya Medina, Estefania;miercoles;13:00;13:30;LCL;5ºA
+Moya Medina, Estefania;jueves;13:00;13:30;Coordinación;-
+Moya Medina, Estefania;viernes;13:00;13:30;Coordinación;-
+Murillo Cerro, Rocío;lunes;13:00;13:30;CMN;6ºB
+Murillo Cerro, Rocío;martes;13:00;13:30;CMN;6ºB
+Murillo Cerro, Rocío;miercoles;13:00;13:30;LCL;6ºB
+Murillo Cerro, Rocío;jueves;13:00;13:30;ING;1ºB
+Murillo Cerro, Rocío;viernes;13:00;13:30;VCE;6ºB
+Ogalla Navarro, Maria del Carmen;lunes;13:00;13:30;CMN;3ºB
+Ogalla Navarro, Maria del Carmen;martes;13:00;13:30;CMN;3ºB
+Ogalla Navarro, Maria del Carmen;miercoles;13:00;13:30;MAT;3ºB
+Ogalla Navarro, Maria del Carmen;jueves;13:00;13:30;EAR;3ºB
+Ogalla Navarro, Maria del Carmen;viernes;13:00;13:30;LCL;3ºA
+Peña García, Maria Carmen;lunes;13:00;13:30;CMN;2ºB
+Peña García, Maria Carmen;martes;13:00;13:30;LCL;2ºB
+Peña García, Maria Carmen;miercoles;13:00;13:30;Biblioteca Lect;-
+Peña García, Maria Carmen;jueves;13:00;13:30;MAT;2ºB
+Peña García, Maria Carmen;viernes;13:00;13:30;MAT;2ºB
+Prats Conti, Juan Jose;lunes;13:00;13:30;EFI;3ºA
+Prats Conti, Juan Jose;martes;13:00;13:30;EFI;4ºA
+Prats Conti, Juan Jose;miercoles;13:00;13:30;EFI;3ºA
+Prats Conti, Juan Jose;jueves;13:00;13:30;MAT;3ºA
+Prats Conti, Juan Jose;viernes;13:00;13:30;EFI;3ºB
+Puntas Rey, Raquel;lunes;13:00;13:30;ACPMF Aula TEA;Aula TEA
+Puntas Rey, Raquel;martes;13:00;13:30;ACPMF Aula TEA;Aula TEA
+Puntas Rey, Raquel;miercoles;13:00;13:30;ACPMF Aula TEA;Aula TEA
+Puntas Rey, Raquel;jueves;13:00;13:30;ACPMF Aula TEA;Aula TEA
+Puntas Rey, Raquel;viernes;13:00;13:30;ACPMF Aula TEA;Aula TEA
+Salinas Lozano, Almudena;lunes;13:00;13:30;LCL;2ºA
+Salinas Lozano, Almudena;martes;13:00;13:30;CMN;2ºA
+Salinas Lozano, Almudena;miercoles;13:00;13:30;MAT;1ºA
+Salinas Lozano, Almudena;jueves;13:00;13:30;ATEDU;1ºA
+Salinas Lozano, Almudena;viernes;13:00;13:30;MAT;1ºA
+Tena Gálvez, Silvia;lunes;13:00;13:30;Función directiva;-
+Tena Gálvez, Silvia;martes;13:00;13:30;Función directiva;-
+Tena Gálvez, Silvia;miercoles;13:00;13:30;Función directiva;-
+Tena Gálvez, Silvia;jueves;13:00;13:30;ALCT;6ºA
+Tena Gálvez, Silvia;viernes;13:00;13:30;Mayores de 55 años;-
+Urquizas Jiménez, Gema;lunes;13:00;13:30;MAT;1ºB
+Urquizas Jiménez, Gema;martes;13:00;13:30;EAR;1ºB
+Urquizas Jiménez, Gema;miercoles;13:00;13:30;CMN;4ºB
+Urquizas Jiménez, Gema;jueves;13:00;13:30;FR2;6ºA
+Urquizas Jiménez, Gema;viernes;13:00;13:30;CMN;4ºB
+Valverde Bascón, Inmaculada;lunes;13:00;13:30;Pedagogía Terapéutica;INF4A
+Valverde Bascón, Inmaculada;martes;13:00;13:30;Pedagogía Terapéutica;INF4B
+Valverde Bascón, Inmaculada;miercoles;13:00;13:30;Pedagogía Terapéutica;4ºA
+Valverde Bascón, Inmaculada;jueves;13:00;13:30;Pedagogía Terapéutica;2ºB
+Valverde Bascón, Inmaculada;viernes;13:00;13:30;Pedagogía Terapéutica;4ºB
+Alcalá Benítez de Lugo, Maria Angeles;lunes;13:30;14:00;CA;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;martes;13:30;14:00;ATEDU;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;miercoles;13:30;14:00;CA;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;jueves;13:30;14:00;CA;INF3B
+Alcalá Benítez de Lugo, Maria Angeles;viernes;13:30;14:00;CA;INF3B
+Blanco Cano, Ignacio;lunes;13:30;14:00;ING;INF4B
+Blanco Cano, Ignacio;martes;13:30;14:00;Función directiva;-
+Blanco Cano, Ignacio;miercoles;13:30;14:00;Función directiva;-
+Blanco Cano, Ignacio;jueves;13:30;14:00;ING;INF4A
+Blanco Cano, Ignacio;viernes;13:30;14:00;Función directiva;-
+Cantos Luque, María Rosa;lunes;13:30;14:00;REL;3ºB
+Cantos Luque, María Rosa;martes;13:30;14:00;REL;4ºB
+Cantos Luque, María Rosa;miercoles;13:30;14:00;REL;INF5A
+Cantos Luque, María Rosa;jueves;13:30;14:00;REL;1ºA
+Cantos Luque, María Rosa;viernes;13:30;14:00;REL;INF5B
+Carranza Berral, Inmaculada;lunes;13:30;14:00;LCL;4ºA
+Carranza Berral, Inmaculada;martes;13:30;14:00;Refuerzo pedagógico;4ºB
+Carranza Berral, Inmaculada;miercoles;13:30;14:00;EAR;1ºB
+Carranza Berral, Inmaculada;jueves;13:30;14:00;EAR;6ºB
+Carranza Berral, Inmaculada;viernes;13:30;14:00;CMN;4ºA
+Castro Jiménez, Rocío;lunes;13:30;14:00;CRR;INF5A
+Castro Jiménez, Rocío;martes;13:30;14:00;DEE;INF5A
+Castro Jiménez, Rocío;miercoles;13:30;14:00;ATEDU;INF5A
+Castro Jiménez, Rocío;jueves;13:30;14:00;DEE;INF5A
+Castro Jiménez, Rocío;viernes;13:30;14:00;DEE;INF5A
+Cuesta Monterroso, Emilia Maria;lunes;13:30;14:00;CRR AULA ESP;INF5B
+Cuesta Monterroso, Emilia Maria;martes;13:30;14:00;DEE AULA ESP;INF5B
+Cuesta Monterroso, Emilia Maria;miercoles;13:30;14:00;DEE AULA ESP;INF5B
+Cuesta Monterroso, Emilia Maria;jueves;13:30;14:00;DEE AULA ESP;INF5B
+Cuesta Monterroso, Emilia Maria;viernes;13:30;14:00;ATEDU AULA ESP;INF5B
+Doncel Laguna, Yolanda;lunes;13:30;14:00;ACPMF AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;martes;13:30;14:00;ACPMF AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;miercoles;13:30;14:00;ACPMF AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;jueves;13:30;14:00;ACPMF AULA ESP;AULA ESP
+Doncel Laguna, Yolanda;viernes;13:30;14:00;ACPMF AULA ESP;AULA ESP
+Gant Tejada, Rafael;lunes;13:30;14:00;ING Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;martes;13:30;14:00;ING Refuerzo pedagógico;4ºA
+Gant Tejada, Rafael;miercoles;13:30;14:00;ING Refuerzo pedagógico;2ºB
+Gant Tejada, Rafael;jueves;13:30;14:00;MAT Refuerzo pedagógico;4ºB
+Gant Tejada, Rafael;viernes;13:30;14:00;ING Refuerzo pedagógico;2ºA
+Gómez Vergara, Sonia;lunes;13:30;14:00;Refuerzo pedagógico;6ºB
+Gómez Vergara, Sonia;martes;13:30;14:00;Refuerzo pedagógico;2ºB
+Gómez Vergara, Sonia;miercoles;13:30;14:00;Refuerzo pedagógico;2ºB
+Gómez Vergara, Sonia;jueves;13:30;14:00;Refuerzo pedagógico;1ºB
+Gómez Vergara, Sonia;viernes;13:30;14:00;Refuerzo pedagógico;2ºA
+Leal García, Carmen Trinidad;lunes;13:30;14:00;CMN;6ºA
+Leal García, Carmen Trinidad;martes;13:30;14:00;EAR;6ºA
+Leal García, Carmen Trinidad;miercoles;13:30;14:00;MAT;4ºA
+Leal García, Carmen Trinidad;jueves;13:30;14:00;MAT;4ºA
+Leal García, Carmen Trinidad;viernes;13:30;14:00;VCE;6ºA
+Ledesma Cid, Maria Angeles;lunes;13:30;14:00;CA;INF3A
+Ledesma Cid, Maria Angeles;martes;13:30;14:00;CA;INF3A
+Ledesma Cid, Maria Angeles;miercoles;13:30;14:00;CA;INF3A
+Ledesma Cid, Maria Angeles;jueves;13:30;14:00;CA;INF3A
+Ledesma Cid, Maria Angeles;viernes;13:30;14:00;CA;INF3A
+Llorente Ostiategui, Miguel;lunes;13:30;14:00;EAR;1ºA
+Llorente Ostiategui, Miguel;martes;13:30;14:00;EFI;1ºA
+Llorente Ostiategui, Miguel;miercoles;13:30;14:00;EFI;2ºA
+Llorente Ostiategui, Miguel;jueves;13:30;14:00;EFI;2ºA
+Llorente Ostiategui, Miguel;viernes;13:30;14:00;EFI;1ºB
+López Jiménez, Daniel;lunes;13:30;14:00;EFI;5ºB
+López Jiménez, Daniel;martes;13:30;14:00;EFI;5ºB
+López Jiménez, Daniel;miercoles;13:30;14:00;EFI;6ºA
+López Jiménez, Daniel;jueves;13:30;14:00;Función directiva;-
+López Jiménez, Daniel;viernes;13:30;14:00;EFI;5ºA
+Maldonado Honorato, Davinia;lunes;13:30;14:00;Refuerzo pedagógico;INF4A
+Maldonado Honorato, Davinia;martes;13:30;14:00;CRR Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;miercoles;13:30;14:00;CA Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;jueves;13:30;14:00;CRR Audición y Lenguaje;INF4B
+Maldonado Honorato, Davinia;viernes;13:30;14:00;CRR Audición y Lenguaje;INF4B
+Mohedano Morales, Elisa Isabel;lunes;13:30;14:00;Audición y Lenguaje;INF3B
+Mohedano Morales, Elisa Isabel;martes;13:30;14:00;-;-
+Mohedano Morales, Elisa Isabel;miercoles;13:30;14:00;Audición y Lenguaje;Aula TEA
+Mohedano Morales, Elisa Isabel;jueves;13:30;14:00;-;-
+Mohedano Morales, Elisa Isabel;viernes;13:30;14:00;Audición y Lenguaje;Aula TEA
+Moya Medina, Estefania;lunes;13:30;14:00;CMN;5ºA
+Moya Medina, Estefania;martes;13:30;14:00;ING INF3B;3ºA
+Moya Medina, Estefania;miercoles;13:30;14:00;LCL;5ºA
+Moya Medina, Estefania;jueves;13:30;14:00;EAR;5ºA
+Moya Medina, Estefania;viernes;13:30;14:00;ING;3ºA
+Murillo Cerro, Rocío;lunes;13:30;14:00;CMN;6ºB
+Murillo Cerro, Rocío;martes;13:30;14:00;CMN;6ºB
+Murillo Cerro, Rocío;miercoles;13:30;14:00;LCL;6ºB
+Murillo Cerro, Rocío;jueves;13:30;14:00;ING;1ºB
+Murillo Cerro, Rocío;viernes;13:30;14:00;EAR;6ºB
+Ogalla Navarro, Maria del Carmen;lunes;13:30;14:00;Refuerzo pedagógico;3ºA
+Ogalla Navarro, Maria del Carmen;martes;13:30;14:00;CMN;3ºB
+Ogalla Navarro, Maria del Carmen;miercoles;13:30;14:00;MAT;3ºB
+Ogalla Navarro, Maria del Carmen;jueves;13:30;14:00;EAR;3ºB
+Ogalla Navarro, Maria del Carmen;viernes;13:30;14:00;MAT;3ºB
+Peña García, Maria Carmen;lunes;13:30;14:00;LCL 3ºA;2ºB
+Peña García, Maria Carmen;martes;13:30;14:00;LCL Mayores de 55 años;2ºB
+Peña García, Maria Carmen;miercoles;13:30;14:00;MAT;3ºA
+Peña García, Maria Carmen;jueves;13:30;14:00;CMN 3ºA;2ºB
+Peña García, Maria Carmen;viernes;13:30;14:00;EAR Mayores de 55 años;2ºB
+Puntas Rey, Raquel;lunes;13:30;14:00;ACPMF Aula TEA;Aula TEA
+Puntas Rey, Raquel;martes;13:30;14:00;ACPMF Aula TEA;Aula TEA
+Puntas Rey, Raquel;miercoles;13:30;14:00;ACPMF Aula TEA;Aula TEA
+Puntas Rey, Raquel;jueves;13:30;14:00;ACPMF Aula TEA;Aula TEA
+Puntas Rey, Raquel;viernes;13:30;14:00;ACPMF Aula TEA;Aula TEA
+Salinas Lozano, Almudena;lunes;13:30;14:00;LCL;2ºA
+Salinas Lozano, Almudena;martes;13:30;14:00;EAR;2ºA
+Salinas Lozano, Almudena;miercoles;13:30;14:00;MAT;1ºA
+Salinas Lozano, Almudena;jueves;13:30;14:00;ATEDU;1ºA
+Salinas Lozano, Almudena;viernes;13:30;14:00;MAT;1ºA
+Tena Gálvez, Silvia;lunes;13:30;14:00;ATEDU;3ºB
+Tena Gálvez, Silvia;martes;13:30;14:00;ATEDU;4ºB
+Tena Gálvez, Silvia;miercoles;13:30;14:00;Función directiva;-
+Tena Gálvez, Silvia;jueves;13:30;14:00;ALCT;6ºA
+Tena Gálvez, Silvia;viernes;13:30;14:00;Mayores de 55 años;-
+Urquizas Jiménez, Gema;lunes;13:30;14:00;MAT;1ºB
+Urquizas Jiménez, Gema;martes;13:30;14:00;EAR;1ºB
+Urquizas Jiménez, Gema;miercoles;13:30;14:00;CMN;4ºB
+Urquizas Jiménez, Gema;jueves;13:30;14:00;FR2;6ºA
+Urquizas Jiménez, Gema;viernes;13:30;14:00;CMN;4ºB
+Valverde Bascón, Inmaculada;lunes;13:30;14:00;Pedagogía Terapéutica;INF4A
+Valverde Bascón, Inmaculada;martes;13:30;14:00;Pedagogía Terapéutica;INF4A
+Valverde Bascón, Inmaculada;miercoles;13:30;14:00;Pedagogía Terapéutica;4ºA
+Valverde Bascón, Inmaculada;jueves;13:30;14:00;Pedagogía Terapéutica;2ºB
+Valverde Bascón, Inmaculada;viernes;13:30;14:00;Pedagogía Terapéutica;4ºB
