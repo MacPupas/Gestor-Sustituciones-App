@@ -325,21 +325,18 @@ const supabaseDelete = async (table, id) => {
 const supabaseDeleteAll = async (table) => {
   if (!useSupabase()) return;
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=not.is.null`, {
-      method: "DELETE",
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
-        Prefer: "return=representation",
-      },
-    });
-    if (!res.ok) {
-      const err = await res.text();
-      console.error(`[Supabase] DeleteAll error for ${table}:`, res.status, err);
-    } else {
-      const data = await res.json().catch(() => []);
-      console.log(`[Supabase] Deleted all rows from ${table} (${Array.isArray(data) ? data.length : 'ok'} eliminados)`);
+    const allRows = await supabaseFetch(table);
+    console.log(`[Supabase] DeleteAll: ${allRows.length} registros encontrados en ${table}`);
+    if (allRows.length === 0) return;
+
+    const ids = allRows.map(r => r.id).filter(Boolean);
+    const batchSize = 50;
+    for (let i = 0; i < ids.length; i += batchSize) {
+      const batch = ids.slice(i, i + batchSize);
+      await Promise.all(batch.map(id => supabaseDelete(table, id)));
+      console.log(`[Supabase] DeleteAll: borrados ${Math.min(i + batchSize, ids.length)}/${ids.length} de ${table}`);
     }
+    console.log(`[Supabase] DeleteAll completado para ${table}`);
   } catch (e) {
     console.error(`[Supabase] DeleteAll error for ${table}:`, e);
   }
