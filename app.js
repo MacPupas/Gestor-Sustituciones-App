@@ -1921,20 +1921,7 @@ const applyImport = async () => {
       }
     }
 
-    // 3. Borrar TODOS los profesores de Supabase (no solo los obsoletos del local)
-    if (useSupabase()) {
-      await supabaseDeleteAll("profesores");
-    }
-
-    // 4. Guardar solo los profesores del curso actual
-    setProfesores(currentYearProfesores);
-
-    // 5. Vaciar tabla de horario anterior en Supabase
-    if (useSupabase()) {
-      await supabaseDeleteAll("tabla_horario");
-    }
-
-    // 6. Generar las nuevas clases vinculadas a los IDs correctos
+    // 3. Generar las nuevas clases vinculadas a los IDs correctos
     const newTabla = mapped.map((row) => {
       const profName = String(row.profesor || '').trim();
       const profesorId = nameToIdMap.get(normalizeText(profName)) || "";
@@ -1958,11 +1945,28 @@ const applyImport = async () => {
       };
     });
 
-    setTabla(newTabla);
-    alert(`Importación completada con éxito:
-• ${currentYearProfesores.length} profesores activos
-• ${obsoleteIds.length} profesores anteriores retirados
-• ${newTabla.length} horarios cargados`);
+    // 4. Borrar TODO de Supabase y localStorage, luego escribir SOLO lo nuevo
+    // Primero limpiar localStorage directamente (sin pasar por setProfesores que dispara Supabase)
+    cachedData.profesores = currentYearProfesores;
+    localStorage.setItem(storageKeys.profesores, JSON.stringify(currentYearProfesores));
+    cachedData.tabla = newTabla;
+    localStorage.setItem(storageKeys.tabla, JSON.stringify(newTabla));
+
+    // Luego borrar y reescribir en Supabase de forma secuencial y esperando cada paso
+    if (useSupabase()) {
+      console.log("[Import] Borrando profesores de Supabase...");
+      await supabaseDeleteAll("profesores");
+      console.log("[Import] Guardando nuevos profesores en Supabase...");
+      await supabaseSave("profesores", currentYearProfesores);
+      console.log("[Import] Borrando tabla_horario de Supabase...");
+      await supabaseDeleteAll("tabla_horario");
+      console.log("[Import] Guardando nueva tabla_horario en Supabase...");
+      await supabaseSave("tabla_horario", newTabla);
+    }
+
+    const numProf = currentYearProfesores.length;
+    const numHorarios = newTabla.length;
+    alert(`Importación completada con éxito:\n• ${numProf} profesores activos\n• ${numHorarios} horarios cargados`);
   }
 
   refreshProfesorOptions();
