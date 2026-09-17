@@ -325,16 +325,25 @@ const supabaseDelete = async (table, id) => {
 const supabaseDeleteAll = async (table) => {
   if (!useSupabase()) return;
   try {
+    console.log(`[Supabase] DeleteAll: buscando registros en ${table}...`);
     const allRows = await supabaseFetch(table);
     console.log(`[Supabase] DeleteAll: ${allRows.length} registros encontrados en ${table}`);
-    if (allRows.length === 0) return;
+
+    if (allRows.length === 0) {
+      console.log(`[Supabase] DeleteAll: no hay registros que borrar en ${table}`);
+      return;
+    }
 
     const ids = allRows.map(r => r.id).filter(Boolean);
+    console.log(`[Supabase] DeleteAll: IDs a borrar:`, ids);
+
     const batchSize = 50;
     for (let i = 0; i < ids.length; i += batchSize) {
       const batch = ids.slice(i, i + batchSize);
-      await Promise.all(batch.map(id => supabaseDelete(table, id)));
-      console.log(`[Supabase] DeleteAll: borrados ${Math.min(i + batchSize, ids.length)}/${ids.length} de ${table}`);
+      const results = await Promise.allSettled(batch.map(id => supabaseDelete(table, id)));
+      const ok = results.filter(r => r.status === 'fulfilled').length;
+      const fail = results.filter(r => r.status === 'rejected').length;
+      console.log(`[Supabase] DeleteAll: lote ${i/batchSize + 1}: ${ok} OK, ${fail} fallos`);
     }
     console.log(`[Supabase] DeleteAll completado para ${table}`);
   } catch (e) {
@@ -1954,14 +1963,36 @@ const applyImport = async () => {
 
     // Luego borrar y reescribir en Supabase de forma secuencial y esperando cada paso
     if (useSupabase()) {
-      console.log("[Import] Borrando profesores de Supabase...");
+      console.log("[Import] === INICIO BORRADO SUPABASE ===");
+      console.log("[Import] Profesores a guardar:", currentYearProfesores.map(p => p.profesor));
+
+      // Paso 1: Borrar todos los profesores
+      console.log("[Import] Paso 1: Borrando todos los profesores de Supabase...");
       await supabaseDeleteAll("profesores");
-      console.log("[Import] Guardando nuevos profesores en Supabase...");
+
+      // Verificar que se borraron
+      const verificarProf = await supabaseFetch("profesores");
+      console.log("[Import] Verificación post-borrado profesores:", verificarProf.length, "registros restantes");
+
+      // Paso 2: Guardar nuevos profesores
+      console.log("[Import] Paso 2: Guardando", currentYearProfesores.length, "profesores nuevos...");
       await supabaseSave("profesores", currentYearProfesores);
-      console.log("[Import] Borrando tabla_horario de Supabase...");
+
+      // Verificar que se guardaron
+      const verificarProf2 = await supabaseFetch("profesores");
+      console.log("[Import] Verificación post-guardado profesores:", verificarProf2.length, "registros");
+
+      // Paso 3: Borrar tabla_horario
+      console.log("[Import] Paso 3: Borrando tabla_horario de Supabase...");
       await supabaseDeleteAll("tabla_horario");
-      console.log("[Import] Guardando nueva tabla_horario en Supabase...");
+
+      // Paso 4: Guardar nueva tabla_horario
+      console.log("[Import] Paso 4: Guardando", newTabla.length, "registros de tabla_horario...");
       await supabaseSave("tabla_horario", newTabla);
+
+      const verificarTabla = await supabaseFetch("tabla_horario");
+      console.log("[Import] Verificación post-guardado tabla_horario:", verificarTabla.length, "registros");
+      console.log("[Import] === FIN BORRADO SUPABASE ===");
     }
 
     const numProf = currentYearProfesores.length;
