@@ -1921,24 +1921,13 @@ const applyImport = async () => {
       }
     }
 
-    // 3. Detectar profesores del curso anterior (los que ya no tienen clases este curso)
-    const obsoleteProfesores = existingProfesores.filter(
-      ep => !currentYearProfesores.some(cp => cp.id === ep.id)
-    );
-    const obsoleteIds = obsoleteProfesores.map(p => p.id);
-    if (obsoleteIds.length > 0) {
-      console.log(`[Import] Retirando ${obsoleteIds.length} profesores del curso anterior:`, obsoleteProfesores.map(p => p.profesor));
-      addDeletedProfesorIds(obsoleteIds);
-      if (useSupabase()) {
-        await Promise.all(obsoleteIds.map(id => supabaseDelete("profesores", id)));
-      }
+    // 3. Borrar TODOS los profesores de Supabase (no solo los obsoletos del local)
+    if (useSupabase()) {
+      await supabaseDeleteAll("profesores");
     }
 
-    // 4. Guardar profesores del curso actual (local y Supabase)
+    // 4. Guardar solo los profesores del curso actual
     setProfesores(currentYearProfesores);
-    if (useSupabase()) {
-      await supabaseSave("profesores", currentYearProfesores);
-    }
 
     // 5. Vaciar tabla de horario anterior en Supabase
     if (useSupabase()) {
