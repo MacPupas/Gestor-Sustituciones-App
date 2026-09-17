@@ -27,6 +27,25 @@ const addDeletedSustitutionIds = (ids) => {
   localStorage.setItem(DELETED_SUST_KEY, JSON.stringify(arr));
 };
 
+const DELETED_PROF_KEY = "gs_deleted_profesores_ids";
+
+// Devuelve el Set de IDs de profesores borrados en este dispositivo
+const getDeletedProfesorIds = () => {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(DELETED_PROF_KEY) || "[]"));
+  } catch { return new Set(); }
+};
+
+// Añade IDs al registro de profesores borrados (máx. 500 entradas)
+const addDeletedProfesorIds = (ids) => {
+  if (!Array.isArray(ids) || ids.length === 0) return;
+  const existing = getDeletedProfesorIds();
+  ids.forEach(id => { if (id) existing.add(id); });
+  let arr = [...existing];
+  if (arr.length > 500) arr = arr.slice(arr.length - 500);
+  localStorage.setItem(DELETED_PROF_KEY, JSON.stringify(arr));
+};
+
 
 
 const useSupabase = () => {
@@ -182,12 +201,32 @@ const supabaseSync = async () => {
     return merged;
   };
 
-  // Combinar datos de profesores
-  if (tables.profesores.length > 0 || localProfesores.length > 0) {
-    const mergedProfesores = mergeData(localProfesores, tables.profesores);
-    setProfesores(mergedProfesores);
-    // Subir registros locales nuevos a Supabase
-    const newLocalProfesores = localProfesores.filter(p => !tables.profesores.some(rp => rp.id === p.id));
+  // Sincronizar profesores con soporte de borrado mediante tombstones
+  {
+    const deletedProfIds = getDeletedProfesorIds();
+
+    // 1. Registros remotos marcados como borrados → eliminar de Supabase si aún están ahí
+    const remoteToDelete = tables.profesores.filter(rp => deletedProfIds.has(rp.id));
+    if (remoteToDelete.length > 0) {
+      console.log(`[Supabase] Eliminando ${remoteToDelete.length} profesores que fueron borrados`);
+      await Promise.all(remoteToDelete.map(rp => supabaseDelete("profesores", rp.id)));
+    }
+
+    // 2. Registros remotos válidos (no borrados y no presentes en local)
+    const remoteNew = tables.profesores.filter(
+      rp => !deletedProfIds.has(rp.id) && !localProfesores.some(lp => lp.id === rp.id)
+    );
+
+    // 3. Estado local activo (filtrando cualquier ID que esté en deletedProfIds)
+    const activeLocal = localProfesores.filter(lp => !deletedProfIds.has(lp.id));
+    const mergedProfesores = [...activeLocal, ...remoteNew];
+    cachedData.profesores = mergedProfesores;
+    localStorage.setItem(storageKeys.profesores, JSON.stringify(mergedProfesores));
+
+    // 4. Subir registros locales nuevos que no están en Supabase ni en borrados
+    const newLocalProfesores = activeLocal.filter(
+      p => !tables.profesores.some(rp => rp.id === p.id)
+    );
     if (newLocalProfesores.length > 0) {
       await supabaseSave("profesores", newLocalProfesores);
     }
@@ -291,13 +330,15 @@ const supabaseDeleteAll = async (table) => {
       headers: {
         apikey: SUPABASE_KEY,
         Authorization: `Bearer ${SUPABASE_KEY}`,
+        Prefer: "return=representation",
       },
     });
     if (!res.ok) {
       const err = await res.text();
       console.error(`[Supabase] DeleteAll error for ${table}:`, res.status, err);
     } else {
-      console.log(`[Supabase] Deleted all rows from ${table}`);
+      const data = await res.json().catch(() => []);
+      console.log(`[Supabase] Deleted all rows from ${table} (${Array.isArray(data) ? data.length : 'ok'} eliminados)`);
     }
   } catch (e) {
     console.error(`[Supabase] DeleteAll error for ${table}:`, e);
@@ -1855,14 +1896,62 @@ const applyImport = async () => {
   }
 
   if (state.importType === "tabla") {
+    // 1. Extraer profesores únicos presentes en el horario del curso actual
+    const csvProfNames = [...new Set(mapped.map(row => String(row.profesor || '').trim()).filter(Boolean))];
+    const existingProfesores = getProfesores();
+
+    // 2. Mapear o crear profesores activos (preservando IDs y datos si ya existían)
+    const currentYearProfesores = [];
+    const nameToIdMap = new Map();
+
+    for (const name of csvProfNames) {
+      const match = existingProfesores.find(
+        (p) => normalizeText(p.profesor) === normalizeText(name)
+      );
+      if (match) {
+        currentYearProfesores.push(match);
+        nameToIdMap.set(normalizeText(name), match.id);
+      } else {
+        const newProf = {
+          id: generateId(),
+          profesor: name,
+          puesto: "Profesor/a",
+          movilAvisos: "",
+          cuenta: "",
+        };
+        currentYearProfesores.push(newProf);
+        nameToIdMap.set(normalizeText(name), newProf.id);
+      }
+    }
+
+    // 3. Detectar profesores del curso anterior (los que ya no tienen clases este curso)
+    const obsoleteProfesores = existingProfesores.filter(
+      ep => !currentYearProfesores.some(cp => cp.id === ep.id)
+    );
+    const obsoleteIds = obsoleteProfesores.map(p => p.id);
+    if (obsoleteIds.length > 0) {
+      console.log(`[Import] Retirando ${obsoleteIds.length} profesores del curso anterior:`, obsoleteProfesores.map(p => p.profesor));
+      addDeletedProfesorIds(obsoleteIds);
+      if (useSupabase()) {
+        await Promise.all(obsoleteIds.map(id => supabaseDelete("profesores", id)));
+      }
+    }
+
+    // 4. Guardar profesores del curso actual (local y Supabase)
+    setProfesores(currentYearProfesores);
     if (useSupabase()) {
-      await supabaseDeleteAll("profesores");
+      await supabaseSave("profesores", currentYearProfesores);
+    }
+
+    // 5. Vaciar tabla de horario anterior en Supabase
+    if (useSupabase()) {
       await supabaseDeleteAll("tabla_horario");
     }
-    setProfesores([]);
 
+    // 6. Generar las nuevas clases vinculadas a los IDs correctos
     const newTabla = mapped.map((row) => {
-      const profesorId = resolveProfesorId(row.profesor);
+      const profName = String(row.profesor || '').trim();
+      const profesorId = nameToIdMap.get(normalizeText(profName)) || "";
       const diaSemana = normalizeDay(row.diaSemana);
       const horaInicio = normalizeTime(row.horaInicio);
       const horaFin = normalizeTime(row.horaFin);
@@ -1874,7 +1963,7 @@ const applyImport = async () => {
       return {
         id: deterministicId,
         profesorId: profesorId,
-        profesorNombre: row.profesor || "",
+        profesorNombre: profName,
         diaSemana: diaSemana,
         horaInicio: horaInicio,
         horaFin: horaFin,
@@ -1882,8 +1971,12 @@ const applyImport = async () => {
         cursoGrupo: cursoGrupo,
       };
     });
+
     setTabla(newTabla);
-    alert(`Importación completada: ${newTabla.length} registros importados`);
+    alert(`Importación completada con éxito:
+• ${currentYearProfesores.length} profesores activos
+• ${obsoleteIds.length} profesores anteriores retirados
+• ${newTabla.length} horarios cargados`);
   }
 
   refreshProfesorOptions();
@@ -2217,13 +2310,67 @@ const editProfesor = (id) => {
   alert("Profesor actualizado correctamente.");
 };
 
-const deleteProfesor = (id, name) => {
+const depurarProfesoresCursoAnterior = async () => {
+  const tabla = getTabla();
+  const profesores = getProfesores();
+  if (tabla.length === 0) {
+    alert("No hay tabla de horario cargada para comparar.");
+    return;
+  }
+
+  // Profesores que tienen al menos una clase en el horario actual
+  const profsConHorario = new Set(tabla.map(t => t.profesorId).filter(Boolean));
+  const profNombresConHorario = new Set(tabla.map(t => normalizeText(t.profesorNombre)).filter(Boolean));
+
+  // Bajas activas o relevistas (no borrar si están vinculados a una baja)
+  const bajas = getBajas();
+  const profsEnBajas = new Set();
+  bajas.forEach(b => {
+    if (b.profesorBajaId) profsEnBajas.add(b.profesorBajaId);
+    if (b.profesorRelevistaId) profsEnBajas.add(b.profesorRelevistaId);
+  });
+
+  const sinHorario = profesores.filter(p => 
+    !profsConHorario.has(p.id) &&
+    !profNombresConHorario.has(normalizeText(p.profesor)) &&
+    !profsEnBajas.has(p.id)
+  );
+
+  if (sinHorario.length === 0) {
+    alert("¡Todo en orden! Todos los profesores registrados tienen clases asignadas en el horario actual.");
+    return;
+  }
+
+  const listaNombres = sinHorario.map(p => `• ${p.profesor}`).join("\n");
+  const ok = confirm(`Se han detectado ${sinHorario.length} profesores que NO tienen clases en el horario actual (curso anterior o duplicados):\n\n${listaNombres}\n\n¿Deseas eliminarlos de la app y de Supabase?`);
+  if (!ok) return;
+
+  const idsParaBorrar = sinHorario.map(p => p.id);
+  addDeletedProfesorIds(idsParaBorrar);
+  const actualizados = profesores.filter(p => !idsParaBorrar.includes(p.id));
+  setProfesores(actualizados);
+
+  if (useSupabase()) {
+    await Promise.all(idsParaBorrar.map(id => supabaseDelete("profesores", id)));
+  }
+
+  renderDataset("profesores");
+  refreshProfesorOptions();
+  renderDashboard();
+  alert(`Se han eliminado ${sinHorario.length} profesores del curso pasado correctamente.`);
+};
+
+const deleteProfesor = async (id, name) => {
   const ok = confirm(`¿Seguro que deseas eliminar a ${name || "este profesor"}?`);
   if (!ok) return;
 
   const profesores = getProfesores();
   const updated = profesores.filter((p) => p.id !== id);
+  addDeletedProfesorIds([id]);
   setProfesores(updated);
+  if (useSupabase()) {
+    await supabaseDelete("profesores", id);
+  }
   renderDataset("profesores");
   refreshProfesorOptions();
   alert("Profesor eliminado correctamente.");
@@ -2640,15 +2787,18 @@ const initImports = () => {
     }
   });
 
-  // Event delegation for Add buttons
+  // Event delegation for Add and Depurar buttons
   document.addEventListener("click", (e) => {
     if (e.target.id === "btnAddActividad" || e.target.closest("#btnAddActividad")) {
       addNewTablaRecord();
     }
+    if (e.target.id === "btnDepurarProfesores" || e.target.closest("#btnDepurarProfesores")) {
+      depurarProfesoresCursoAnterior();
+    }
   });
 
   document.querySelectorAll("[data-clear]").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener("click", async (e) => {
       e.preventDefault();
       const type = btn.dataset.clear;
       if (!type) {
@@ -2659,10 +2809,21 @@ const initImports = () => {
       if (!ok) return;
       try {
         if (type === "profesores") {
+          const currentIds = getProfesores().map(p => p.id);
+          addDeletedProfesorIds(currentIds);
+          if (useSupabase()) {
+            await supabaseDeleteAll("profesores");
+          }
           setProfesores([]);
         } else if (type === "materias") {
+          if (useSupabase()) {
+            await supabaseDeleteAll("materias");
+          }
           setMaterias([]);
         } else if (type === "tabla") {
+          if (useSupabase()) {
+            await supabaseDeleteAll("tabla_horario");
+          }
           setTabla([]);
         }
         renderDataset(type);

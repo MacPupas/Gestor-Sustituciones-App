@@ -326,6 +326,14 @@ p {
   color: #475569;
 }
 
+.btn-warning {
+  background: #fef3c7;
+  color: #b45309;
+}
+.btn-warning:hover {
+  background: #fde68a;
+}
+
 .btn-danger {
   background: #fee2e2;
   color: #b91c1c;
