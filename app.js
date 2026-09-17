@@ -283,6 +283,27 @@ const supabaseDelete = async (table, id) => {
   }
 };
 
+const supabaseDeleteAll = async (table) => {
+  if (!useSupabase()) return;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=not.is.null`, {
+      method: "DELETE",
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+      },
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      console.error(`[Supabase] DeleteAll error for ${table}:`, res.status, err);
+    } else {
+      console.log(`[Supabase] Deleted all rows from ${table}`);
+    }
+  } catch (e) {
+    console.error(`[Supabase] DeleteAll error for ${table}:`, e);
+  }
+};
+
 const supabaseSave = async (table, data) => {
   if (!useSupabase()) return;
   if (!data || data.length === 0) return;
@@ -1782,7 +1803,7 @@ const renderPreview = () => {
   `;
 };
 
-const applyImport = () => {
+const applyImport = async () => {
   const config = datasetConfig[state.importType];
   const mapping = state.importMapping;
   const rows = state.importRows;
@@ -1808,6 +1829,9 @@ const applyImport = () => {
       };
       return prof;
     });
+    if (useSupabase()) {
+      await supabaseDeleteAll("profesores");
+    }
     setProfesores(profesores);
   }
 
@@ -1824,13 +1848,13 @@ const applyImport = () => {
         materia: row.materia || "",
       };
     });
+    if (useSupabase()) {
+      await supabaseDeleteAll("materias");
+    }
     setMaterias(newMaterias);
   }
 
   if (state.importType === "tabla") {
-    const existingTabla = getTabla();
-    const existingIds = new Set(existingTabla.map(t => t.id));
-
     const newTabla = mapped.map((row) => {
       const profesorId = resolveProfesorId(row.profesor);
       const diaSemana = normalizeDay(row.diaSemana);
@@ -1839,7 +1863,6 @@ const applyImport = () => {
       const asignatura = row.asignatura || "";
       const cursoGrupo = row.cursoGrupo || "";
 
-      // Generar ID determinístico para evitar duplicados
       const deterministicId = generateDeterministicId(profesorId, diaSemana, horaInicio, horaFin, asignatura, cursoGrupo);
 
       return {
@@ -1852,15 +1875,10 @@ const applyImport = () => {
         asignatura: asignatura,
         cursoGrupo: cursoGrupo,
       };
-    }).filter(newRow => {
-      // Filtrar duplicados: no agregar si ya existe un registro con el mismo ID
-      if (existingIds.has(newRow.id)) {
-        return false;
-      }
-      existingIds.add(newRow.id);
-      return true;
     });
-
+    if (useSupabase()) {
+      await supabaseDeleteAll("tabla_horario");
+    }
     setTabla(newTabla);
     alert(`Importación completada: ${newTabla.length} registros importados`);
   }
