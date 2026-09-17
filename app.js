@@ -23,7 +23,7 @@ const addDeletedSustitutionIds = (ids) => {
   const existing = getDeletedSustitutionIds();
   ids.forEach(id => existing.add(id));
   let arr = [...existing];
-  if (arr.length > 500) arr = arr.slice(arr.length - 500);
+  if (arr.length > 5000) arr = arr.slice(arr.length - 5000);
   localStorage.setItem(DELETED_SUST_KEY, JSON.stringify(arr));
 };
 
@@ -42,7 +42,7 @@ const addDeletedProfesorIds = (ids) => {
   const existing = getDeletedProfesorIds();
   ids.forEach(id => { if (id) existing.add(id); });
   let arr = [...existing];
-  if (arr.length > 500) arr = arr.slice(arr.length - 500);
+  if (arr.length > 5000) arr = arr.slice(arr.length - 5000);
   localStorage.setItem(DELETED_PROF_KEY, JSON.stringify(arr));
 };
 
@@ -57,7 +57,7 @@ const addDeletedMateriasIds = (ids) => {
   const existing = getDeletedMateriasIds();
   ids.forEach(id => { if (id) existing.add(id); });
   let arr = [...existing];
-  if (arr.length > 500) arr = arr.slice(arr.length - 500);
+  if (arr.length > 5000) arr = arr.slice(arr.length - 5000);
   localStorage.setItem(DELETED_MATERIAS_KEY, JSON.stringify(arr));
 };
 
@@ -72,7 +72,7 @@ const addDeletedTablaIds = (ids) => {
   const existing = getDeletedTablaIds();
   ids.forEach(id => { if (id) existing.add(id); });
   let arr = [...existing];
-  if (arr.length > 500) arr = arr.slice(arr.length - 500);
+  if (arr.length > 5000) arr = arr.slice(arr.length - 5000);
   localStorage.setItem(DELETED_TABLA_KEY, JSON.stringify(arr));
 };
 
@@ -87,7 +87,7 @@ const addDeletedBajasIds = (ids) => {
   const existing = getDeletedBajasIds();
   ids.forEach(id => { if (id) existing.add(id); });
   let arr = [...existing];
-  if (arr.length > 500) arr = arr.slice(arr.length - 500);
+  if (arr.length > 5000) arr = arr.slice(arr.length - 5000);
   localStorage.setItem(DELETED_BAJAS_KEY, JSON.stringify(arr));
 };
 
@@ -1952,6 +1952,12 @@ const applyImport = async () => {
   const rows = state.importRows;
 
   if (!rows.length) return;
+  
+  // Bloquear sync durante la importación para evitar race conditions
+  isSyncing = true;
+  isSavingToSupabase = true;
+  
+  try {
   const mapped = rows.map((row) => {
     const record = {};
     config.fields.forEach((field) => {
@@ -2057,11 +2063,13 @@ const applyImport = async () => {
     });
 
     // 4. Borrar TODO de Supabase y localStorage, luego escribir SOLO lo nuevo
-    // Registrar IDs antiguos como borrados para que no reaparezcan en sync
-    const oldProfIds = getProfesores().map(p => p.id);
-    if (oldProfIds.length > 0) addDeletedProfesorIds(oldProfIds);
-    const oldTablaIds = getTabla().map(t => t.id);
-    if (oldTablaIds.length > 0) addDeletedTablaIds(oldTablaIds);
+    // Registrar IDs antiguos como borrados SOLO si NO están en los nuevos datos
+    const newProfIds = new Set(currentYearProfesores.map(p => p.id));
+    const oldProfIdsToDelete = getProfesores().map(p => p.id).filter(id => !newProfIds.has(id));
+    if (oldProfIdsToDelete.length > 0) addDeletedProfesorIds(oldProfIdsToDelete);
+    const newTablaIds = new Set(newTabla.map(t => t.id));
+    const oldTablaIdsToDelete = getTabla().map(t => t.id).filter(id => !newTablaIds.has(id));
+    if (oldTablaIdsToDelete.length > 0) addDeletedTablaIds(oldTablaIdsToDelete);
     // Primero limpiar localStorage directamente (sin pasar por setProfesores que dispara Supabase)
     cachedData.profesores = currentYearProfesores;
     localStorage.setItem(storageKeys.profesores, JSON.stringify(currentYearProfesores));
@@ -2110,6 +2118,11 @@ const applyImport = async () => {
   refreshProfesorOptions();
   closeImportModal();
   renderDashboard();
+  } finally {
+    // Liberar el lock de sync
+    isSyncing = false;
+    isSavingToSupabase = false;
+  }
 };
 
 const renderProfesoresCards = (profesores) => {
