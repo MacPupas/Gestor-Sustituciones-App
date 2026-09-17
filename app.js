@@ -46,6 +46,50 @@ const addDeletedProfesorIds = (ids) => {
   localStorage.setItem(DELETED_PROF_KEY, JSON.stringify(arr));
 };
 
+// --- Tombstones para MATERIAS ---
+const DELETED_MATERIAS_KEY = "gs_deleted_materias_ids";
+const getDeletedMateriasIds = () => {
+  try { return new Set(JSON.parse(localStorage.getItem(DELETED_MATERIAS_KEY) || "[]")); }
+  catch { return new Set(); }
+};
+const addDeletedMateriasIds = (ids) => {
+  if (!Array.isArray(ids) || ids.length === 0) return;
+  const existing = getDeletedMateriasIds();
+  ids.forEach(id => { if (id) existing.add(id); });
+  let arr = [...existing];
+  if (arr.length > 500) arr = arr.slice(arr.length - 500);
+  localStorage.setItem(DELETED_MATERIAS_KEY, JSON.stringify(arr));
+};
+
+// --- Tombstones para TABLA_HORARIO ---
+const DELETED_TABLA_KEY = "gs_deleted_tabla_ids";
+const getDeletedTablaIds = () => {
+  try { return new Set(JSON.parse(localStorage.getItem(DELETED_TABLA_KEY) || "[]")); }
+  catch { return new Set(); }
+};
+const addDeletedTablaIds = (ids) => {
+  if (!Array.isArray(ids) || ids.length === 0) return;
+  const existing = getDeletedTablaIds();
+  ids.forEach(id => { if (id) existing.add(id); });
+  let arr = [...existing];
+  if (arr.length > 500) arr = arr.slice(arr.length - 500);
+  localStorage.setItem(DELETED_TABLA_KEY, JSON.stringify(arr));
+};
+
+// --- Tombstones para BAJAS ---
+const DELETED_BAJAS_KEY = "gs_deleted_bajas_ids";
+const getDeletedBajasIds = () => {
+  try { return new Set(JSON.parse(localStorage.getItem(DELETED_BAJAS_KEY) || "[]")); }
+  catch { return new Set(); }
+};
+const addDeletedBajasIds = (ids) => {
+  if (!Array.isArray(ids) || ids.length === 0) return;
+  const existing = getDeletedBajasIds();
+  ids.forEach(id => { if (id) existing.add(id); });
+  let arr = [...existing];
+  if (arr.length > 500) arr = arr.slice(arr.length - 500);
+  localStorage.setItem(DELETED_BAJAS_KEY, JSON.stringify(arr));
+};
 
 
 const useSupabase = () => {
@@ -232,21 +276,49 @@ const supabaseSync = async () => {
     }
   }
 
-  // Combinar datos de materias
-  if (tables.materias.length > 0 || localMaterias.length > 0) {
-    const mergedMaterias = mergeData(localMaterias, tables.materias);
+  // Sincronizar materias con tombstones
+  {
+    const deletedMateriasIds = getDeletedMateriasIds();
+    // Borrar de Supabase los que están en tombstones
+    const remoteToDeleteM = tables.materias.filter(rm => deletedMateriasIds.has(rm.id));
+    if (remoteToDeleteM.length > 0) {
+      console.log(`[Supabase] Eliminando ${remoteToDeleteM.length} materias borradas`);
+      await Promise.all(remoteToDeleteM.map(rm => supabaseDelete("materias", rm.id)));
+    }
+    // Registros remotos válidos (no borrados, no en local)
+    const remoteNewMaterias = tables.materias.filter(
+      rm => !deletedMateriasIds.has(rm.id) && !localMaterias.some(lm => lm.id === rm.id)
+    );
+    // Estado local activo
+    const activeLocalMaterias = localMaterias.filter(lm => !deletedMateriasIds.has(lm.id));
+    const mergedMaterias = [...activeLocalMaterias, ...remoteNewMaterias];
     setMaterias(mergedMaterias);
-    const newLocalMaterias = localMaterias.filter(m => !tables.materias.some(rm => rm.id === m.id));
+    // Subir locales nuevos
+    const newLocalMaterias = activeLocalMaterias.filter(
+      m => !tables.materias.some(rm => rm.id === m.id)
+    );
     if (newLocalMaterias.length > 0) {
       await supabaseSave("materias", newLocalMaterias);
     }
   }
 
-  // Combinar datos de tabla_horario
-  if (tables.tabla_horario.length > 0 || localTabla.length > 0) {
-    const mergedTabla = mergeData(localTabla, tables.tabla_horario);
+  // Sincronizar tabla_horario con tombstones
+  {
+    const deletedTablaIds = getDeletedTablaIds();
+    const remoteToDeleteT = tables.tabla_horario.filter(rt => deletedTablaIds.has(rt.id));
+    if (remoteToDeleteT.length > 0) {
+      console.log(`[Supabase] Eliminando ${remoteToDeleteT.length} registros de tabla borrados`);
+      await Promise.all(remoteToDeleteT.map(rt => supabaseDelete("tabla_horario", rt.id)));
+    }
+    const remoteNewTabla = tables.tabla_horario.filter(
+      rt => !deletedTablaIds.has(rt.id) && !localTabla.some(lt => lt.id === rt.id)
+    );
+    const activeLocalTabla = localTabla.filter(lt => !deletedTablaIds.has(lt.id));
+    const mergedTabla = [...activeLocalTabla, ...remoteNewTabla];
     setTabla(mergedTabla);
-    const newLocalTabla = localTabla.filter(t => !tables.tabla_horario.some(rt => rt.id === t.id));
+    const newLocalTabla = activeLocalTabla.filter(
+      t => !tables.tabla_horario.some(rt => rt.id === t.id)
+    );
     if (newLocalTabla.length > 0) {
       await supabaseSave("tabla_horario", newLocalTabla);
     }
@@ -285,11 +357,23 @@ const supabaseSync = async () => {
     }
   }
 
-  // Combinar datos de bajas
-  if (tables.bajas.length > 0 || localBajas.length > 0) {
-    const mergedBajas = mergeData(localBajas, tables.bajas);
+  // Sincronizar bajas con tombstones
+  {
+    const deletedBajasIds = getDeletedBajasIds();
+    const remoteToDeleteB = tables.bajas.filter(rb => deletedBajasIds.has(rb.id));
+    if (remoteToDeleteB.length > 0) {
+      console.log(`[Supabase] Eliminando ${remoteToDeleteB.length} bajas borradas`);
+      await Promise.all(remoteToDeleteB.map(rb => supabaseDelete("bajas", rb.id)));
+    }
+    const remoteNewBajas = tables.bajas.filter(
+      rb => !deletedBajasIds.has(rb.id) && !localBajas.some(lb => lb.id === rb.id)
+    );
+    const activeLocalBajas = localBajas.filter(lb => !deletedBajasIds.has(lb.id));
+    const mergedBajas = [...activeLocalBajas, ...remoteNewBajas];
     setBajas(mergedBajas);
-    const newLocalBajas = localBajas.filter(b => !tables.bajas.some(rb => rb.id === b.id));
+    const newLocalBajas = activeLocalBajas.filter(
+      b => !tables.bajas.some(rb => rb.id === b.id)
+    );
     if (newLocalBajas.length > 0) {
       await supabaseSave("bajas", newLocalBajas);
     }
@@ -478,7 +562,10 @@ const setBajas = (data) => {
   localStorage.setItem(storageKeys.bajas, JSON.stringify(data));
   if (useSupabase() && !isSavingToSupabase) {
     const idsToDelete = oldData.filter(b => !data.find(d => d.id === b.id)).map(b => b.id);
-    idsToDelete.forEach(id => supabaseDelete("bajas", id));
+    if (idsToDelete.length > 0) {
+      addDeletedBajasIds(idsToDelete);
+      idsToDelete.forEach(id => supabaseDelete("bajas", id));
+    }
     supabaseSave("bajas", data);
   }
 };
@@ -544,7 +631,10 @@ const setProfesores = (data) => {
   localStorage.setItem(storageKeys.profesores, JSON.stringify(data));
   if (useSupabase() && !isSavingToSupabase) {
     const idsToDelete = oldData.filter(s => !data.find(d => d.id === s.id)).map(s => s.id);
-    idsToDelete.forEach(id => supabaseDelete("profesores", id));
+    if (idsToDelete.length > 0) {
+      addDeletedProfesorIds(idsToDelete);
+      idsToDelete.forEach(id => supabaseDelete("profesores", id));
+    }
     supabaseSave("profesores", data);
   }
 };
@@ -554,7 +644,10 @@ const setMaterias = (data) => {
   localStorage.setItem(storageKeys.materias, JSON.stringify(data));
   if (useSupabase() && !isSavingToSupabase) {
     const idsToDelete = oldData.filter(s => !data.find(d => d.id === s.id)).map(s => s.id);
-    idsToDelete.forEach(id => supabaseDelete("materias", id));
+    if (idsToDelete.length > 0) {
+      addDeletedMateriasIds(idsToDelete);
+      idsToDelete.forEach(id => supabaseDelete("materias", id));
+    }
     supabaseSave("materias", data);
   }
 };
@@ -564,7 +657,10 @@ const setTabla = (data) => {
   localStorage.setItem(storageKeys.tabla, JSON.stringify(data));
   if (useSupabase() && !isSavingToSupabase) {
     const idsToDelete = oldData.filter(s => !data.find(d => d.id === s.id)).map(s => s.id);
-    idsToDelete.forEach(id => supabaseDelete("tabla_horario", id));
+    if (idsToDelete.length > 0) {
+      addDeletedTablaIds(idsToDelete);
+      idsToDelete.forEach(id => supabaseDelete("tabla_horario", id));
+    }
     supabaseSave("tabla_horario", data);
   }
 };
@@ -1876,6 +1972,9 @@ const applyImport = async () => {
       };
       return prof;
     });
+    // Registrar IDs antiguos como borrados para que no reaparezcan en sync
+    const oldIds = getProfesores().map(p => p.id);
+    if (oldIds.length > 0) addDeletedProfesorIds(oldIds);
     if (useSupabase()) {
       await supabaseDeleteAll("profesores");
     }
@@ -1895,6 +1994,9 @@ const applyImport = async () => {
         materia: row.materia || "",
       };
     });
+    // Registrar IDs antiguos como borrados para que no reaparezcan en sync
+    const oldIds = getMaterias().map(m => m.id);
+    if (oldIds.length > 0) addDeletedMateriasIds(oldIds);
     if (useSupabase()) {
       await supabaseDeleteAll("materias");
     }
@@ -1955,6 +2057,11 @@ const applyImport = async () => {
     });
 
     // 4. Borrar TODO de Supabase y localStorage, luego escribir SOLO lo nuevo
+    // Registrar IDs antiguos como borrados para que no reaparezcan en sync
+    const oldProfIds = getProfesores().map(p => p.id);
+    if (oldProfIds.length > 0) addDeletedProfesorIds(oldProfIds);
+    const oldTablaIds = getTabla().map(t => t.id);
+    if (oldTablaIds.length > 0) addDeletedTablaIds(oldTablaIds);
     // Primero limpiar localStorage directamente (sin pasar por setProfesores que dispara Supabase)
     cachedData.profesores = currentYearProfesores;
     localStorage.setItem(storageKeys.profesores, JSON.stringify(currentYearProfesores));
@@ -2837,11 +2944,15 @@ const initImports = () => {
           }
           setProfesores([]);
         } else if (type === "materias") {
+          const currentIds = getMaterias().map(m => m.id);
+          addDeletedMateriasIds(currentIds);
           if (useSupabase()) {
             await supabaseDeleteAll("materias");
           }
           setMaterias([]);
         } else if (type === "tabla") {
+          const currentIds = getTabla().map(t => t.id);
+          addDeletedTablaIds(currentIds);
           if (useSupabase()) {
             await supabaseDeleteAll("tabla_horario");
           }
@@ -3765,6 +3876,7 @@ const eliminarBajaHistorico = (bajaId) => {
   const ok = confirm(`¿Estás seguro de eliminar la baja de ${baja.profesorBajaNombre}?`);
   if (!ok) return;
 
+  addDeletedBajasIds([bajaId]);
   const updated = bajas.filter(b => b.id !== bajaId);
   setBajas(updated);
   renderBajaActiva();
