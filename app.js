@@ -1855,6 +1855,12 @@ const applyImport = async () => {
   }
 
   if (state.importType === "tabla") {
+    if (useSupabase()) {
+      await supabaseDeleteAll("profesores");
+      await supabaseDeleteAll("tabla_horario");
+    }
+    setProfesores([]);
+
     const newTabla = mapped.map((row) => {
       const profesorId = resolveProfesorId(row.profesor);
       const diaSemana = normalizeDay(row.diaSemana);
@@ -1876,9 +1882,6 @@ const applyImport = async () => {
         cursoGrupo: cursoGrupo,
       };
     });
-    if (useSupabase()) {
-      await supabaseDeleteAll("tabla_horario");
-    }
     setTabla(newTabla);
     alert(`Importación completada: ${newTabla.length} registros importados`);
   }
