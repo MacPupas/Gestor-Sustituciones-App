@@ -1824,8 +1824,7 @@ const applyImport = () => {
         materia: row.materia || "",
       };
     });
-    const existingMaterias = getMaterias();
-    setMaterias([...existingMaterias, ...newMaterias]);
+    setMaterias(newMaterias);
   }
 
   if (state.importType === "tabla") {
@@ -1862,8 +1861,8 @@ const applyImport = () => {
       return true;
     });
 
-    setTabla([...existingTabla, ...newTabla]);
-    alert(`Importación completada: ${newTabla.length} registros nuevos añadidos`);
+    setTabla(newTabla);
+    alert(`Importación completada: ${newTabla.length} registros importados`);
   }
 
   refreshProfesorOptions();
