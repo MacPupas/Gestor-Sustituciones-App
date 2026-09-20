@@ -37,13 +37,13 @@ for (const r of rows) {
   if (prof) {
     horario.push({
       id: Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6),
-      profesorId: profesores.get(prof),
-      profesorNombre: prof,
-      diaSemana: (r['Día'] || '').trim().toLowerCase(),
-      horaInicio: (r['Hora Inicio'] || '').trim(),
-      horaFin: (r['Hora Fin'] || '').trim(),
+      profesorid: profesores.get(prof),
+      profesornombre: prof,
+      diasemana: (r['Día'] || '').trim().toLowerCase(),
+      horainicio: (r['Hora Inicio'] || '').trim(),
+      horafin: (r['Hora Fin'] || '').trim(),
       asignatura: (r['Asignatura'] || '').trim(),
-      cursoGrupo: (r['Curso/Grupo'] || '').trim()
+      // cursoGrupo: (r['Curso/Grupo'] || '').trim()
     });
   }
 }
