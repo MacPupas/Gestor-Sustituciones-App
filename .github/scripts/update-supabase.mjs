@@ -12,8 +12,7 @@ async function fetchRest(table, method, body) {
 }
 
 const raw = fs.readFileSync('materias_por_profesores.csv', 'utf8');
-const lines = raw.split(/?
-/).filter(l => l.trim().length > 0);
+const lines = raw.split(/\r?\n/).filter(l => l.trim().length > 0);
 const header = lines[0].split(';').map(s => s.trim());
 const rows = [];
 for (let i = 1; i < lines.length; i++) {
