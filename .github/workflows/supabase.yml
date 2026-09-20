@@ -1,0 +1,27 @@
+name: Update Supabase DB
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link project and push DB
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          # Vincula el proyecto usando el ref del secret
+          echo "$SUPABASE_ACCESS_TOKEN" | supabase login
+          supabase link --project-ref "$SUPABASE_PROJECT_REF"
+          # Aplica cambios de la DB (si tenés config.toml o migraciones)
+          supabase db push
