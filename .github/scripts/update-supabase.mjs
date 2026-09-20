@@ -50,7 +50,7 @@ for (const r of rows) {
 
 // Insertar profesores
 for (const [prof, id] of profesores) {
-  await fetchRest('profesores', 'POST', { id, profesor: prof, puesto: 'Profesor/a', movilAvisos: '', cuenta: '' });
+  await fetchRest('profesores', 'POST', { id, profesor: prof, puesto: 'Profesor/a', movilavisos: '', cuenta: '' });
 }
 
 // Insertar horario por batches de 50
