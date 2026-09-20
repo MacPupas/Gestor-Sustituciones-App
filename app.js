@@ -1194,8 +1194,11 @@ const refreshProfesorOptions = () => {
 
   const options = ["<option value=\"\">Seleccionar</option>"];
 
-  // Mostrar todos los profesores ordenados alfabéticamente
+  const seenIds = new Set();
+  // Mostrar todos los profesores ordenados alfabéticamente (sin duplicados)
   profesores.forEach((p) => {
+    if (!p.id || seenIds.has(p.id)) return;
+    seenIds.add(p.id);
     const count = sustitucionCount[p.id] || 0;
     const countLabel = count > 0 ? ` <b style="color:#dc2626; font-weight:bold;">(${count})</b>` : '';
     options.push(`<option value="${p.id}">${p.profesor}${countLabel}</option>`);
@@ -1205,6 +1208,8 @@ const refreshProfesorOptions = () => {
 
   // Profesores del centro (casos excepcionales)
   profesores.forEach((p) => {
+    if (!p.id || seenIds.has(p.id)) return;
+    seenIds.add(p.id);
     const count = sustitucionCount[p.id] || 0;
     const countLabel = count > 0 ? ` <b style="color:#dc2626; font-weight:bold;">(${count})</b>` : '';
     extraOptions.push(`<option value="${p.id}">${p.profesor}${countLabel}</option>`);
