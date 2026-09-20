@@ -550,7 +550,7 @@ const supabaseSave = async (table, data) => {
 
 let cachedData = { profesores: [], materias: [], tabla: [], sustituciones: [], bajas: [] };
 
-const getProfesores = () => cachedData.profesores;
+const getProfesores = () => { const arr = cachedData.profesores || []; const seen = new Set(); return arr.filter(p => p && p.id && !seen.has(p.id) && seen.add(p.id)); };
 const getMaterias = () => cachedData.materias;
 const getTabla = () => cachedData.tabla;
 const getSustituciones = () => cachedData.sustituciones;
