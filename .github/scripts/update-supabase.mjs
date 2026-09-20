@@ -1,5 +1,6 @@
 import fs from 'fs';
 
+function hashId(s){let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i)|0;}return Math.abs(h).toString(36).slice(0,8);}
 const URL = 'https://pxpujmdlobwopqqbudwi.supabase.co';
 const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cHVqbWRsb2J3b3BxcWJ1ZHdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExOTE4NjYsImV4cCI6MjA4Njc2Nzg2Nn0.f1R38JNM09UkI-2hzng5iYNUbCHq4cyjZXfngr1q64E';
 
@@ -32,11 +33,11 @@ const horario = [];
 for (const r of rows) {
   const prof = (r['Profesor'] || '').trim();
   if (prof && !profesores.has(prof)) {
-    profesores.set(prof, Math.random().toString(36).slice(2, 10));
+    profesores.set(prof, hashId(prof));
   }
   if (prof) {
     horario.push({
-      id: Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6),
+      id: hashId(fila['profesorid'] + '|' + fila['diasemana'] + '|' + fila['horainicio'] + '|' + fila['horafin'] + '|' + fila['asignatura']),
       profesorid: profesores.get(prof),
       profesornombre: prof,
       diasemana: (r['Día'] || '').trim().toLowerCase(),
