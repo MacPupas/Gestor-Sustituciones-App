@@ -1207,9 +1207,10 @@ const refreshProfesorOptions = () => {
   const extraOptions = ["<option value=\"\"></option>"];
 
   // Profesores del centro (casos excepcionales)
+  const seenExtra = new Set();
   profesores.forEach((p) => {
-    if (!p.id || seenIds.has(p.id)) return;
-    seenIds.add(p.id);
+    if (!p.id || seenExtra.has(p.id)) return;
+    seenExtra.add(p.id);
     const count = sustitucionCount[p.id] || 0;
     const countLabel = count > 0 ? ` <b style="color:#dc2626; font-weight:bold;">(${count})</b>` : '';
     extraOptions.push(`<option value="${p.id}">${p.profesor}${countLabel}</option>`);
