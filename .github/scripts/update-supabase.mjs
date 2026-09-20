@@ -44,7 +44,7 @@ for (const r of rows) {
       horainicio: (r['Hora Inicio'] || '').trim(),
       horafin: (r['Hora Fin'] || '').trim(),
       asignatura: (r['Asignatura'] || '').trim(),
-      // cursoGrupo: (r['Curso/Grupo'] || '').trim()
+      cursogrupo: (r['Curso/Grupo'] || '').trim()
     });
   }
 }
