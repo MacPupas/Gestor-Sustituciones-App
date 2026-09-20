@@ -4030,6 +4030,8 @@ const init = async () => {
     });
   }
 
+  // Estadísticas: por defecto desde 1 septiembre 2026
+  if (el.statsFrom) el.statsFrom.value = '2026-09-01';
   initNavigation();
   initImports();
   initEvents();
