@@ -1,4 +1,4 @@
-name: Update Supabase DB
+name: Update Supabase DB from CSV
 
 on:
   push:
@@ -15,13 +15,14 @@ jobs:
         with:
           version: latest
 
-      - name: Link project and push DB
+      - name: Generate SQL from CSV
+        run: python3 .github/scripts/import-csv.py
+
+      - name: Apply SQL to Supabase
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
         run: |
-          # Vincula el proyecto usando el ref del secret
           echo "$SUPABASE_ACCESS_TOKEN" | supabase login
           supabase link --project-ref "$SUPABASE_PROJECT_REF"
-          # Aplica cambios de la DB (si tenés config.toml o migraciones)
-          supabase db push
+          supabase sql --file .supabase_update.sql
