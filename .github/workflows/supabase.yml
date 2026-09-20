@@ -10,19 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
-      - name: Generate SQL from CSV
-        run: python3 .github/scripts/import-csv.py
-
-      - name: Apply SQL to Supabase
+      - name: Update Supabase from CSV
+        run: node .github/scripts/update-supabase.mjs
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
-        run: |
-          echo "$SUPABASE_ACCESS_TOKEN" | supabase login
-          supabase link --project-ref "$SUPABASE_PROJECT_REF"
-          supabase sql --file .supabase_update.sql
