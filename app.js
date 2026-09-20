@@ -922,10 +922,7 @@ const normalizeText = (value) =>
 
 const resolveProfesorId = (value) => {
   if (!value) return "";
-  let profesores = getProfesores();
-  if (useSupabase() && (!profesores || profesores.length === 0)) {
-    try { profesores = await supabaseFetch('profesores') || []; } catch(e) {}
-  }
+  const profesores = getProfesores();
   const normalized = String(value).trim();
   const byId = profesores.find((p) => p.id === normalized);
   if (byId) return byId.id;
@@ -1245,10 +1242,7 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
   const currentFecha = el.formFecha.value;
   const sustituciones = getSustituciones();
   const tabla = getTabla();
-  let profesores = getProfesores();
-  if (useSupabase() && (!profesores || profesores.length === 0)) {
-    try { profesores = await supabaseFetch('profesores') || []; } catch(e) {}
-  }
+  const profesores = getProfesores();
 
   if (!start || !end) {
     el.formProfesorSustituto.innerHTML = '<option value="">Selecciona una hora primero</option>';
@@ -1377,10 +1371,7 @@ const refreshSustitutoOptions = (ausenteId, selected = "") => {
 
 const renderDashboard = () => {
   const dateKey = toIso(state.activeDate);
-  let profesores = getProfesores();
-  if (useSupabase() && (!profesores || profesores.length === 0)) {
-    try { profesores = await supabaseFetch('profesores') || []; } catch(e) {}
-  }
+  const profesores = getProfesores();
   const dayName = getDayName(state.activeDate);
 
   // Obtener sustituciones del día
@@ -2249,10 +2240,7 @@ const renderDataset = (type) => {
 
   // Custom view for materias with profesor name resolution
   if (type === "materias") {
-    let profesores = getProfesores();
-  if (useSupabase() && (!profesores || profesores.length === 0)) {
-    try { profesores = await supabaseFetch('profesores') || []; } catch(e) {}
-  }
+    const profesores = getProfesores();
     const search = state.datasetViewSearch.toLowerCase();
     const filtered = search
       ? data.filter((row) =>
@@ -2308,10 +2296,7 @@ const renderDataset = (type) => {
 
   // Custom view for tabla with profesor name resolution
   if (type === "tabla") {
-    let profesores = getProfesores();
-  if (useSupabase() && (!profesores || profesores.length === 0)) {
-    try { profesores = await supabaseFetch('profesores') || []; } catch(e) {}
-  }
+    const profesores = getProfesores();
     const search = state.datasetViewSearch.toLowerCase();
     const selectedProfesor = state.selectedProfesorFilter || "";
 
@@ -2438,10 +2423,7 @@ const renderDataset = (type) => {
 };
 
 const editProfesor = (id) => {
-  let profesores = getProfesores();
-  if (useSupabase() && (!profesores || profesores.length === 0)) {
-    try { profesores = await supabaseFetch('profesores') || []; } catch(e) {}
-  }
+  const profesores = getProfesores();
   const prof = profesores.find((p) => p.id === id);
   if (!prof) return;
 
@@ -2477,10 +2459,7 @@ const editProfesor = (id) => {
 
 const depurarProfesoresCursoAnterior = async () => {
   const tabla = getTabla();
-  let profesores = getProfesores();
-  if (useSupabase() && (!profesores || profesores.length === 0)) {
-    try { profesores = await supabaseFetch('profesores') || []; } catch(e) {}
-  }
+  const profesores = getProfesores();
   if (tabla.length === 0) {
     alert("No hay tabla de horario cargada para comparar.");
     return;
@@ -2532,10 +2511,7 @@ const deleteProfesor = async (id, name) => {
   const ok = confirm(`¿Seguro que deseas eliminar a ${name || "este profesor"}?`);
   if (!ok) return;
 
-  let profesores = getProfesores();
-  if (useSupabase() && (!profesores || profesores.length === 0)) {
-    try { profesores = await supabaseFetch('profesores') || []; } catch(e) {}
-  }
+  const profesores = getProfesores();
   const updated = profesores.filter((p) => p.id !== id);
   addDeletedProfesorIds([id]);
   setProfesores(updated);
@@ -2568,10 +2544,7 @@ const addNewProfesor = () => {
     cuenta: cuenta.trim(),
   };
 
-  let profesores = getProfesores();
-  if (useSupabase() && (!profesores || profesores.length === 0)) {
-    try { profesores = await supabaseFetch('profesores') || []; } catch(e) {}
-  }
+  const profesores = getProfesores();
   setProfesores([...profesores, newProf]);
   renderDataset("profesores");
   refreshProfesorOptions();
@@ -2687,14 +2660,11 @@ const isRelevistaDeBajaActiva = (profesorSustitutoId, profesorAusenteId, fecha) 
   return bajaRelevista && bajaRelevista.profesorBajaId === profesorAusenteId;
 };
 
-const updateStats = async () => {
+const updateStats = () => {
   const from = el.statsFrom.value ? fromIso(el.statsFrom.value) : null;
   const to = el.statsTo.value ? fromIso(el.statsTo.value) : null;
   const profesorId = el.statsProfesor.value;
-  let profesores = getProfesores();
-  if (useSupabase() && (!profesores || profesores.length === 0)) {
-    try { profesores = await supabaseFetch('profesores') || []; } catch(e) {}
-  }
+  const profesores = getProfesores();
 
   const filtered = getSustituciones().filter((s) => {
     if (isRelevistaDeBajaActiva(s.profesorSustitutoId, s.profesorAusenteId, s.fecha)) {
@@ -2791,10 +2761,7 @@ const renderPrintTable = () => {
     dateList.push(selected);
   }
 
-  let profesores = getProfesores();
-  if (useSupabase() && (!profesores || profesores.length === 0)) {
-    try { profesores = await supabaseFetch('profesores') || []; } catch(e) {}
-  }
+  const profesores = getProfesores();
   const sustituciones = getSustituciones();
 
   el.printTable.innerHTML = dateList
@@ -3030,10 +2997,7 @@ const initImports = () => {
         return;
       }
 
-      let profesores = getProfesores();
-  if (useSupabase() && (!profesores || profesores.length === 0)) {
-    try { profesores = await supabaseFetch('profesores') || []; } catch(e) {}
-  }
+      const profesores = getProfesores();
 
       // Preparar datos con nombres de profesores
       const dataToExport = tabla.map(row => {
@@ -3090,10 +3054,7 @@ const initImports = () => {
       if (!confirmDelete) return;
 
       const tabla = getTabla();
-      let profesores = getProfesores();
-  if (useSupabase() && (!profesores || profesores.length === 0)) {
-    try { profesores = await supabaseFetch('profesores') || []; } catch(e) {}
-  }
+      const profesores = getProfesores();
       const selectedProfesor = state.selectedProfesorFilter;
 
       // Filtrar registros a eliminar usando el ID del registro
@@ -3206,10 +3167,7 @@ const initEvents = () => {
         el.formProfesorSustituto.value = bajaActiva.profesorRelevistaId;
       } else if (bajaActiva && bajaActiva.profesorRelevistaNombre) {
         // El relevista no tiene ID - buscar por nombre en la lista de profesores
-        let profesores = getProfesores();
-  if (useSupabase() && (!profesores || profesores.length === 0)) {
-    try { profesores = await supabaseFetch('profesores') || []; } catch(e) {}
-  }
+        const profesores = getProfesores();
         const relevista = profesores.find(p => normalizeText(p.profesor) === normalizeText(bajaActiva.profesorRelevistaNombre));
         if (relevista) {
           el.formProfesorSustituto.value = relevista.id;
@@ -3604,10 +3562,7 @@ const calculateConsejoEscolar = () => {
   }
 
   const sustituciones = getSustituciones();
-  let profesores = getProfesores();
-  if (useSupabase() && (!profesores || profesores.length === 0)) {
-    try { profesores = await supabaseFetch('profesores') || []; } catch(e) {}
-  }
+  const profesores = getProfesores();
 
   const filteredSubs = sustituciones.filter(s => {
     if (isRelevistaDeBajaActiva(s.profesorSustitutoId, s.profesorAusenteId, s.fecha)) {
