@@ -1,5 +1,4 @@
 import fs from 'fs';
-import csv from 'csv-parse/sync';
 
 const URL = 'https://pxpujmdlobwopqqbudwi.supabase.co';
 const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cHVqbWRsb2J3b3BxcWJ1ZHdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExOTE4NjYsImV4cCI6MjA4Njc2Nzg2Nn0.f1R38JNM09UkI-2hzng5iYNUbCHq4cyjZXfngr1q64E';
@@ -12,8 +11,17 @@ async function fetchRest(table, method, body) {
   return res;
 }
 
-const data = fs.readFileSync('materias_por_profesores.csv', 'utf8');
-const rows = csv.parse(data, { delimiter: ';', columns: true, skip_empty_lines: true });
+const raw = fs.readFileSync('materias_por_profesores.csv', 'utf8');
+const lines = raw.split(/?
+/).filter(l => l.trim().length > 0);
+const header = lines[0].split(';').map(s => s.trim());
+const rows = [];
+for (let i = 1; i < lines.length; i++) {
+  const cells = lines[i].split(';');
+  const obj = {};
+  for (let j = 0; j < header.length; j++) obj[header[j]] = (cells[j] || '').trim();
+  rows.push(obj);
+}
 
 // Borrar todo
 await fetchRest('profesores', 'DELETE', null);
