@@ -3976,6 +3976,13 @@ const migrateTablaIds = () => {
 
 const init = async () => {
   try {
+    if (useSupabase()) {
+      localStorage.removeItem(storageKeys.profesores);
+      localStorage.removeItem(storageKeys.materias);
+      localStorage.removeItem(storageKeys.tabla);
+      localStorage.removeItem(storageKeys.sustituciones);
+      localStorage.removeItem(storageKeys.bajas);
+    }
     loadCachedData();
 
     // Migrar IDs antiguos antes de sincronizar con Supabase
