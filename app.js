@@ -2686,6 +2686,8 @@ const updateStats = () => {
     filtered.forEach((s) => {
       const id = s[key];
       if (!id) return;
+      const prof = profesores.find(p => p.id === id);
+      if (!prof || !prof.profesor) return;
       if (!map[id]) {
         map[id] = { dias: new Set(), sesiones: 0 };
       }
@@ -2727,6 +2729,7 @@ const updateStats = () => {
 
   const rankingList = Object.entries(allSubCounts)
     .filter(([, count]) => count > 0)
+    .filter(([id]) => { const p = profesores.find(x => x.id === id); return p && p.profesor; })
     .sort((a, b) => b[1] - a[1])
     .map(([id, count]) => {
       const prof = profesores.find((p) => p.id === id);
