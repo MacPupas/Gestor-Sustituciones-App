@@ -37,7 +37,7 @@ for (const r of rows) {
   }
   if (prof) {
     horario.push({
-      id: hashId(fila['profesorid'] + '|' + fila['diasemana'] + '|' + fila['horainicio'] + '|' + fila['horafin'] + '|' + fila['asignatura']),
+      id: hashId(prof + '|' + (r['Día']||'').trim().toLowerCase() + '|' + (r['Hora Inicio']||'').trim() + '|' + (r['Hora Fin']||'').trim() + '|' + (r['Asignatura']||'').trim()),
       profesorid: profesores.get(prof),
       profesornombre: prof,
       diasemana: (r['Día'] || '').trim().toLowerCase(),
